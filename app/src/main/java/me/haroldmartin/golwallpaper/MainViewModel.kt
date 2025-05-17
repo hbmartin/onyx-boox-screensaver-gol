@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val TAG = "MainViewModel"
+private const val STOP_TIMEOUT_MILLIS = 5000L
 
 data class UiState(val fgColor: Int, val bgColor: Int)
 
@@ -32,7 +33,7 @@ class MainViewModel : ViewModel() {
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
             initialValue = UiState(
                 fgColor = Color.Black.toArgb(),
                 bgColor = Color.White.toArgb(),
@@ -65,7 +66,12 @@ class MainViewModel : ViewModel() {
 
         repository[UserDataStore.Keys.GAME_STATE] = GolController(rows, cols, pattern).toString()
         viewModelScope.launch {
-            saveWallpaper(context, repository, showToast = true, updateGame = false)
+            saveWallpaper(
+                context = context,
+                repository = repository,
+                showToast = true,
+                updateGame = false,
+            )
         }
     }
 }

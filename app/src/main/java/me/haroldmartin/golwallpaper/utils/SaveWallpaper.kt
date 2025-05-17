@@ -31,22 +31,22 @@ suspend fun saveWallpaper(
 ) {
     val resolution = getScreenResolution(context)
     Log.d(TAG, "resolution: $resolution")
-    val fgColor: Int = (repository[UserDataStore.Keys.FG_COLOR].first() ?: Color.Black.toArgb())
-        .let {
-            if (it == RANDOM_COLOR) {
+    val fgColor: Int = (repository[UserDataStore.Keys.FG_COLOR].first() ?: RANDOM_COLOR)
+        .let { color ->
+            if (color == RANDOM_COLOR) {
                 Colors.ALL.chooseRandom(except = setOf(Color.White.toArgb())).value.toArgb()
             } else {
-                it
+                color
             }
         }
     val bgColor: Int = repository[UserDataStore.Keys.BG_COLOR].first() ?: Color.White.toArgb()
-        .let {
-            if (it == RANDOM_COLOR) {
+        .let { color ->
+            if (color == RANDOM_COLOR) {
                 Colors.ALL.chooseRandom(
                     except = setOf(fgColor, Color.Black.toArgb()),
                 ).value.toArgb()
             } else {
-                it
+                color
             }
         }
 
@@ -76,11 +76,11 @@ suspend fun saveWallpaper(
             fileName = "screenshot_${System.currentTimeMillis()}.png",
         )
         Log.d(TAG, "saved bitmap: $path")
-        val result = ScreenResourceManager.setScreensaver(
+        val isSuccess = ScreenResourceManager.setScreensaver(
             context,
             path,
             showToast,
         )
-        Log.d(TAG, "setScreensaver: $result")
+        Log.d(TAG, "setScreensaver: $isSuccess")
     }
 }

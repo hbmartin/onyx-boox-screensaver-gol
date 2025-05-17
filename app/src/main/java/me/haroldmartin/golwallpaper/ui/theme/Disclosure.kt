@@ -12,19 +12,20 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Disclosure(isOpen: Boolean) = Image(
+fun Disclosure(isOpen: Boolean, size: Dp = 16.dp) = Image(
     modifier = Modifier
-        .size(16.dp)
+        .size(size)
         .rotate(if (isOpen) 180f else 90f),
-    imageVector = Triangle,
+    imageVector = TRIANGLE,
     contentDescription = "Triangle",
 )
 
 @Suppress("MagicNumber")
-val Triangle: ImageVector = ImageVector.Builder(
+val TRIANGLE: ImageVector = ImageVector.Builder(
     name = "Triangle",
     defaultWidth = 24.dp,
     defaultHeight = 24.dp,
@@ -43,11 +44,35 @@ val Triangle: ImageVector = ImageVector.Builder(
         pathFillType = PathFillType.NonZero,
     ) {
         moveTo(13.73f, 4f)
-        arcToRelative(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, -3.46f, 0f)
+        arcToRelative(
+            a = 2f,
+            b = 2f,
+            theta = 0f,
+            isMoreThanHalf = false,
+            isPositiveArc = false,
+            dx1 = -3.46f,
+            dy1 = 0f,
+        )
         lineToRelative(-8f, 14f)
-        arcTo(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, 4f, 21f)
+        arcTo(
+            horizontalEllipseRadius = 2f,
+            verticalEllipseRadius = 2f,
+            theta = 0f,
+            isMoreThanHalf = false,
+            isPositiveArc = false,
+            x1 = 4f,
+            y1 = 21f,
+        )
         horizontalLineToRelative(16f)
-        arcToRelative(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = false, 1.73f, -3f)
+        arcToRelative(
+            a = 2f,
+            b = 2f,
+            theta = 0f,
+            isMoreThanHalf = false,
+            isPositiveArc = false,
+            dx1 = 1.73f,
+            dy1 = -3f,
+        )
         close()
     }
 }.build()

@@ -2,69 +2,52 @@ package me.haroldmartin.golwallpaper.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
-import me.haroldmartin.golwallpaper.ui.theme.Colors
+import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 
 @Composable
-fun ColorPicker(onClick: (Int) -> Unit) {
+fun ColorPicker(label: String, selectedColor: Int, onClick: (Int) -> Unit) {
+    var isPaletteVisible by remember { mutableStateOf(false) }
+
     Row(
-        modifier = Modifier.Companion.fillMaxWidth().padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.clickable { isPaletteVisible = !isPaletteVisible },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Colors.Companion.ALL.forEach { color ->
-            Button(
-                onClick = { onClick(color.value.toArgb()) },
-                modifier = Modifier.Companion
-                    .weight(1f)
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(color.value)
-                    .border(1.dp, COLOR_SCHEME.secondary)
-                    .padding(0.dp),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = color.value,
-                ),
-                content = {},
+        Disclosure(isPaletteVisible)
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            fontWeight = FontWeight.Bold,
+            text = label,
+        )
+        if (selectedColor != RANDOM_COLOR) {
+            Box(
+                modifier = Modifier
+                    .size(18.dp)
+                    .background(Color(selectedColor))
+                    .border(1.dp, COLOR_SCHEME.secondary),
             )
+        } else {
+            Text("Random")
         }
-        Button(
-            onClick = { onClick(RANDOM_COLOR) },
-            modifier = Modifier.Companion
-                .weight(1f)
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(4.dp))
-                .background(Color.White)
-                .border(1.dp, COLOR_SCHEME.secondary)
-                .padding(0.dp),
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-            ),
-        ) {
-            Text(
-                "RAN\nDOM",
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-            )
-        }
+    }
+    if (isPaletteVisible) {
+        ColorPicker(onClick = { color -> onClick(color) })
     }
 }

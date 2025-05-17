@@ -194,7 +194,6 @@ private fun wrappedIndex(i: Int, upperBound: Int): Int = when (i) {
 private fun parsePattern(pattern: String): Array<BooleanArray> {
     require(pattern.isNotEmpty()) { "Pattern cannot be empty" }
     val illegalChar = pattern.find { it !in "Ao.b0123456789$!\n" }
-    @Suppress("NullableToStringCall")
     require(illegalChar == null) { "Illegal character in pattern: $illegalChar" }
     return pattern.split('$').mapNotNull { parseRow(it) }.toTypedArray()
 }
