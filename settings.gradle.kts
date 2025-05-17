@@ -27,5 +27,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "GoL Wallpaper"
+rootProject.name = "GoL Screensaver"
 include(":app")

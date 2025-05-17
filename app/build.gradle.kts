@@ -66,7 +66,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     detektPlugins(rootProject.libs.detekt.formatting)
-    detektPlugins("me.haroldmartin:hbmartin-detekt-rules:0.1.6")
+    detektPlugins(rootProject.libs.detekt.hbmartin)
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {

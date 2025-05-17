@@ -18,6 +18,12 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+          cache: 'gradle'
+          cache-dependency-path: |
+            gradlew
+            settings.gradle.kts
+            build.gradle.kts
+            app/build.gradle.kts
       - name: Run Detekt on the detekt rules
         uses: gradle/gradle-build-action@v3
         with:

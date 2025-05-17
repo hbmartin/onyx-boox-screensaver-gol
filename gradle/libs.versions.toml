@@ -12,6 +12,8 @@ onyxsdkDevice = "1.2.32"
 datastore = "1.1.6"
 detekt = "1.23.8"
 androidxWork = "2.10.1"
+updatesCheck = "0.52.0"
+hbmartinRules = "0.1.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,9 +35,12 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
 onyxsdkDevice = { group = "com.onyx.android.sdk", name = "onyxsdk-device", version.ref = "onyxsdkDevice" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+detekt-hbmartin = { group = "me.haroldmartin", name = "hbmartin-detekt-rules", version.ref = "hbmartinRules" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+updatesCheck = { id = "com.github.ben-manes.versions", version.ref = "updatesCheck" }
+

@@ -34,7 +34,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     ) {
         Text(
             "NOTE! You must disable freezing in order to for the game to update:\n" +
-                "Settings > Apps & Notifications > Freeze Settings > GoL Wallpaper (OFF)",
+                "Settings > Apps & Notifications > Freeze Settings > GoL Screensaver (OFF)",
         )
         ColorPicker("Foreground Color", uiState.fgColor) { color ->
             viewModel.setFgColor(context, color)
