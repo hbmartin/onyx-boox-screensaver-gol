@@ -1,24 +1,26 @@
 # GoL Screensaver
 
-[![CodeFactor](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol/badge)](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol)
 [![Lint](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/lint.yml/badge.svg)](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/lint.yml)
-
-GoL Screensaver is an app that generates and updates screensavers for Onyx Boox using [Conway's Game of Life Algorithm](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). Optimized for e-ink screens!
+[![CodeFactor](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol/badge)](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hbmartin_onyx-boox-screensaver-gol&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hbmartin_onyx-boox-screensaver-gol)
 
 <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="50" align="right" alt="icon">
 
+GoL Screensaver is an app that generates and updates screensavers for Onyx Boox using [Conway's Game of Life Algorithm](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). Optimized for e-ink screens!
+
 <img src="media/screenshot.png" width="300" />
+<img src="media/screenshot2.png" width="300" />
 
 ## 🎨 Features
 - Auto-updating screensaver based on Conway's Game of Life
   - Note that wallpaper will not update while the screen is locked, only on the next unlock -> lock.
 
-- Customizable foreground and background colors
+- Customizable foreground and background colors (chosen specifically for color e-ink)
 - Pattern picker for common Game of Life starting states
 
 ## 🏄 Usage
 1. **Install the app** on your Android device using F-Droid or building from source.
-2. ⚠️ **Disable freezing** in order to for the game to update
+2. ⚠️ **Disable freezing** in order to for the game to self-update
    - Settings > Apps & Notifications > Freeze Settings > GoL Wallpaper (OFF)
    - **Note:** Updates happen at most every 15 minutes and **only** with sufficient battery
 
