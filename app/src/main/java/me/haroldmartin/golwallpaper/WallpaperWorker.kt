@@ -19,7 +19,6 @@ class WallpaperWorker(private val context: Context, workerParams: WorkerParamete
         try {
             AppContainer.init(context)
             val repository: UserDataStore = AppContainer.userDataStore
-            Log.d(TAG, "initialized on thread ${Thread.currentThread().name}")
             saveWallpaper(context, repository, false)
             Result.success()
         } catch (e: Exception) {

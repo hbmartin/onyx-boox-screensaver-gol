@@ -9,6 +9,8 @@ object AppContainer {
         private set
 
     fun init(context: Context) {
-        userDataStore = UserDataStore(context = context)
+        if (!::userDataStore.isInitialized) {
+            userDataStore = UserDataStore(context = context)
+        }
     }
 }

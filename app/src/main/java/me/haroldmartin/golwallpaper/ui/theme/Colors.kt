@@ -1,6 +1,9 @@
 package me.haroldmartin.golwallpaper.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+
+const val RANDOM_COLOR = -2
 
 @Suppress("MagicNumber")
 sealed class Colors(val displayName: String, val value: Color) {
@@ -18,3 +21,7 @@ sealed class Colors(val displayName: String, val value: Color) {
         val ALL: List<Colors> = listOf(Red, Pink, Purple, Cyan, Green, Yellow, Blue, Black, White)
     }
 }
+
+fun List<Colors>.chooseRandom(except: Set<Int>): Colors = this.filterNot {
+    it.value.toArgb() in except
+}.random()

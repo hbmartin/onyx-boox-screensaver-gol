@@ -70,6 +70,8 @@ fun saveBitmapToInternalStorage(context: Context, bitmap: Bitmap, fileName: Stri
     } catch (e: IOException) {
         Log.e(TAG, "Failed to save bitmap to file", e)
         return null
+    } finally {
+        bitmap.recycle()
     }
 
     return file.absolutePath
@@ -82,11 +84,18 @@ internal fun saveBitmapToPictures(context: Context, bitmap: Bitmap, fileName: St
     }
     val resolver = context.contentResolver
     val uri: Uri? = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-    uri?.let {
-        resolver.openOutputStream(it)?.use { out -> out.writeBitmap(bitmap) }
-    } ?: return null
+    try {
+        uri?.let {
+            resolver.openOutputStream(it)?.use { out -> out.writeBitmap(bitmap) }
+        }
+    } catch (e: IOException) {
+        Log.e(TAG, "Failed to save bitmap to file", e)
+        return null
+    } finally {
+        bitmap.recycle()
+    }
 
-    return "/storage/emulated/0/Download/$fileName"
+    return uri?.let { "/storage/emulated/0/Download/$fileName" }
 }
 
 private fun OutputStream.writeBitmap(bitmap: Bitmap) {

@@ -6,6 +6,7 @@ import kotlin.random.Random
 
 private const val RULE_SIZE = 9
 private val NEIGHBOR_RANGE = -1..1
+private val DEFAULT_PATTERN = Patterns.HERRINGBONE_AGAR_P14
 
 class GolController(
     private val rows: Int,
@@ -17,7 +18,11 @@ class GolController(
     @Suppress("AvoidVarsExceptWithDelegate")
     var grid: Array<BooleanArray> = initialPattern?.let {
         centerPattern(it, rows, columns)
-    } ?: randomGrid(rows, columns)
+    } ?: centerPattern(
+        initialPattern = parsePattern(DEFAULT_PATTERN.value),
+        rows = rows,
+        columns = columns,
+    )
         private set
 
     init {
@@ -92,7 +97,13 @@ class GolController(
             if (pattern != null) {
                 centerPattern(pattern.asArray, rows, columns)
             } else {
-                randomGrid(rows, columns)
+                val random = Array(rows) {
+                    BooleanArray(columns) {
+                        Random.nextBoolean()
+                    }
+                }
+
+                centerPattern(random, rows, columns)
             }
     }
 
@@ -169,12 +180,6 @@ private fun centerPattern(
                 false
             }
         }
-    }
-}
-
-fun randomGrid(rows: Int, columns: Int): Array<BooleanArray> = Array(rows) {
-    BooleanArray(columns) {
-        Random.nextBoolean()
     }
 }
 

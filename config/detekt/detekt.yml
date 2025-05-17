@@ -628,6 +628,10 @@ style:
       - '0'
       - '1'
       - '2'
+      - '90'
+      - '180'
+      - '270'
+      - '260'
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
     ignoreLocalVariableDeclaration: false
