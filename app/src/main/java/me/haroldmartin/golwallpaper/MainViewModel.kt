@@ -4,14 +4,12 @@ import android.content.Context
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.utils.saveWallpaper
+import kotlinx.coroutines.launch
 
-private const val TAG = "GolViewModel"
-
-class MainViewModel() : ViewModel() {
+class MainViewModel : ViewModel() {
     private val repository: UserDataStore = AppContainer.userDataStore
 
     fun setFgColor(context: Context, color: Colors) {

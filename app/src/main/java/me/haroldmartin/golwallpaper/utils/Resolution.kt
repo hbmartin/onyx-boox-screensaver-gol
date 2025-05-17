@@ -18,23 +18,23 @@ val Resolution.ratio: Float
         height.toFloat() / width
     }
 
+@Suppress("Deprecation")
 fun getScreenResolution(context: Context): Resolution {
     val displayMetrics = DisplayMetrics()
-    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
 
-    // For Android 10 (API 29) and below
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-    }
-    // For Android 11 (API 30) and above
-    else {
-        val displayManager = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-        val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
+        // For Android 10 (API 29) and below
+        windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+    } else {
+        // For Android 11 (API 30) and above
+        val displayManager = context.getSystemService(Context.DISPLAY_SERVICE) as? DisplayManager
+        val display = displayManager?.getDisplay(Display.DEFAULT_DISPLAY)
         display?.getRealMetrics(displayMetrics)
     }
 
     val width = displayMetrics.widthPixels
     val height = displayMetrics.heightPixels
 
-    return Pair(width, height)
+    return Resolution(width, height)
 }

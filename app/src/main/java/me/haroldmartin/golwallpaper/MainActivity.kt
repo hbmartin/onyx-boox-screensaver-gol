@@ -31,16 +31,17 @@ class MainActivity : ComponentActivity() {
     private fun scheduleUpdate() {
         val constraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
 
-        // TODO: configurable intervals
+        // TODO: configurable intervals - Min schedule interval is 15mins
         val workRequest =
-            PeriodicWorkRequestBuilder<WallpaperWorker>(15, TimeUnit.MINUTES) // Min schedule interval is 15mins
-//                .setConstraints(constraints)
+            PeriodicWorkRequestBuilder<WallpaperWorker>(15, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .setInitialDelay(0, TimeUnit.MILLISECONDS)
                 .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             uniqueWorkName = "WallpaperWorker",
             existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.KEEP,
-            request = workRequest
+            request = workRequest,
         )
     }
 }

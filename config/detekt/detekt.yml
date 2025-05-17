@@ -53,7 +53,7 @@ output-reports:
 comments:
   active: true
   AbsentOrWrongFileLicense:
-    active: true
+    active: false
     licenseTemplateFile: 'license.template'
     licenseTemplateIsRegex: false
   CommentOverPrivateFunction:
@@ -74,7 +74,7 @@ comments:
     matchDeclarationsOrder: true
     allowParamOnConstructorProperties: false
   UndocumentedPublicClass:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     searchInNestedClass: true
     searchInInnerClass: true
@@ -83,11 +83,11 @@ comments:
     searchInProtectedClass: false
     ignoreDefaultCompanionObject: false
   UndocumentedPublicFunction:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     searchProtectedFunction: false
   UndocumentedPublicProperty:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     searchProtectedProperty: false
 
@@ -183,7 +183,7 @@ coroutines:
   GlobalCoroutineUsage:
     active: true
   InjectDispatcher:
-    active: true
+    active: false
     dispatcherNames:
       - 'IO'
       - 'Default'
@@ -335,6 +335,7 @@ naming:
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
+    ignoreAnnotated: ['Composable']
   FunctionParameterNaming:
     active: true
     parameterPattern: '[a-z][A-Za-z0-9]*'
@@ -649,6 +650,7 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
     excludeRawStrings: true
+    excludes: ['**/Patterns.kt']
   MayBeConst:
     active: true
   ModifierOrder:
@@ -737,7 +739,7 @@ style:
   UnnecessaryLet:
     active: true
   UnnecessaryParentheses:
-    active: true
+    active: false
     allowForUnclearPrecedence: false
   UntilInsteadOfRangeTo:
     active: true
@@ -854,12 +856,13 @@ formatting:
     autoCorrect: true
   FunctionName:
     active: true
+    ignoreAnnotated: ['Composable']
   FunctionReturnTypeSpacing:
     active: true
     autoCorrect: true
     maxLineLength: 120
   FunctionSignature:
-    active: true
+    active: false
     autoCorrect: true
     forceMultilineWhenParameterCountGreaterOrEqualThan: 2147483647
     functionBodyExpressionWrapping: 'default'
@@ -882,7 +885,7 @@ formatting:
   ImportOrdering:
     active: true
     autoCorrect: true
-    layout: '*,java.**,javax.**,kotlin.**,^'
+    layout: '*,java.**,javax.**,kotlin.**,kotlinx.**,^'
   Indentation:
     active: true
     autoCorrect: true
@@ -895,6 +898,7 @@ formatting:
     active: true
     maxLineLength: 120
     ignoreBackTickedIdentifier: false
+    excludes: [ '**/Patterns.kt' ]
   ModifierListSpacing:
     active: true
     autoCorrect: true
@@ -906,7 +910,7 @@ formatting:
     autoCorrect: true
     indentSize: 4
   MultilineExpressionWrapping:
-    active: true
+    active: false
     autoCorrect: true
     indentSize: 4
   NoBlankLineBeforeRbrace:

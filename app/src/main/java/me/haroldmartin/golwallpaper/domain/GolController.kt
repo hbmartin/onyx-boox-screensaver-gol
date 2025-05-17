@@ -1,6 +1,7 @@
+package me.haroldmartin.golwallpaper.domain
+
 // https://github.com/hbmartin/openrndr-game-of-life/blob/main/src/main/kotlin/GolController.kt
 
-import me.haroldmartin.golwallpaper.domain.Patterns
 import kotlin.random.Random
 
 private const val RULE_SIZE = 9
@@ -15,8 +16,8 @@ class GolController(
 ) {
     @Suppress("AvoidVarsExceptWithDelegate")
     var grid: Array<BooleanArray> = initialPattern?.let {
-            centerPattern(it, rows, columns)
-        } ?: randomGrid(rows, columns)
+        centerPattern(it, rows, columns)
+    } ?: randomGrid(rows, columns)
         private set
 
     init {
@@ -57,42 +58,34 @@ class GolController(
         return grid
     }
 
-    private fun countLiveNeighbours(
-        rowIndex: Int,
-        columnIndex: Int,
-    ): Int =
-        NEIGHBOR_RANGE
-            .flatMap { y ->
-                NEIGHBOR_RANGE.map { x ->
-                    if (x == 0 && y == 0) {
-                        0
-                    } else {
-                        val neighbourRowIndex = wrappedIndex(rowIndex + y, rows)
-                        val neighbourColumnIndex = wrappedIndex(columnIndex + x, columns)
+    private fun countLiveNeighbours(rowIndex: Int, columnIndex: Int): Int = NEIGHBOR_RANGE
+        .flatMap { y ->
+            NEIGHBOR_RANGE.map { x ->
+                if (x == 0 && y == 0) {
+                    0
+                } else {
+                    val neighbourRowIndex = wrappedIndex(rowIndex + y, rows)
+                    val neighbourColumnIndex = wrappedIndex(columnIndex + x, columns)
 
-                        if (grid[neighbourRowIndex][neighbourColumnIndex]) {
-                            1
-                        } else {
-                            0
-                        }
+                    if (grid[neighbourRowIndex][neighbourColumnIndex]) {
+                        1
+                    } else {
+                        0
                     }
                 }
             }
-            .sum()
+        }
+        .sum()
 
-    fun turnOnCell(
-        rowIndex: Int,
-        colIndex: Int,
-    ) {
+    fun turnOnCell(rowIndex: Int, colIndex: Int) {
         grid[rowIndex][colIndex] = true
     }
 
     operator fun get(coords: Pair<Int, Int>): Boolean = grid[coords.first][coords.second]
 
-    override fun toString(): String =
-        grid.joinToString("$\n") {
-            it.compress()
-        }
+    override fun toString(): String = grid.joinToString("$\n") {
+        it.compress()
+    }
 
     fun reset(pattern: Patterns?) {
         grid =
@@ -133,11 +126,10 @@ private fun BooleanArray.compress(): String {
     return result.toString()
 }
 
-private fun Boolean.asChar(): Char =
-    when (this) {
-        true -> 'A'
-        false -> '.'
-    }
+private fun Boolean.asChar(): Char = when (this) {
+    true -> 'A'
+    false -> '.'
+}
 
 private fun String.toBirthRule(): BooleanArray {
     val rule = this.uppercase().substringAfter("B").substringBefore("/")
@@ -155,7 +147,9 @@ private fun centerPattern(
     columns: Int,
 ): Array<BooleanArray> {
     require(initialPattern.isNotEmpty()) { "Initial shape cannot be empty" }
-    require(initialPattern.size <= rows) { "Initial shape is too tall (${initialPattern.size} > $rows)" }
+    require(initialPattern.size <= rows) {
+        "Initial shape is too tall (${initialPattern.size} > $rows)"
+    }
     require(initialPattern[0].isNotEmpty()) { "Initial shape has 0 width columns" }
 
     val height = initialPattern.size
@@ -178,25 +172,17 @@ private fun centerPattern(
     }
 }
 
-fun randomGrid(
-    rows: Int,
-    columns: Int,
-): Array<BooleanArray> =
-    Array(rows) {
-        BooleanArray(columns) {
-            Random.nextBoolean()
-        }
+fun randomGrid(rows: Int, columns: Int): Array<BooleanArray> = Array(rows) {
+    BooleanArray(columns) {
+        Random.nextBoolean()
     }
+}
 
-private fun wrappedIndex(
-    i: Int,
-    upperBound: Int,
-): Int =
-    when (i) {
-        upperBound -> 0
-        -1 -> upperBound - 1
-        else -> i
-    }
+private fun wrappedIndex(i: Int, upperBound: Int): Int = when (i) {
+    upperBound -> 0
+    -1 -> upperBound - 1
+    else -> i
+}
 
 // Function to convert RLE syntax to a 2D array of booleans
 // eg. A.A$3.A$3.A$A2.A$.3A!

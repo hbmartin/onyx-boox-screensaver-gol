@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.map
 
 private const val USER_PREFERENCES_NAME = "user_preferences"
 
+@Suppress("PropertyName")
 private val Context.dataStore by preferencesDataStore(
-    name = USER_PREFERENCES_NAME
+    name = USER_PREFERENCES_NAME,
 )
 
 class UserDataStore(private val dataStore: DataStore<Preferences>) {
     constructor(context: Context) : this(
-        dataStore = context.dataStore
+        dataStore = context.dataStore,
     )
 
-    operator fun <T : Any> get(key: Keys<T>): Flow<T?> =
-        dataStore.data.map { it[key.prefsKey] }
+    operator fun <T : Any> get(key: Keys<T>): Flow<T?> = dataStore.data.map { it[key.prefsKey] }
 
     suspend operator fun <T : Any> set(key: Keys<T>, value: T) {
         dataStore.edit { preferences ->
@@ -30,11 +30,12 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    @Suppress("ClassName")
     sealed class Keys<T : Any>(val prefsKey: Preferences.Key<T>) {
-        object FG_COLOR: Keys<Int>(intPreferencesKey("fg_color"))
-        object BG_COLOR: Keys<Int>(intPreferencesKey("bg_color"))
-        object SCREEN_WIDTH: Keys<Int>(intPreferencesKey("screen_width"))
-        object SCREEN_HEIGHT: Keys<Int>(intPreferencesKey("screen_height"))
-        object GAME_STATE: Keys<String>(stringPreferencesKey("game_state"))
+        object FG_COLOR : Keys<Int>(intPreferencesKey("fg_color"))
+        object BG_COLOR : Keys<Int>(intPreferencesKey("bg_color"))
+        object SCREEN_WIDTH : Keys<Int>(intPreferencesKey("screen_width"))
+        object SCREEN_HEIGHT : Keys<Int>(intPreferencesKey("screen_height"))
+        object GAME_STATE : Keys<String>(stringPreferencesKey("game_state"))
     }
 }

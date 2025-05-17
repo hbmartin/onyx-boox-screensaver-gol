@@ -14,25 +14,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.haroldmartin.golwallpaper.ui.ColorPicker
-import me.haroldmartin.golwallpaper.ui.theme.ColorScheme
+import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = viewModel()  // This creates or retrieves the ViewModel
-) {
+fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
         Column {
             ColorPicker(onClick = { color -> viewModel.setFgColor(context, color) })
             Button(
-                modifier = Modifier.border(1.dp, ColorScheme.secondary),
-                onClick = { viewModel.updateGameImage(context) }) {
+                modifier = Modifier.border(1.dp, COLOR_SCHEME.secondary),
+                onClick = { viewModel.updateGameImage(context) },
+            ) {
                 Text("Save Image")
             }
         }

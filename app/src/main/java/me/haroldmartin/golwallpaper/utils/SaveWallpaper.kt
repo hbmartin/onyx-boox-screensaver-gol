@@ -1,15 +1,15 @@
 package me.haroldmartin.golwallpaper.utils
 
-import GolController
 import android.content.Context
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.onyx.android.sdk.api.device.screensaver.ScreenResourceManager
+import me.haroldmartin.golwallpaper.data.UserDataStore
+import me.haroldmartin.golwallpaper.domain.GolController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import me.haroldmartin.golwallpaper.data.UserDataStore
 
 private const val TAG = "SaveWallpaper"
 private const val SCREEN_TO_GRID_RATIO = 10
@@ -33,19 +33,19 @@ suspend fun saveWallpaper(context: Context, repository: UserDataStore, showToast
         height = resolution.height,
         trueColor = fgColor,
         falseColor = bgColor,
-        grid = gridController.grid
+        grid = gridController.grid,
     )
 
     withContext(Dispatchers.IO) {
         val path = saveBitmapToPictures(
             context = context,
             bitmap = bitmap,
-            fileName = "screenshot_${System.currentTimeMillis()}.png"
+            fileName = "screenshot_${System.currentTimeMillis()}.png",
         )
         ScreenResourceManager.setScreensaver(
             context,
             path,
-            showToast
+            showToast,
         )
     }
 }

@@ -12,15 +12,17 @@ import androidx.core.graphics.createBitmap
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 
 private const val TAG = "BitmapRenderer"
+private const val QUALITY = 100
 
 fun createBitmapFromBooleanArray(
     width: Int,
     height: Int,
     trueColor: Int,
     falseColor: Int,
-    grid: Array<BooleanArray>
+    grid: Array<BooleanArray>,
 ): Bitmap {
     val numRows = grid.size
     val numCols = if (numRows > 0) grid[0].size else 0
@@ -50,7 +52,7 @@ fun createBitmapFromBooleanArray(
                 top.toFloat(),
                 right.toFloat(),
                 bottom.toFloat(),
-                paint
+                paint,
             )
         }
     }
@@ -64,13 +66,8 @@ fun saveBitmapToInternalStorage(context: Context, bitmap: Bitmap, fileName: Stri
     Log.d(TAG, "file: $file") // Log
 
     try {
-        FileOutputStream(file).use { out ->
-            // Compress the bitmap to PNG format and write it to the file
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-            out.flush()
-        }
+        FileOutputStream(file).use { it.writeBitmap(bitmap) }
     } catch (e: IOException) {
-        e.printStackTrace()
         Log.e(TAG, "Failed to save bitmap to file", e)
         return null
     }
@@ -86,10 +83,13 @@ internal fun saveBitmapToPictures(context: Context, bitmap: Bitmap, fileName: St
     val resolver = context.contentResolver
     val uri: Uri? = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
     uri?.let {
-        resolver.openOutputStream(it)?.use { outputStream ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        }
+        resolver.openOutputStream(it)?.use { out -> out.writeBitmap(bitmap) }
     } ?: return null
 
     return "/storage/emulated/0/Download/$fileName"
+}
+
+private fun OutputStream.writeBitmap(bitmap: Bitmap) {
+    bitmap.compress(Bitmap.CompressFormat.PNG, QUALITY, this)
+    this.flush()
 }

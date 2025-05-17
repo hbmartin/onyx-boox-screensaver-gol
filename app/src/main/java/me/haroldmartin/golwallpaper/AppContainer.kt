@@ -3,6 +3,7 @@ package me.haroldmartin.golwallpaper
 import android.content.Context
 import me.haroldmartin.golwallpaper.data.UserDataStore
 
+@Suppress("LateinitUsage", "AvoidVarsExceptWithDelegate")
 object AppContainer {
     lateinit var userDataStore: UserDataStore
         private set
