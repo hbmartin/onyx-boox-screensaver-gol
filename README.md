@@ -5,7 +5,8 @@
 
 GoL Screensaver is an app that generates and updates screensavers for Onyx Boox using [Conway's Game of Life Algorithm](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). Optimized for e-ink screens!
 
-## Screenshot
+<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="50" align="right" alt="icon">
+
 <img src="media/screenshot.png" width="300" />
 
 ## 🎨 Features
@@ -16,10 +17,10 @@ GoL Screensaver is an app that generates and updates screensavers for Onyx Boox 
 - Pattern picker for common Game of Life starting states
 
 ## 🏄 Usage
-1. **Install the app** on your Android device using F-Droid.
-2. **Disable freezing in order to for the game to update**
-   1. Settings > Apps & Notifications > Freeze Settings > GoL Wallpaper (OFF)
-   2. Note: Updates happen at most every 15 minutes and **only** with sufficient battery
+1. **Install the app** on your Android device using F-Droid or building from source.
+2. ⚠️ **Disable freezing** in order to for the game to update
+   - Settings > Apps & Notifications > Freeze Settings > GoL Wallpaper (OFF)
+   - **Note:** Updates happen at most every 15 minutes and **only** with sufficient battery
 
 3. **Launch the app**:
    - (Optional) Choose foreground and background colors in the app
