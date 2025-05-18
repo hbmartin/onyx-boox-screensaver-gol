@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
+import me.haroldmartin.golwallpaper.ui.theme.LARGE
+import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 
 @Composable
@@ -34,14 +36,14 @@ fun ColorPicker(label: String, selectedColor: Int, onClick: (Int) -> Unit) {
     ) {
         Disclosure(isPaletteVisible)
         Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = MEDIUM),
             fontWeight = FontWeight.Bold,
             text = label,
         )
         if (selectedColor != RANDOM_COLOR) {
             Box(
                 modifier = Modifier
-                    .size(18.dp)
+                    .size(LARGE)
                     .background(Color(selectedColor))
                     .border(1.dp, COLOR_SCHEME.secondary),
             )

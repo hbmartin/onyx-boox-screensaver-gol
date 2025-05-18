@@ -13,10 +13,9 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 @Composable
-fun Disclosure(isOpen: Boolean, size: Dp = 16.dp) = Image(
+fun Disclosure(isOpen: Boolean, size: Dp = LARGE) = Image(
     modifier = Modifier
         .size(size)
         .rotate(if (isOpen) 180f else 90f),
@@ -27,8 +26,8 @@ fun Disclosure(isOpen: Boolean, size: Dp = 16.dp) = Image(
 @Suppress("MagicNumber")
 val TRIANGLE: ImageVector = ImageVector.Builder(
     name = "Triangle",
-    defaultWidth = 24.dp,
-    defaultHeight = 24.dp,
+    defaultWidth = XLARGE,
+    defaultHeight = XLARGE,
     viewportWidth = 24f,
     viewportHeight = 24f,
 ).apply {

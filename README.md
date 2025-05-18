@@ -1,10 +1,10 @@
 # GoL Screensaver
 
+<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="50" align="right" alt="icon">
+
 [![Lint](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/lint.yml/badge.svg)](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/lint.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol/badge)](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hbmartin_onyx-boox-screensaver-gol&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hbmartin_onyx-boox-screensaver-gol)
-
-<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="50" align="right" alt="icon">
 
 GoL Screensaver is an app that generates and updates screensavers for Onyx Boox using [Conway's Game of Life Algorithm](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). Optimized for e-ink screens!
 

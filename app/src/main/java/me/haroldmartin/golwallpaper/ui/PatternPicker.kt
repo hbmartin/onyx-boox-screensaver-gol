@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Patterns
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
+import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
+import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
 private const val SCREEN_FRACTION = 0.5f
 
@@ -37,24 +39,24 @@ fun PatternPicker(onClick: (String?) -> Unit) {
     ) {
         Disclosure(arePatternsVisible)
         Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = MEDIUM),
             fontWeight = FontWeight.Bold,
             text = stringResource(R.string.reset_pattern),
         )
     }
     if (arePatternsVisible) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(SMALL),
             modifier = Modifier
                 .fillMaxHeight(SCREEN_FRACTION)
                 .verticalScroll(patternsScrollState)
-                .padding(4.dp),
+                .padding(SMALL),
         ) {
             Button(
                 onClick = { onClick(null) },
             ) {
                 Text(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
+                    modifier = Modifier.padding(horizontal = MEDIUM, vertical = 0.dp),
                     fontWeight = FontWeight.Normal,
                     text = stringResource(R.string.random_noise),
                 )
@@ -64,7 +66,7 @@ fun PatternPicker(onClick: (String?) -> Unit) {
                     onClick = { onClick(pattern.value) },
                 ) {
                     Text(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
+                        modifier = Modifier.padding(horizontal = MEDIUM, vertical = 0.dp),
                         fontWeight = FontWeight.Normal,
                         text = pattern.name,
                     )

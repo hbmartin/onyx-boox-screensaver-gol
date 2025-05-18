@@ -8,4 +8,5 @@
     <string name="reset_pattern">Reset Starting Pattern</string>
     <string name="random_noise">Random Noise</string>
     <string name="ran_newline_dom">RAN\nDOM</string>
+    <string name="report_issue">Report Issue or Request Feature</string>
 </resources>

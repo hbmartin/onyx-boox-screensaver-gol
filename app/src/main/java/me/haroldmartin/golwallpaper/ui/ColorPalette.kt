@@ -23,13 +23,15 @@ import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Colors
+import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
+import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
 @Composable
 fun ColorPicker(onClick: (Int) -> Unit) {
     Row(
-        modifier = Modifier.Companion.fillMaxWidth().padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.Companion.fillMaxWidth().padding(horizontal = MEDIUM),
+        horizontalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Colors.Companion.ALL.forEach { color ->
             Button(
@@ -37,7 +39,7 @@ fun ColorPicker(onClick: (Int) -> Unit) {
                 modifier = Modifier.Companion
                     .weight(1f)
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(RoundedCornerShape(SMALL))
                     .background(color.value)
                     .border(1.dp, COLOR_SCHEME.secondary)
                     .padding(0.dp),
@@ -53,7 +55,7 @@ fun ColorPicker(onClick: (Int) -> Unit) {
             modifier = Modifier.Companion
                 .weight(1f)
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(SMALL))
                 .background(Color.White)
                 .border(1.dp, COLOR_SCHEME.secondary)
                 .padding(0.dp),
