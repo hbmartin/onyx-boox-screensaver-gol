@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
@@ -61,7 +63,7 @@ fun ColorPicker(onClick: (Int) -> Unit) {
             ),
         ) {
             Text(
-                "RAN\nDOM",
+                text = stringResource(R.string.ran_newline_dom),
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
             )

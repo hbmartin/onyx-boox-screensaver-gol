@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,14 +33,11 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             .padding(32.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
-        Text(
-            "NOTE! You must disable freezing in order to for the game to update:\n" +
-                "Settings > Apps & Notifications > Freeze Settings > GoL Screensaver (OFF)",
-        )
-        ColorPicker("Foreground Color", uiState.fgColor) { color ->
+        Text(stringResource(R.string.freeze_alert))
+        ColorPicker(stringResource(R.string.fg_color), uiState.fgColor) { color ->
             viewModel.setFgColor(context, color)
         }
-        ColorPicker("Background Color", uiState.bgColor) { color ->
+        ColorPicker(stringResource(R.string.bg_color), uiState.bgColor) { color ->
             viewModel.setBgColor(context, color)
         }
         PatternPicker { pattern ->
@@ -49,7 +47,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             modifier = Modifier.border(1.dp, COLOR_SCHEME.secondary),
             onClick = { viewModel.updateGameImage(context) },
         ) {
-            Text("Generate Next Step")
+            Text(stringResource(R.string.next_step))
         }
     }
 }

@@ -17,8 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Patterns
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 
@@ -37,7 +39,7 @@ fun PatternPicker(onClick: (String?) -> Unit) {
         Text(
             modifier = Modifier.padding(horizontal = 8.dp),
             fontWeight = FontWeight.Bold,
-            text = "Reset Starting Pattern",
+            text = stringResource(R.string.reset_pattern),
         )
     }
     if (arePatternsVisible) {
@@ -54,7 +56,7 @@ fun PatternPicker(onClick: (String?) -> Unit) {
                 Text(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
                     fontWeight = FontWeight.Normal,
-                    text = "Random Noise",
+                    text = stringResource(R.string.random_noise),
                 )
             }
             Patterns.entries.forEach { pattern ->

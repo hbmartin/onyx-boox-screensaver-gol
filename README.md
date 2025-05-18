@@ -8,8 +8,7 @@
 
 GoL Screensaver is an app that generates and updates screensavers for Onyx Boox using [Conway's Game of Life Algorithm](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). Optimized for e-ink screens!
 
-<img src="media/screenshot.png" width="300" />
-<img src="media/screenshot2.png" width="300" />
+<img src="media/screenshot.webp" width="45%" /> <img src="media/screenshot2.webp" width="45%" />
 
 ## 🎨 Features
 - Auto-updating screensaver based on Conway's Game of Life
