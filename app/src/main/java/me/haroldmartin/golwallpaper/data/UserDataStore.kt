@@ -34,8 +34,6 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
     sealed class Keys<T : Any>(val prefsKey: Preferences.Key<T>) {
         object FG_COLOR : Keys<Int>(intPreferencesKey("fg_color"))
         object BG_COLOR : Keys<Int>(intPreferencesKey("bg_color"))
-        object SCREEN_WIDTH : Keys<Int>(intPreferencesKey("screen_width"))
-        object SCREEN_HEIGHT : Keys<Int>(intPreferencesKey("screen_height"))
         object GAME_STATE : Keys<String>(stringPreferencesKey("game_state"))
     }
 }

@@ -70,8 +70,6 @@ fun saveBitmapToInternalStorage(context: Context, bitmap: Bitmap, fileName: Stri
     } catch (e: IOException) {
         Log.e(TAG, "Failed to save bitmap to file", e)
         return null
-    } finally {
-        bitmap.recycle()
     }
 
     return file.absolutePath
@@ -91,8 +89,6 @@ internal fun saveBitmapToPictures(context: Context, bitmap: Bitmap, fileName: St
     } catch (e: IOException) {
         Log.e(TAG, "Failed to save bitmap to file", e)
         return null
-    } finally {
-        bitmap.recycle()
     }
 
     return uri?.let { "/storage/emulated/0/Download/$fileName" }

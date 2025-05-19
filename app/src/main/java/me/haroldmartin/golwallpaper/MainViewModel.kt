@@ -1,70 +1,62 @@
 package me.haroldmartin.golwallpaper
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import me.haroldmartin.golwallpaper.data.UserDataStore
-import me.haroldmartin.golwallpaper.domain.GolController
-import me.haroldmartin.golwallpaper.utils.getScreenResolution
-import me.haroldmartin.golwallpaper.utils.saveWallpaper
-import me.haroldmartin.golwallpaper.utils.toRowsCols
+import me.haroldmartin.golwallpaper.domain.SaveBgColor
+import me.haroldmartin.golwallpaper.domain.SaveFgColor
+import me.haroldmartin.golwallpaper.domain.UiState
+import me.haroldmartin.golwallpaper.utils.SaveScreensaver
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val STOP_TIMEOUT_MILLIS = 5000L
 
-data class UiState(val fgColor: Int, val bgColor: Int)
-
-class MainViewModel : ViewModel() {
-    private val dataStore: UserDataStore = AppContainer.userDataStore
-
-    val uiState: StateFlow<UiState> = dataStore[UserDataStore.Keys.FG_COLOR]
-        .combine(dataStore[UserDataStore.Keys.BG_COLOR]) { fgColor, bgColor ->
-            UiState(
-                fgColor = fgColor ?: Color.Black.toArgb(),
-                bgColor = bgColor ?: Color.White.toArgb(),
-            )
-        }
+class MainViewModel(
+    private val saveBgColor: SaveBgColor,
+    private val saveFgColor: SaveFgColor,
+    private val saveScreenSaver: SaveScreensaver,
+) : ViewModel() {
+    val uiState: StateFlow<UiState> = AppContainer.observeUiState()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-            initialValue = UiState(
-                fgColor = Color.Black.toArgb(),
-                bgColor = Color.White.toArgb(),
-            ),
+            initialValue = UiState(),
         )
 
+    constructor() : this(
+        saveBgColor = AppContainer.saveBgColor,
+        saveFgColor = AppContainer.saveFgColor,
+        saveScreenSaver = AppContainer.saveScreensaver,
+    )
+
     fun setFgColor(context: Context, color: Int) = viewModelScope.launch {
-        dataStore[UserDataStore.Keys.FG_COLOR] = color
-        updateGameImage(context)
+        saveFgColor(color)
+        saveScreenSaver(context, showToast = true)
     }
 
     fun setBgColor(context: Context, color: Int) = viewModelScope.launch {
-        dataStore[UserDataStore.Keys.BG_COLOR] = color
-        updateGameImage(context)
+        saveBgColor(color)
+        saveScreenSaver(context, showToast = true)
     }
 
-    fun updateGameImage(context: Context) = viewModelScope.launch {
-        saveWallpaper(context, dataStore, showToast = true)
+    fun saveNextStep(context: Context) = viewModelScope.launch {
+        saveScreenSaver(context, showToast = true)
     }
 
     fun reset(context: Context, pattern: String?) = viewModelScope.launch {
-        val resolution = getScreenResolution(context)
-        val (rows, cols) = resolution.toRowsCols()
+        saveScreenSaver(context, showToast = true, pattern = pattern)
+    }
 
-        dataStore[UserDataStore.Keys.GAME_STATE] = GolController(rows, cols, pattern).toString()
-        viewModelScope.launch {
-            saveWallpaper(
-                context = context,
-                dataStore = dataStore,
-                showToast = true,
-                updateGame = false,
-            )
-        }
+    fun openIssues(context: Context) {
+        context.startActivity(
+            android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+                "https://github.com/hbmartin/onyx-boox-screensaver-gol/issues".toUri(),
+            ),
+        )
     }
 }
