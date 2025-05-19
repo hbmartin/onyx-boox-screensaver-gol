@@ -25,13 +25,13 @@ fun Resolution.toRowsCols(): Pair<Int, Int> {
 
 suspend fun saveWallpaper(
     context: Context,
-    repository: UserDataStore,
+    dataStore: UserDataStore,
     showToast: Boolean,
     updateGame: Boolean = true,
 ) {
     val resolution = getScreenResolution(context)
     Log.d(TAG, "resolution: $resolution")
-    val fgColor: Int = (repository[UserDataStore.Keys.FG_COLOR].first() ?: RANDOM_COLOR)
+    val fgColor: Int = (dataStore[UserDataStore.Keys.FG_COLOR].first() ?: RANDOM_COLOR)
         .let { color ->
             if (color == RANDOM_COLOR) {
                 Colors.ALL.chooseRandom(except = setOf(Color.White.toArgb())).value.toArgb()
@@ -39,7 +39,7 @@ suspend fun saveWallpaper(
                 color
             }
         }
-    val bgColor: Int = repository[UserDataStore.Keys.BG_COLOR].first() ?: Color.White.toArgb()
+    val bgColor: Int = dataStore[UserDataStore.Keys.BG_COLOR].first() ?: Color.White.toArgb()
         .let { color ->
             if (color == RANDOM_COLOR) {
                 Colors.ALL.chooseRandom(
@@ -52,13 +52,13 @@ suspend fun saveWallpaper(
 
     val (rows, cols) = resolution.toRowsCols()
 
-    val gridController = repository[UserDataStore.Keys.GAME_STATE].first().let {
+    val gridController = dataStore[UserDataStore.Keys.GAME_STATE].first().let {
         GolController(rows, cols, it)
     }
 
     if (updateGame) {
         gridController.update()
-        repository[UserDataStore.Keys.GAME_STATE] = gridController.toString()
+        dataStore[UserDataStore.Keys.GAME_STATE] = gridController.toString()
     }
 
     val bitmap = createBitmapFromBooleanArray(

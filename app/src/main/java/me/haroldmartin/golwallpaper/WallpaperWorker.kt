@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.utils.saveWallpaper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,8 +17,7 @@ class WallpaperWorker(private val context: Context, workerParams: WorkerParamete
         Log.d(TAG, "doWork on thread ${Thread.currentThread().name}")
         try {
             AppContainer.init(context)
-            val repository: UserDataStore = AppContainer.userDataStore
-            saveWallpaper(context, repository, false)
+            saveWallpaper(context, AppContainer.userDataStore, false)
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Error syncing data", e)
