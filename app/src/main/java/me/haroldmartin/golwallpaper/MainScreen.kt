@@ -10,7 +10,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,10 +36,16 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         verticalArrangement = Arrangement.spacedBy(XXLARGE),
     ) {
         Text(stringResource(R.string.freeze_alert))
-        ColorPicker(stringResource(R.string.fg_color), uiState.fgColor) { color ->
+        ColorPicker(
+            label = stringResource(id = R.string.fg_color),
+            selectedColor = uiState.fgColor,
+        ) { color ->
             viewModel.setFgColor(context, color)
         }
-        ColorPicker(stringResource(R.string.bg_color), uiState.bgColor) { color ->
+        ColorPicker(
+            label = stringResource(id = R.string.bg_color),
+            selectedColor = uiState.bgColor,
+        ) { color ->
             viewModel.setBgColor(context, color)
         }
         PatternPicker { pattern ->

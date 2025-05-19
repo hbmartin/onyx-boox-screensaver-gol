@@ -28,6 +28,7 @@ import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
 private const val SCREEN_FRACTION = 0.5f
 
+@Suppress("MultipleEmitters")
 @Composable
 fun PatternPicker(onClick: (String?) -> Unit) {
     var arePatternsVisible by remember { mutableStateOf(false) }

@@ -67,6 +67,7 @@ dependencies {
 
     detektPlugins(rootProject.libs.detekt.formatting)
     detektPlugins(rootProject.libs.detekt.hbmartin)
+    detektPlugins(rootProject.libs.detekt.compose)
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
