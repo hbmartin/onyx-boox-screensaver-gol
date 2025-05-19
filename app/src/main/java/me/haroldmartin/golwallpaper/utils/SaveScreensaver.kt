@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.net.toUri
 import com.onyx.android.sdk.api.device.screensaver.ScreenResourceManager
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
@@ -19,7 +20,7 @@ private const val TAG = "SaveWallpaper"
 private const val SCREEN_TO_GRID_RATIO = 10
 
 class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineDispatcher) {
-    suspend operator fun invoke(context: Context, showToast: Boolean, pattern: String? = null) =
+    suspend operator fun invoke(context: Context, showToast: Boolean, pattern: String? = null) {
         withContext(ioDispatcher) {
             val resolution = getScreenResolution(context)
             val fgColor = getFgColor()
@@ -41,34 +42,46 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
                 grid = gridController.grid,
             )
 
-            val path = saveBitmapToPictures(
+            val uriAndFakePath = saveBitmapToPictures(
                 context = context,
                 bitmap = bitmap,
                 fileName = "screenshot_${System.currentTimeMillis()}.png",
             )
-            Log.d(TAG, "saved bitmap: $path , ${getAppMemoryUsage(context)}")
+
+            if (uriAndFakePath == null) {
+                Log.e(TAG, "failed to save image")
+                return@withContext
+            }
+
+            Log.d(TAG, "saved bitmap, ${getAppMemoryUsage(context)}")
+            dataStore[Keys.PREV_IMAGE_URI].first()?.let {
+                deleteImage(context, it.toUri())
+            }
+            dataStore[Keys.PREV_IMAGE_URI] = uriAndFakePath.first.toString()
 
             bitmap.recycle()
 
             val isSuccess = ScreenResourceManager.setScreensaver(
                 context,
-                path,
+                uriAndFakePath.second,
                 showToast,
             )
             Log.d(TAG, "setScreensaver: $isSuccess , ${getAppMemoryUsage(context)}")
         }
+    }
 
-    private suspend fun getFgColor(): Int = dataStore[Keys.FG_COLOR].first() ?: Color.White.toArgb()
-        .let { color ->
-            if (color == RANDOM_COLOR) {
-                Colors.ALL.chooseRandom(setOf(Color.White.toArgb())).value.toArgb()
-            } else {
-                color
+    private suspend fun getFgColor(): Int =
+        (dataStore[Keys.FG_COLOR].first() ?: Color.Black.toArgb())
+            .let { color ->
+                if (color == RANDOM_COLOR) {
+                    Colors.ALL.chooseRandom(setOf(Color.White.toArgb())).value.toArgb()
+                } else {
+                    color
+                }
             }
-        }
 
     private suspend fun getBgColor(fgColor: Int): Int =
-        (dataStore[Keys.BG_COLOR].first() ?: Color.Black.toArgb())
+        (dataStore[Keys.BG_COLOR].first() ?: Color.White.toArgb())
             .let { color ->
                 if (color == RANDOM_COLOR) {
                     Colors.ALL.chooseRandom(setOf(fgColor, Color.Black.toArgb())).value.toArgb()

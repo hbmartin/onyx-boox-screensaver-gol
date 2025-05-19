@@ -3,6 +3,7 @@
 <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="50" align="right" alt="icon">
 
 [![Lint](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/lint.yml/badge.svg)](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/lint.yml)
+[![Test](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/test.yml/badge.svg)](https://github.com/hbmartin/onyx-boox-screensaver-gol/actions/workflows/test.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol/badge)](https://www.codefactor.io/repository/github/hbmartin/onyx-boox-screensaver-gol)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hbmartin_onyx-boox-screensaver-gol&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hbmartin_onyx-boox-screensaver-gol)
 

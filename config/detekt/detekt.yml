@@ -123,7 +123,7 @@ complexity:
       - 'use'
       - 'with'
   LabeledExpression:
-    active: true
+    active: false
     ignoredLabels: []
   LargeClass:
     active: true

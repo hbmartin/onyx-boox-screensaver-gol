@@ -9,7 +9,6 @@ on:
 
 jobs:
   run-junit:
-    name: Run Detekt on the detekt rules
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo

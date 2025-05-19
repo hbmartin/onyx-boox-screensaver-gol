@@ -12,6 +12,7 @@ val COLOR_SCHEME = lightColorScheme(
     onPrimary = Black,
     secondary = Black,
     tertiary = Gray,
+    background = White,
 )
 
 @Composable

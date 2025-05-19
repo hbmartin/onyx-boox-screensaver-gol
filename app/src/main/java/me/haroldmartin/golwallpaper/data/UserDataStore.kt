@@ -35,5 +35,6 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         object FG_COLOR : Keys<Int>(intPreferencesKey("fg_color"))
         object BG_COLOR : Keys<Int>(intPreferencesKey("bg_color"))
         object GAME_STATE : Keys<String>(stringPreferencesKey("game_state"))
+        object PREV_IMAGE_URI : Keys<String>(stringPreferencesKey("prev_image_uri"))
     }
 }
