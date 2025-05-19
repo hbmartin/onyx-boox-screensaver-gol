@@ -1,4 +1,4 @@
-GoL Screensaver is an app that generates and updates screensavers for Onyx Boox using Conway's Game of Life algorithm.
+GoL Screensaver generates and updates screensavers for Onyx Boox devices using Conway's Game of Life algorithm.
 
 Features:
 - Auto-updating screensaver based on Conway's Game of Life
