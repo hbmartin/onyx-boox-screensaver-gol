@@ -35,20 +35,20 @@ class MainViewModel(
 
     fun setFgColor(context: Context, color: Int) = viewModelScope.launch {
         saveFgColor(color)
-        saveScreenSaver(context, showToast = true)
+        saveScreenSaver(context, showHint = true)
     }
 
     fun setBgColor(context: Context, color: Int) = viewModelScope.launch {
         saveBgColor(color)
-        saveScreenSaver(context, showToast = true)
+        saveScreenSaver(context, showHint = true)
     }
 
     fun saveNextStep(context: Context) = viewModelScope.launch {
-        saveScreenSaver(context, showToast = true)
+        saveScreenSaver(context, showHint = true)
     }
 
     fun reset(context: Context, pattern: String?) = viewModelScope.launch {
-        saveScreenSaver(context, showToast = true, pattern = pattern)
+        saveScreenSaver(context, showHint = true, pattern = pattern)
     }
 
     fun openIssues(context: Context) {

@@ -16,7 +16,7 @@ class WallpaperWorker(private val context: Context, workerParams: WorkerParamete
         Log.d(TAG, "doWork on thread ${Thread.currentThread().name}")
         try {
             AppContainer.init(context)
-            AppContainer.saveScreensaver(context, showToast = false)
+            AppContainer.saveScreensaver(context, showHint = false)
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Error syncing data", e)

@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "me.haroldmartin.golwallpaper"
-        minSdk = 29
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.work.runtime)
-    implementation(libs.onyxsdkDevice)
     implementation(platform(libs.androidx.compose.bom))
 
     testImplementation(libs.junit)

@@ -1,11 +1,11 @@
 package me.haroldmartin.golwallpaper.utils
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.net.toUri
-import com.onyx.android.sdk.api.device.screensaver.ScreenResourceManager
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
 import me.haroldmartin.golwallpaper.domain.GolController
@@ -18,9 +18,10 @@ import kotlinx.coroutines.withContext
 
 private const val TAG = "SaveWallpaper"
 private const val SCREEN_TO_GRID_RATIO = 10
+private const val ONYX_SCREENSAVER_TYPE = 16
 
 class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineDispatcher) {
-    suspend operator fun invoke(context: Context, showToast: Boolean, pattern: String? = null) {
+    suspend operator fun invoke(context: Context, showHint: Boolean, pattern: String? = null) {
         withContext(ioDispatcher) {
             val resolution = getScreenResolution(context)
             val fgColor = getFgColor()
@@ -61,12 +62,11 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
 
             bitmap.recycle()
 
-            val isSuccess = ScreenResourceManager.setScreensaver(
-                context,
+            context.setScreensaver(
                 uriAndFakePath.second,
-                showToast,
+                showHint,
             )
-            Log.d(TAG, "setScreensaver: $isSuccess , ${getAppMemoryUsage(context)}")
+            Log.d(TAG, "setScreensaver: ${getAppMemoryUsage(context)}")
         }
     }
 
@@ -95,4 +95,13 @@ private fun Resolution.toRowsCols(): Pair<Int, Int> {
     val rows = width / SCREEN_TO_GRID_RATIO
     val cols = height / (SCREEN_TO_GRID_RATIO * ratio).toInt()
     return rows to cols
+}
+
+private fun Context.setScreensaver(filePath: String, showHint: Boolean) {
+    sendBroadcast(
+        Intent("onyx.action.SCREENSAVER")
+            .putExtra("type", ONYX_SCREENSAVER_TYPE)
+            .putExtra("file", filePath)
+            .putExtra("show_result_hint", showHint),
+    )
 }
