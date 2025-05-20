@@ -27,9 +27,20 @@ jobs:
         uses: gradle/gradle-build-action@v3
         with:
           arguments: assembleRelease
-      - name: Commit and push to homebrew repo
-        run: mv app/build/outputs/apk/release/app-release-unsigned.apk ./gol-screensaver.apk
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "36.0.0"
+      - name: List APKs
+        run: ls -l app/build/outputs/apk/release/
       - name: Upload Release APK
         uses: softprops/action-gh-release@v2
         with:
-          files: gol-screensaver.apk
+          files: ${{steps.sign_app.outputs.signedReleaseFile}}
