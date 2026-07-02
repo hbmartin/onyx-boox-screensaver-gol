@@ -3,22 +3,31 @@ package me.haroldmartin.golwallpaper
 import android.app.Application
 import android.os.StrictMode
 import android.util.Log
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import me.haroldmartin.golwallpaper.data.UserDataStore
+import me.haroldmartin.golwallpaper.domain.DEFAULT_UPDATE_INTERVAL_MINS
 import me.haroldmartin.golwallpaper.utils.getAppMemoryUsage
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainApplication"
-private const val UPDATE_TIME_MINS = 15L
 
 class MainApplication : Application() {
+    @Suppress("InjectDispatcher")
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     override fun onCreate() {
         super.onCreate()
         configureStrictMode()
         AppContainer.init(this.applicationContext)
-        scheduleUpdate()
+        applicationScope.launch {
+            val intervalMins =
+                AppContainer.userDataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS].first()
+                    ?: DEFAULT_UPDATE_INTERVAL_MINS
+            scheduleWallpaperUpdates(this@MainApplication, intervalMins)
+        }
     }
 
     private fun configureStrictMode() {
@@ -34,27 +43,6 @@ class MainApplication : Application() {
                 .penaltyLog()
                 .build(),
         )
-    }
-
-    private fun scheduleUpdate() {
-        val constraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
-
-        val workRequest =
-            PeriodicWorkRequestBuilder<WallpaperWorker>(UPDATE_TIME_MINS, TimeUnit.MINUTES)
-                .setConstraints(constraints)
-                .setInitialDelay(0, TimeUnit.MILLISECONDS)
-                .build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            uniqueWorkName = "WallpaperWorker",
-            existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
-            request = workRequest,
-        )
-
-        val workInfo = WorkManager.getInstance(this)
-            .getWorkInfoById(workRequest.id)
-            .get()
-        Log.d(TAG, "worker info: $workInfo")
     }
 
     override fun onTrimMemory(level: Int) {

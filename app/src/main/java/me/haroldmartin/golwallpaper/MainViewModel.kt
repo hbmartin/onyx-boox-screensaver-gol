@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.SaveBgColor
 import me.haroldmartin.golwallpaper.domain.SaveFgColor
+import me.haroldmartin.golwallpaper.domain.SaveSettings
 import me.haroldmartin.golwallpaper.domain.UiState
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,6 +20,7 @@ private const val STOP_TIMEOUT_MILLIS = 5000L
 class MainViewModel(
     private val saveBgColor: SaveBgColor,
     private val saveFgColor: SaveFgColor,
+    private val saveSettings: SaveSettings,
     private val saveScreenSaver: SaveScreensaver,
 ) : ViewModel() {
     val uiState: StateFlow<UiState> = AppContainer.observeUiState()
@@ -30,6 +33,7 @@ class MainViewModel(
     constructor() : this(
         saveBgColor = AppContainer.saveBgColor,
         saveFgColor = AppContainer.saveFgColor,
+        saveSettings = AppContainer.saveSettings,
         saveScreenSaver = AppContainer.saveScreensaver,
     )
 
@@ -41,6 +45,32 @@ class MainViewModel(
     fun setBgColor(context: Context, color: Int) = viewModelScope.launch {
         saveBgColor(color)
         saveScreenSaver(context, showHint = true)
+    }
+
+    fun updateSettings(context: Context, settings: GolSettings) = viewModelScope.launch {
+        val current = uiState.value.settings
+        val needsRedraw =
+            settings.copy(updateIntervalMins = current.updateIntervalMins) != current
+
+        if (settings.cellSize != current.cellSize) {
+            saveSettings.setCellSize(settings.cellSize)
+        }
+        if (settings.rule != current.rule) {
+            saveSettings.setRule(settings.rule)
+        }
+        if (settings.showStats != current.showStats) {
+            saveSettings.setShowStats(settings.showStats)
+        }
+        if (settings.wallpaperTarget != current.wallpaperTarget) {
+            saveSettings.setWallpaperTarget(settings.wallpaperTarget)
+        }
+        if (settings.updateIntervalMins != current.updateIntervalMins) {
+            saveSettings.setUpdateIntervalMins(settings.updateIntervalMins)
+            scheduleWallpaperUpdates(context, settings.updateIntervalMins)
+        }
+        if (needsRedraw) {
+            saveScreenSaver(context, showHint = true)
+        }
     }
 
     fun saveNextStep(context: Context) = viewModelScope.launch {

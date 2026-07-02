@@ -5,8 +5,9 @@ package me.haroldmartin.golwallpaper.domain
 import kotlin.random.Random
 
 private const val RULE_SIZE = 9
-private val NEIGHBOR_RANGE = -1..1
 private val DEFAULT_PATTERN = Patterns.HERRINGBONE_AGAR_P14
+private val HEADER_REGEX = Regex("""^\s*x\s*=.*""", RegexOption.IGNORE_CASE)
+private const val DECIMAL_BASE = 10
 
 class GolController(
     private val rows: Int,
@@ -25,6 +26,21 @@ class GolController(
     )
         private set
 
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var buffer: Array<BooleanArray> = Array(rows) { BooleanArray(columns) }
+
+    val population: Int
+        get() {
+            @Suppress("AvoidVarsExceptWithDelegate")
+            var count = 0
+            for (row in grid) {
+                for (cell in row) {
+                    if (cell) count++
+                }
+            }
+            return count
+        }
+
     init {
         require(columns > 0) { "Columns must be greater than 0" }
         require(rows > 0) { "Rows must be greater than 0" }
@@ -36,7 +52,7 @@ class GolController(
         rows: Int,
         columns: Int,
         initialPattern: String?,
-        rule: String = "B3/S23",
+        rule: String = DEFAULT_RULE,
     ) : this(
         rows = rows,
         columns = columns,
@@ -45,42 +61,47 @@ class GolController(
         initialPattern = initialPattern?.let { parsePattern(it) },
     )
 
+    // The nested loops and unrolled neighbour counting are deliberate: this runs over every
+    // cell of a screen-sized grid and must not allocate.
+    @Suppress(
+        "AvoidVarsExceptWithDelegate",
+        "NestedBlockDepth",
+        "CyclomaticComplexMethod",
+        "CognitiveComplexMethod",
+    )
     fun update(): Array<BooleanArray> {
-        // n.b. if trying to avoid new Array allocation, be sure to not to update current grid for calculations
-        grid =
-            Array(rows) { rowIndex ->
-                BooleanArray(columns) { columnIndex ->
-                    val isCellAlive = grid[rowIndex][columnIndex]
-                    val liveNeighbours = countLiveNeighbours(rowIndex, columnIndex)
+        // Double buffered: compute the next generation into `buffer`, then swap it with `grid`
+        // so each update allocates nothing.
+        val next = buffer
+        for (rowIndex in 0 until rows) {
+            val above = grid[if (rowIndex == 0) rows - 1 else rowIndex - 1]
+            val current = grid[rowIndex]
+            val below = grid[if (rowIndex == rows - 1) 0 else rowIndex + 1]
+            val nextRow = next[rowIndex]
+            for (columnIndex in 0 until columns) {
+                val left = if (columnIndex == 0) columns - 1 else columnIndex - 1
+                val right = if (columnIndex == columns - 1) 0 else columnIndex + 1
+                var liveNeighbours = 0
+                if (above[left]) liveNeighbours++
+                if (above[columnIndex]) liveNeighbours++
+                if (above[right]) liveNeighbours++
+                if (current[left]) liveNeighbours++
+                if (current[right]) liveNeighbours++
+                if (below[left]) liveNeighbours++
+                if (below[columnIndex]) liveNeighbours++
+                if (below[right]) liveNeighbours++
 
-                    if (isCellAlive) {
-                        surviveRule[liveNeighbours]
-                    } else {
-                        birthRule[liveNeighbours]
-                    }
-                }
-            }
-        return grid
-    }
-
-    private fun countLiveNeighbours(rowIndex: Int, columnIndex: Int): Int = NEIGHBOR_RANGE
-        .flatMap { y ->
-            NEIGHBOR_RANGE.map { x ->
-                if (x == 0 && y == 0) {
-                    0
+                nextRow[columnIndex] = if (current[columnIndex]) {
+                    surviveRule[liveNeighbours]
                 } else {
-                    val neighbourRowIndex = wrappedIndex(rowIndex + y, rows)
-                    val neighbourColumnIndex = wrappedIndex(columnIndex + x, columns)
-
-                    if (grid[neighbourRowIndex][neighbourColumnIndex]) {
-                        1
-                    } else {
-                        0
-                    }
+                    birthRule[liveNeighbours]
                 }
             }
         }
-        .sum()
+        buffer = grid
+        grid = next
+        return grid
+    }
 
     fun turnOnCell(rowIndex: Int, colIndex: Int) {
         grid[rowIndex][colIndex] = true
@@ -183,67 +204,65 @@ private fun centerPattern(
     }
 }
 
-private fun wrappedIndex(i: Int, upperBound: Int): Int = when (i) {
-    upperBound -> 0
-    -1 -> upperBound - 1
-    else -> i
-}
-
-// Function to convert RLE syntax to a 2D array of booleans
-// eg. A.A$3.A$3.A$A2.A$.3A!
-private fun parsePattern(pattern: String): Array<BooleanArray> {
+// Converts run length encoded (RLE) text to a 2D array of booleans, eg. A.A$3.A$3.A$A2.A$.3A!
+// Handles the full Golly/LifeWiki RLE format: `#` comment lines, an optional `x = m, y = n,
+// rule = ...` header line, run counts on `$` (multiple blank rows), the `!` terminator, and
+// line wrapping anywhere. https://golly.sourceforge.io/Help/formats.html
+@Suppress("AvoidMutableCollections", "AvoidVarsExceptWithDelegate", "CyclomaticComplexMethod")
+internal fun parsePattern(pattern: String): Array<BooleanArray> {
     require(pattern.isNotEmpty()) { "Pattern cannot be empty" }
-    val illegalChar = pattern.find { it !in "Ao.b0123456789$!\n" }
-    require(illegalChar == null) { "Illegal character in pattern: $illegalChar" }
-    return pattern.split('$').mapNotNull { parseRow(it) }.toTypedArray()
-}
+    val body = pattern.lineSequence()
+        .filterNot { line ->
+            line.trimStart().startsWith("#") || HEADER_REGEX.matches(line)
+        }
+        .joinToString("\n")
 
-@Suppress("AvoidMutableCollections")
-private fun parseRow(pRow: String): BooleanArray? {
-    if (pRow.isEmpty()) return null
+    val parsedRows = mutableListOf<BooleanArray>()
+    val currentRow = mutableListOf<Boolean>()
+    var runCount = 0
 
-    val parsed = mutableListOf<Boolean>()
-
-    @Suppress("AvoidVarsExceptWithDelegate")
-    var multiplier = 1
-
-    @Suppress("AvoidVarsExceptWithDelegate", "BooleanPropertyNaming")
-    var prevWasDigit = false
-    for (char in pRow) {
+    loop@ for (char in body) {
         when {
             char.isDigit() -> {
-                multiplier =
-                    if (prevWasDigit) {
-                        @Suppress("MagicNumber")
-                        multiplier * 10 + char.toString().toInt()
-                    } else {
-                        char.toString().toInt()
-                    }
-                prevWasDigit = true
+                runCount = runCount * DECIMAL_BASE + (char - '0')
             }
 
-            char == '.' || char == 'b' -> {
-                repeat(multiplier) {
-                    parsed.add(false)
-                }
-                multiplier = 1
-                prevWasDigit = false
+            char == '.' || char == 'b' || char == 'B' -> {
+                repeat(runCount.coerceAtLeast(1)) { currentRow.add(false) }
+                runCount = 0
             }
 
-            char == 'A' || char == 'o' -> {
-                repeat(multiplier) {
-                    parsed.add(true)
-                }
-                multiplier = 1
-                prevWasDigit = false
+            char == 'A' || char == 'o' || char == 'O' -> {
+                repeat(runCount.coerceAtLeast(1)) { currentRow.add(true) }
+                runCount = 0
+            }
+
+            char == '$' -> {
+                parsedRows.add(currentRow.toBooleanArray())
+                currentRow.clear()
+                // A run count on `$` means (count - 1) additional blank rows.
+                repeat(runCount.coerceAtLeast(1) - 1) { parsedRows.add(BooleanArray(0)) }
+                runCount = 0
+            }
+
+            char == '!' -> {
+                break@loop
+            }
+
+            char.isWhitespace() -> {
+                // Line wrapping is allowed anywhere, including within a run count.
             }
 
             else -> {
-                prevWasDigit = false
+                throw IllegalArgumentException("Illegal character in pattern: $char")
             }
         }
     }
-    return parsed.toBooleanArray()
+    if (currentRow.isNotEmpty()) {
+        parsedRows.add(currentRow.toBooleanArray())
+    }
+    require(parsedRows.isNotEmpty()) { "Pattern contains no rows" }
+    return parsedRows.toTypedArray()
 }
 
 private val Patterns.asArray: Array<BooleanArray>

@@ -2,13 +2,18 @@ package me.haroldmartin.golwallpaper.utils
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.net.toUri
+import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
+import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
+import me.haroldmartin.golwallpaper.domain.DEFAULT_RULE
 import me.haroldmartin.golwallpaper.domain.GolController
+import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
@@ -17,7 +22,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 private const val TAG = "SaveWallpaper"
-private const val SCREEN_TO_GRID_RATIO = 10
 private const val ONYX_SCREENSAVER_TYPE = 16
 
 class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineDispatcher) {
@@ -26,13 +30,21 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             val resolution = getScreenResolution(context)
             val fgColor = getFgColor()
             val bgColor: Int = getBgColor(fgColor)
+            val cellSize = dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE
+            val rule = dataStore[Keys.RULE].first() ?: DEFAULT_RULE
 
-            val (rows, cols) = resolution.toRowsCols()
+            val (rows, cols) = resolution.toRowsCols(cellSize)
 
-            val gridController = pattern?.let { GolController(rows, cols, it) }
-                ?: GolController(rows, cols, dataStore[Keys.GAME_STATE].first())
+            val gridController = pattern?.let { GolController(rows, cols, it, rule) }
+                ?: GolController(rows, cols, dataStore[Keys.GAME_STATE].first(), rule)
                     .apply { update() }
 
+            val generation = if (pattern != null) {
+                0
+            } else {
+                (dataStore[Keys.GENERATION].first() ?: 0) + 1
+            }
+            dataStore[Keys.GENERATION] = generation
             dataStore[Keys.GAME_STATE] = gridController.toString()
 
             val bitmap = createBitmapFromBooleanArray(
@@ -43,31 +55,53 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
                 grid = gridController.grid,
             )
 
-            val uriAndFakePath = saveBitmapToPictures(
-                context = context,
-                bitmap = bitmap,
-                fileName = "screenshot_${System.currentTimeMillis()}.png",
-            )
-
-            if (uriAndFakePath == null) {
-                Log.e(TAG, "failed to save image")
-                return@withContext
+            if (dataStore[Keys.SHOW_STATS].first() == true) {
+                drawStatsOverlay(
+                    bitmap = bitmap,
+                    text = context.getString(
+                        R.string.stats_overlay,
+                        generation,
+                        gridController.population,
+                    ),
+                    textColor = fgColor,
+                    backgroundColor = bgColor,
+                )
             }
 
-            Log.d(TAG, "saved bitmap, ${getAppMemoryUsage(context)}")
-            dataStore[Keys.PREV_IMAGE_URI].first()?.let {
-                deleteImage(context, it.toUri())
+            if (isOnyxDevice()) {
+                setOnyxScreensaver(context, bitmap, showHint)
+            } else {
+                val target = WallpaperTarget.fromString(dataStore[Keys.WALLPAPER_TARGET].first())
+                setDeviceWallpaper(context, bitmap, target)
             }
-            dataStore[Keys.PREV_IMAGE_URI] = uriAndFakePath.first.toString()
 
             bitmap.recycle()
-
-            context.setScreensaver(
-                uriAndFakePath.second,
-                showHint,
-            )
-            Log.d(TAG, "setScreensaver: ${getAppMemoryUsage(context)}")
+            Log.d(TAG, "wallpaper updated, ${getAppMemoryUsage(context)}")
         }
+    }
+
+    private suspend fun setOnyxScreensaver(context: Context, bitmap: Bitmap, showHint: Boolean) {
+        val uriAndFakePath = saveBitmapToPictures(
+            context = context,
+            bitmap = bitmap,
+            fileName = "screenshot_${System.currentTimeMillis()}.png",
+        )
+
+        if (uriAndFakePath == null) {
+            Log.e(TAG, "failed to save image")
+            return
+        }
+
+        Log.d(TAG, "saved bitmap, ${getAppMemoryUsage(context)}")
+        dataStore[Keys.PREV_IMAGE_URI].first()?.let {
+            deleteImage(context, it.toUri())
+        }
+        dataStore[Keys.PREV_IMAGE_URI] = uriAndFakePath.first.toString()
+
+        context.setScreensaver(
+            uriAndFakePath.second,
+            showHint,
+        )
     }
 
     private suspend fun getFgColor(): Int =
@@ -91,9 +125,9 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             }
 }
 
-private fun Resolution.toRowsCols(): Pair<Int, Int> {
-    val rows = width / SCREEN_TO_GRID_RATIO
-    val cols = height / (SCREEN_TO_GRID_RATIO * ratio).toInt()
+private fun Resolution.toRowsCols(cellSize: Int): Pair<Int, Int> {
+    val rows = width / cellSize
+    val cols = height / (cellSize * ratio).toInt()
     return rows to cols
 }
 
