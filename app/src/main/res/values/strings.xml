@@ -22,4 +22,9 @@
     <string name="hours_format">%1$d h</string>
     <string name="pixels_format">%1$d px</string>
     <string name="stats_overlay">Gen %1$d · Pop %2$d</string>
+    <string name="rule_conway">Conway\'s Life</string>
+    <string name="rule_high_life">HighLife</string>
+    <string name="rule_day_and_night">Day &amp; Night</string>
+    <string name="rule_seeds">Seeds</string>
+    <string name="rule_life_without_death">Life without Death</string>
 </resources>

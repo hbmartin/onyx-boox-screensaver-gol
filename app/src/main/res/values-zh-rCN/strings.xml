@@ -21,4 +21,9 @@
     <string name="hours_format">%1$d 小时</string>
     <string name="pixels_format">%1$d 像素</string>
     <string name="stats_overlay">第 %1$d 代 · %2$d 个细胞</string>
+    <string name="rule_conway">康威生命游戏</string>
+    <string name="rule_high_life">HighLife</string>
+    <string name="rule_day_and_night">昼与夜</string>
+    <string name="rule_seeds">种子</string>
+    <string name="rule_life_without_death">不死生命</string>
 </resources>

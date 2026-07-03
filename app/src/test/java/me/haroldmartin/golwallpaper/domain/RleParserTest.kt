@@ -103,6 +103,13 @@ class RleParserTest {
     }
 
     @Test
+    fun `leading and trailing blank rows are trimmed`() {
+        val parsed = parsePattern("2\$o2\$!")
+        assertEquals(1, parsed.size, "Only the content row should remain")
+        assertPatternEquals(listOf("A"), parsed)
+    }
+
+    @Test
     fun `stops parsing at terminator`() {
         assertPatternEquals(
             expected = listOf("AA"),

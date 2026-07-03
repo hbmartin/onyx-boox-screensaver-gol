@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -19,6 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
@@ -81,7 +85,7 @@ private fun SettingsOptions(
 ) = Column(verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
     OptionRow(
         label = stringResource(R.string.rule_label),
-        options = RulePreset.entries.map { it.displayName to it.rule },
+        options = RulePreset.entries.map { it.displayName() to it.rule },
         selected = settings.rule,
         onSelect = { rule -> onSettingsChange(settings.copy(rule = rule)) },
     )
@@ -114,16 +118,32 @@ private fun SettingsOptions(
         )
     }
     Row(
+        modifier = Modifier.toggleable(
+            value = settings.isStatsVisible,
+            role = Role.Switch,
+            onValueChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
+        ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Switch(
             checked = settings.isStatsVisible,
-            onCheckedChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
+            onCheckedChange = null,
         )
         Text(stringResource(R.string.show_stats_label))
     }
 }
+
+@Composable
+private fun RulePreset.displayName(): String = stringResource(
+    when (this) {
+        RulePreset.CONWAY -> R.string.rule_conway
+        RulePreset.HIGH_LIFE -> R.string.rule_high_life
+        RulePreset.DAY_AND_NIGHT -> R.string.rule_day_and_night
+        RulePreset.SEEDS -> R.string.rule_seeds
+        RulePreset.LIFE_WITHOUT_DEATH -> R.string.rule_life_without_death
+    },
+)
 
 @Composable
 private fun intervalLabel(mins: Long): String = if (mins < MINS_PER_HOUR) {
@@ -159,10 +179,12 @@ private fun <T> OptionRow(
 @Composable
 private fun OptionButton(name: String, isSelected: Boolean, onClick: () -> Unit) {
     Button(
-        modifier = Modifier.border(
-            width = if (isSelected) SELECTED_BORDER else UNSELECTED_BORDER,
-            color = if (isSelected) COLOR_SCHEME.primary else COLOR_SCHEME.secondary,
-        ),
+        modifier = Modifier
+            .border(
+                width = if (isSelected) SELECTED_BORDER else UNSELECTED_BORDER,
+                color = if (isSelected) COLOR_SCHEME.primary else COLOR_SCHEME.secondary,
+            )
+            .semantics { selected = isSelected },
         onClick = onClick,
     ) {
         Text(

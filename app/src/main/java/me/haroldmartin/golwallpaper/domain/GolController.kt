@@ -261,8 +261,10 @@ internal fun parsePattern(pattern: String): Array<BooleanArray> {
     if (currentRow.isNotEmpty()) {
         parsedRows.add(currentRow.toBooleanArray())
     }
-    require(parsedRows.isNotEmpty()) { "Pattern contains no rows" }
-    return parsedRows.toTypedArray()
+    // Leading/trailing blank rows carry no information and would break centering.
+    val trimmedRows = parsedRows.dropWhile { it.isEmpty() }.dropLastWhile { it.isEmpty() }
+    require(trimmedRows.isNotEmpty()) { "Pattern contains no rows" }
+    return trimmedRows.toTypedArray()
 }
 
 private val Patterns.asArray: Array<BooleanArray>

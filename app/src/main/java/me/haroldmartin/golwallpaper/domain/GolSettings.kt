@@ -17,12 +17,12 @@ enum class WallpaperTarget {
     }
 }
 
-enum class RulePreset(val displayName: String, val rule: String) {
-    CONWAY("Conway's Life", "B3/S23"),
-    HIGH_LIFE("HighLife", "B36/S23"),
-    DAY_AND_NIGHT("Day & Night", "B3678/S34678"),
-    SEEDS("Seeds", "B2/S"),
-    LIFE_WITHOUT_DEATH("Life without Death", "B3/S012345678"),
+enum class RulePreset(val rule: String) {
+    CONWAY("B3/S23"),
+    HIGH_LIFE("B36/S23"),
+    DAY_AND_NIGHT("B3678/S34678"),
+    SEEDS("B2/S"),
+    LIFE_WITHOUT_DEATH("B3/S012345678"),
 }
 
 data class GolSettings(

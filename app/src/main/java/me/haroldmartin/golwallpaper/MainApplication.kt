@@ -23,9 +23,9 @@ class MainApplication : Application() {
         configureStrictMode()
         AppContainer.init(this.applicationContext)
         applicationScope.launch {
-            val intervalMins =
+            val intervalMins = runCatching {
                 AppContainer.userDataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS].first()
-                    ?: DEFAULT_UPDATE_INTERVAL_MINS
+            }.getOrNull() ?: DEFAULT_UPDATE_INTERVAL_MINS
             scheduleWallpaperUpdates(this@MainApplication, intervalMins)
         }
     }

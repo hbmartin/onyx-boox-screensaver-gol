@@ -18,12 +18,13 @@ fun drawStatsOverlay(bitmap: Bitmap, text: String, textColor: Int, backgroundCol
         typeface = Typeface.MONOSPACE
     }
     val padding = textPaint.textSize / TEXT_PADDING_DIVISOR
-    val baseline = bitmap.height - padding - textPaint.fontMetrics.descent
+    val fontMetrics = textPaint.fontMetrics
+    val baseline = bitmap.height - padding - fontMetrics.descent
     val backgroundPaint = Paint().apply { color = backgroundColor }
 
     canvas.drawRect(
         0f,
-        baseline + textPaint.fontMetrics.ascent - padding,
+        baseline + fontMetrics.ascent - padding,
         padding + textPaint.measureText(text) + padding,
         bitmap.height.toFloat(),
         backgroundPaint,

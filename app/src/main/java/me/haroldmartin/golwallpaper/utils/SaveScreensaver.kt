@@ -30,17 +30,18 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             val resolution = getScreenResolution(context)
             val fgColor = getFgColor()
             val bgColor: Int = getBgColor(fgColor)
-            val cellSize = dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE
+            val cellSize =
+                (dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE).coerceAtLeast(1)
             val rule = dataStore[Keys.RULE].first() ?: DEFAULT_RULE
 
             val (rows, cols) = resolution.toRowsCols(cellSize)
 
             val gridController = pattern?.let {
-                GolController(rows = rows, columns = cols, initialPattern = it, rule = rule)
-            } ?: GolController(
+                newController(rows = rows, cols = cols, state = it, rule = rule)
+            } ?: newController(
                 rows = rows,
-                columns = cols,
-                initialPattern = dataStore[Keys.GAME_STATE].first(),
+                cols = cols,
+                state = dataStore[Keys.GAME_STATE].first(),
                 rule = rule,
             ).apply { update() }
 
@@ -84,6 +85,18 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             Log.d(TAG, "wallpaper updated, ${getAppMemoryUsage(context)}")
         }
     }
+
+    // The stored game state (or a chosen pattern) can be too large for the grid after the
+    // user shrinks it by picking a bigger cell size — fall back to a random grid instead
+    // of crashing the update.
+    private fun newController(rows: Int, cols: Int, state: String?, rule: String): GolController =
+        try {
+            GolController(rows = rows, columns = cols, initialPattern = state, rule = rule)
+        } catch (e: IllegalArgumentException) {
+            Log.w(TAG, "Pattern does not fit ${rows}x$cols grid, resetting to random", e)
+            GolController(rows = rows, columns = cols, initialPattern = ".", rule = rule)
+                .apply { reset(pattern = null) }
+        }
 
     private suspend fun setOnyxScreensaver(context: Context, bitmap: Bitmap, showHint: Boolean) {
         val uriAndFakePath = saveBitmapToPictures(
