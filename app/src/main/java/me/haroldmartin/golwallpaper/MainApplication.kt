@@ -6,12 +6,12 @@ import android.util.Log
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.domain.DEFAULT_UPDATE_INTERVAL_MINS
 import me.haroldmartin.golwallpaper.utils.getAppMemoryUsage
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 private const val TAG = "MainApplication"
 
