@@ -3,8 +3,10 @@ package me.haroldmartin.golwallpaper.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -36,5 +38,11 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         object BG_COLOR : Keys<Int>(intPreferencesKey("bg_color"))
         object GAME_STATE : Keys<String>(stringPreferencesKey("game_state"))
         object PREV_IMAGE_URI : Keys<String>(stringPreferencesKey("prev_image_uri"))
+        object CELL_SIZE : Keys<Int>(intPreferencesKey("cell_size"))
+        object UPDATE_INTERVAL_MINS : Keys<Long>(longPreferencesKey("update_interval_mins"))
+        object RULE : Keys<String>(stringPreferencesKey("rule"))
+        object SHOW_STATS : Keys<Boolean>(booleanPreferencesKey("show_stats"))
+        object WALLPAPER_TARGET : Keys<String>(stringPreferencesKey("wallpaper_target"))
+        object GENERATION : Keys<Int>(intPreferencesKey("generation"))
     }
 }

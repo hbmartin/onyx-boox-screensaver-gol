@@ -9,6 +9,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,14 +19,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.haroldmartin.golwallpaper.ui.ColorPicker
 import me.haroldmartin.golwallpaper.ui.PatternPicker
+import me.haroldmartin.golwallpaper.ui.SettingsPanel
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.XXLARGE
+import me.haroldmartin.golwallpaper.utils.isOnyxDevice
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isOnyx = remember { isOnyxDevice() }
 
     Column(
         modifier = Modifier
@@ -33,7 +37,9 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             .padding(XXLARGE),
         verticalArrangement = Arrangement.spacedBy(XXLARGE),
     ) {
-        Text(stringResource(R.string.freeze_alert))
+        if (isOnyx) {
+            Text(stringResource(R.string.freeze_alert))
+        }
         ColorPicker(
             label = stringResource(id = R.string.fg_color),
             selectedColor = uiState.fgColor,
@@ -49,6 +55,11 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         PatternPicker { pattern ->
             viewModel.reset(context, pattern)
         }
+        SettingsPanel(
+            settings = uiState.settings,
+            showWallpaperTarget = !isOnyx,
+            onSettingsChange = { settings -> viewModel.updateSettings(context, settings) },
+        )
         Button(
             modifier = Modifier.border(1.dp, COLOR_SCHEME.secondary),
             onClick = { viewModel.saveNextStep(context) },

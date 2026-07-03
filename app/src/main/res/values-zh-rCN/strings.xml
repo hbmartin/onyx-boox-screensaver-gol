@@ -1,0 +1,29 @@
+<resources>
+    <string name="random">随机</string>
+    <string name="fg_color">前景颜色：</string>
+    <string name="bg_color">背景颜色：</string>
+    <string name="next_step">生成下一步</string>
+    <string name="freeze_alert">注意！必须关闭应用冻结，游戏才能自动更新：\n设置 > 应用和通知 > 冻结设置 > GoL Screensaver（关闭）</string>
+    <string name="reset_pattern">重置初始图案</string>
+    <string name="random_noise">随机噪点</string>
+    <string name="ran_newline_dom">随\n机</string>
+    <string name="report_issue">报告问题或请求功能</string>
+    <string name="settings">设置</string>
+    <string name="rule_label">游戏规则：</string>
+    <string name="cell_size_label">单元格大小：</string>
+    <string name="update_interval_label">更新间隔：</string>
+    <string name="show_stats_label">在壁纸上显示世代和细胞数量</string>
+    <string name="wallpaper_target_label">应用到：</string>
+    <string name="target_lock">锁屏</string>
+    <string name="target_home">主屏幕</string>
+    <string name="target_both">两者</string>
+    <string name="minutes_format">%1$d 分钟</string>
+    <string name="hours_format">%1$d 小时</string>
+    <string name="pixels_format">%1$d 像素</string>
+    <string name="stats_overlay">第 %1$d 代 · %2$d 个细胞</string>
+    <string name="rule_conway">康威生命游戏</string>
+    <string name="rule_high_life">HighLife</string>
+    <string name="rule_day_and_night">昼与夜</string>
+    <string name="rule_seeds">种子</string>
+    <string name="rule_life_without_death">不死生命</string>
+</resources>

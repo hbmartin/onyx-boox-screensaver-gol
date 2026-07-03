@@ -9,4 +9,22 @@
     <string name="random_noise">Random Noise</string>
     <string name="ran_newline_dom">RAN\nDOM</string>
     <string name="report_issue">Report Issue or Request Feature</string>
+    <string name="settings">Settings</string>
+    <string name="rule_label">Game Rule:</string>
+    <string name="cell_size_label">Cell Size:</string>
+    <string name="update_interval_label">Update Interval:</string>
+    <string name="show_stats_label">Show generation &amp; population on wallpaper</string>
+    <string name="wallpaper_target_label">Apply To:</string>
+    <string name="target_lock">Lock screen</string>
+    <string name="target_home">Home screen</string>
+    <string name="target_both">Both</string>
+    <string name="minutes_format">%1$d min</string>
+    <string name="hours_format">%1$d h</string>
+    <string name="pixels_format">%1$d px</string>
+    <string name="stats_overlay">Gen %1$d · Pop %2$d</string>
+    <string name="rule_conway">Conway\'s Life</string>
+    <string name="rule_high_life">HighLife</string>
+    <string name="rule_day_and_night">Day &amp; Night</string>
+    <string name="rule_seeds">Seeds</string>
+    <string name="rule_life_without_death">Life without Death</string>
 </resources>

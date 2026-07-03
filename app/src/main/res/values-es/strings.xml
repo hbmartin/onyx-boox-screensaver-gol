@@ -1,0 +1,29 @@
+<resources>
+    <string name="random">Aleatorio</string>
+    <string name="fg_color">Color de primer plano:</string>
+    <string name="bg_color">Color de fondo:</string>
+    <string name="next_step">Generar siguiente paso</string>
+    <string name="freeze_alert">¡NOTA! Debes desactivar la congelación para que el juego se actualice:\nAjustes > Aplicaciones y notificaciones > Congelación > GoL Screensaver (OFF)</string>
+    <string name="reset_pattern">Restablecer patrón inicial</string>
+    <string name="random_noise">Ruido aleatorio</string>
+    <string name="ran_newline_dom">A\nZAR</string>
+    <string name="report_issue">Informar de un problema o pedir una función</string>
+    <string name="settings">Ajustes</string>
+    <string name="rule_label">Regla del juego:</string>
+    <string name="cell_size_label">Tamaño de celda:</string>
+    <string name="update_interval_label">Intervalo de actualización:</string>
+    <string name="show_stats_label">Mostrar generación y población en el fondo</string>
+    <string name="wallpaper_target_label">Aplicar a:</string>
+    <string name="target_lock">Pantalla de bloqueo</string>
+    <string name="target_home">Pantalla de inicio</string>
+    <string name="target_both">Ambas</string>
+    <string name="minutes_format">%1$d min</string>
+    <string name="hours_format">%1$d h</string>
+    <string name="pixels_format">%1$d px</string>
+    <string name="stats_overlay">Gen. %1$d · Pob. %2$d</string>
+    <string name="rule_conway">Vida de Conway</string>
+    <string name="rule_high_life">HighLife</string>
+    <string name="rule_day_and_night">Día y Noche</string>
+    <string name="rule_seeds">Semillas</string>
+    <string name="rule_life_without_death">Vida sin Muerte</string>
+</resources>

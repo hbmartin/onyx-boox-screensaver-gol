@@ -17,16 +17,21 @@ GoL Screensaver is an app that generates and updates screensavers for Onyx Boox 
 
 - Customizable foreground and background colors (chosen specifically for color e-ink)
 - Pattern picker for common Game of Life starting states
+- Configurable settings: cell size, update interval, and cellular automaton rule (Conway's Life, HighLife, Day & Night, Seeds, Life without Death)
+- Optional generation & population counter drawn on the wallpaper
+- Works on non-Onyx Android devices too: sets the lock screen (and/or home screen) wallpaper instead of the Onyx screensaver
+- Translated into German, Spanish, French, Russian, and Simplified Chinese
 
 ## 🏄 Usage
 1. **Install the app** on your Android device from [F-Droid](https://f-droid.org/packages/me.haroldmartin.golwallpaper/), the [Releases Section](https://github.com/hbmartin/onyx-boox-screensaver-gol/releases/latest), or by building from source.
 2. ⚠️ **Disable freezing** in order to for the game to self-update
    - Settings > Apps & Notifications > Freeze Settings > GoL Wallpaper (OFF)
-   - **Note:** Updates happen at most every 15 minutes and **only** with sufficient battery
+   - **Note:** Updates happen at most every 15 minutes (configurable in Settings) and **only** with sufficient battery
 
 3. **Launch the app**:
    - (Optional) Choose foreground and background colors in the app
    - (Optional) Pick a starting pattern 
+   - (Optional) Open Settings to change the rule, cell size, update interval, or to show the generation & population counter
    - (Optional) Tap "Generate Next Step" to advance the Game of Life and update your wallpaper
 
 ## 🤝 Contributing
