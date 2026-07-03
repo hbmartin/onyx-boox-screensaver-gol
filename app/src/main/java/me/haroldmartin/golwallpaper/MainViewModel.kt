@@ -49,7 +49,7 @@ class MainViewModel(
 
     fun updateSettings(context: Context, settings: GolSettings) = viewModelScope.launch {
         val current = uiState.value.settings
-        val needsRedraw =
+        val isRedrawNeeded =
             settings.copy(updateIntervalMins = current.updateIntervalMins) != current
 
         if (settings.cellSize != current.cellSize) {
@@ -58,8 +58,8 @@ class MainViewModel(
         if (settings.rule != current.rule) {
             saveSettings.setRule(settings.rule)
         }
-        if (settings.showStats != current.showStats) {
-            saveSettings.setShowStats(settings.showStats)
+        if (settings.isStatsVisible != current.isStatsVisible) {
+            saveSettings.setShowStats(settings.isStatsVisible)
         }
         if (settings.wallpaperTarget != current.wallpaperTarget) {
             saveSettings.setWallpaperTarget(settings.wallpaperTarget)
@@ -68,7 +68,7 @@ class MainViewModel(
             saveSettings.setUpdateIntervalMins(settings.updateIntervalMins)
             scheduleWallpaperUpdates(context, settings.updateIntervalMins)
         }
-        if (needsRedraw) {
+        if (isRedrawNeeded) {
             saveScreenSaver(context, showHint = true)
         }
     }

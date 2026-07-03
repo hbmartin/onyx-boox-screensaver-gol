@@ -118,8 +118,8 @@ private fun SettingsOptions(
         horizontalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Switch(
-            checked = settings.showStats,
-            onCheckedChange = { show -> onSettingsChange(settings.copy(showStats = show)) },
+            checked = settings.isStatsVisible,
+            onCheckedChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
         )
         Text(stringResource(R.string.show_stats_label))
     }

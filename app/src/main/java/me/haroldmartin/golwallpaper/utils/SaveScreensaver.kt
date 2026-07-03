@@ -35,9 +35,14 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
 
             val (rows, cols) = resolution.toRowsCols(cellSize)
 
-            val gridController = pattern?.let { GolController(rows, cols, it, rule) }
-                ?: GolController(rows, cols, dataStore[Keys.GAME_STATE].first(), rule)
-                    .apply { update() }
+            val gridController = pattern?.let {
+                GolController(rows = rows, columns = cols, initialPattern = it, rule = rule)
+            } ?: GolController(
+                rows = rows,
+                columns = cols,
+                initialPattern = dataStore[Keys.GAME_STATE].first(),
+                rule = rule,
+            ).apply { update() }
 
             val generation = if (pattern != null) {
                 0

@@ -27,17 +27,17 @@ class ObserveUiStateImpl(val dataStore: UserDataStore) : ObserveUiState {
     }
 
     private fun observeSettings(): Flow<GolSettings> = combine(
-        dataStore[UserDataStore.Keys.CELL_SIZE],
-        dataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS],
-        dataStore[UserDataStore.Keys.RULE],
-        dataStore[UserDataStore.Keys.SHOW_STATS],
-        dataStore[UserDataStore.Keys.WALLPAPER_TARGET],
+        flow = dataStore[UserDataStore.Keys.CELL_SIZE],
+        flow2 = dataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS],
+        flow3 = dataStore[UserDataStore.Keys.RULE],
+        flow4 = dataStore[UserDataStore.Keys.SHOW_STATS],
+        flow5 = dataStore[UserDataStore.Keys.WALLPAPER_TARGET],
     ) { cellSize, intervalMins, rule, showStats, target ->
         GolSettings(
             cellSize = cellSize ?: DEFAULT_CELL_SIZE,
             updateIntervalMins = intervalMins ?: DEFAULT_UPDATE_INTERVAL_MINS,
             rule = rule ?: DEFAULT_RULE,
-            showStats = showStats ?: DEFAULT_SHOW_STATS,
+            isStatsVisible = showStats ?: DEFAULT_SHOW_STATS,
             wallpaperTarget = WallpaperTarget.fromString(target),
         )
     }

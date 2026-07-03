@@ -29,6 +29,6 @@ data class GolSettings(
     val cellSize: Int = DEFAULT_CELL_SIZE,
     val updateIntervalMins: Long = DEFAULT_UPDATE_INTERVAL_MINS,
     val rule: String = DEFAULT_RULE,
-    val showStats: Boolean = DEFAULT_SHOW_STATS,
+    val isStatsVisible: Boolean = DEFAULT_SHOW_STATS,
     val wallpaperTarget: WallpaperTarget = WallpaperTarget.LOCK,
 )
