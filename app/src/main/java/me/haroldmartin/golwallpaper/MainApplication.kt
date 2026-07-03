@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 private const val TAG = "MainApplication"
 
@@ -23,9 +24,12 @@ class MainApplication : Application() {
         configureStrictMode()
         AppContainer.init(this.applicationContext)
         applicationScope.launch {
-            val intervalMins = runCatching {
+            val intervalMins = try {
                 AppContainer.userDataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS].first()
-            }.getOrNull() ?: DEFAULT_UPDATE_INTERVAL_MINS
+            } catch (e: IOException) {
+                Log.e(TAG, "Failed to read update interval, using default", e)
+                null
+            } ?: DEFAULT_UPDATE_INTERVAL_MINS
             scheduleWallpaperUpdates(this@MainApplication, intervalMins)
         }
     }
