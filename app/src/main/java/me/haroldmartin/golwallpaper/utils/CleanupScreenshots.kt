@@ -23,7 +23,15 @@ private const val TAG = "CleanupScreenshots"
 fun deleteOrphanedScreenshots(context: Context, keep: Uri?): Int {
     val resolver = context.contentResolver
     val collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI
-    val keepId = keep?.let { ContentUris.parseId(it) }
+
+    // parseId throws on a non-hierarchical or non-numeric URI. If we can't resolve the id of the
+    // image to keep, abort rather than fall through with a null keepId, which would compare unequal
+    // to every row and delete the active screensaver.
+    val keepId = keep?.let { runCatching { ContentUris.parseId(it) }.getOrNull() }
+    if (keep != null && keepId == null) {
+        Log.e(TAG, "Could not resolve id of $keep; skipping cleanup to keep the active image")
+        return 0
+    }
     var deleted = 0
 
     try {
