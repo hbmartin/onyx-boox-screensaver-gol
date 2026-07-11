@@ -6,6 +6,9 @@
     <string name="freeze_alert">ВНИМАНИЕ! Отключите заморозку приложения, чтобы игра обновлялась:\nНастройки > Приложения и уведомления > Заморозка > GoL Screensaver (ВЫКЛ)</string>
     <string name="reset_pattern">Сбросить начальный узор</string>
     <string name="random_noise">Случайный шум</string>
+    <string name="paste_rle_label">Вставить шаблон RLE</string>
+    <string name="apply_rle">Применить вставленный шаблон</string>
+    <string name="invalid_rle">Недопустимый шаблон RLE</string>
     <string name="ran_newline_dom">СЛУ\nЧАЙ</string>
     <string name="report_issue">Сообщить об ошибке или предложить функцию</string>
     <string name="settings">Настройки</string>
@@ -41,7 +44,12 @@
     <string name="preview_pause">Пауза</string>
     <string name="preview_step">Шаг</string>
     <string name="preview_resync">Синхронизировать</string>
-    <string name="max_layers_warning">Более %1$d слоёв могут медленно обновляться на устройствах с электронными чернилами.</string>
+    <plurals name="max_layers_warning">
+        <item quantity="one">Более %1$d слоя может медленно обновляться на устройствах с электронными чернилами.</item>
+        <item quantity="few">Более %1$d слоёв могут медленно обновляться на устройствах с электронными чернилами.</item>
+        <item quantity="many">Более %1$d слоёв могут медленно обновляться на устройствах с электронными чернилами.</item>
+        <item quantity="other">Более %1$d слоёв могут медленно обновляться на устройствах с электронными чернилами.</item>
+    </plurals>
     <string name="calendar_section_title">Календарь на обоях</string>
     <string name="calendar_enable">Показывать предстоящие события</string>
     <string name="calendar_choose">Выбрать календари</string>

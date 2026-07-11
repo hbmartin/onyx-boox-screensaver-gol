@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.haroldmartin.golwallpaper.ui.CalendarSection
+import me.haroldmartin.golwallpaper.ui.CalendarSectionCallbacks
 import me.haroldmartin.golwallpaper.ui.CompositePreview
 import me.haroldmartin.golwallpaper.ui.LayersCallbacks
 import me.haroldmartin.golwallpaper.ui.LayersSection
@@ -55,9 +56,6 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            viewModel.startCalendarObservation()
-        }
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
             viewModel.stopCalendarObservation()
@@ -100,13 +98,15 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         CalendarSection(
             settings = uiState.calendarOverlaySettings,
             uiState = calendarUiState,
-            onPermissionResult = viewModel::onCalendarPermissionResult,
-            onOpenPicker = viewModel::openCalendarPicker,
-            onDisable = { viewModel.disableCalendarOverlay(context) },
-            onSettingsChange = { settings -> viewModel.updateCalendarOverlay(context, settings) },
-            onToggleDraft = viewModel::toggleDraftCalendar,
-            onConfirmPicker = { viewModel.confirmCalendarSelection(context) },
-            onDismissPicker = viewModel::dismissCalendarPicker,
+            callbacks = CalendarSectionCallbacks(
+                onPermissionResult = viewModel::onCalendarPermissionResult,
+                onOpenPicker = viewModel::openCalendarPicker,
+                onDisable = { viewModel.disableCalendarOverlay(context) },
+                onSettingsChange = { settings -> viewModel.updateCalendarOverlay(context, settings) },
+                onToggleDraft = viewModel::toggleDraftCalendar,
+                onConfirmPicker = { viewModel.confirmCalendarSelection(context) },
+                onDismissPicker = viewModel::dismissCalendarPicker,
+            ),
         )
         LayersSection(
             layers = uiState.layers,

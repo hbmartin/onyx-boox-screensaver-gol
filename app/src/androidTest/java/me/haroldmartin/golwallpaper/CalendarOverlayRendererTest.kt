@@ -4,6 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import me.haroldmartin.golwallpaper.domain.AgendaDay
+import me.haroldmartin.golwallpaper.domain.AgendaEvent
+import me.haroldmartin.golwallpaper.domain.AgendaTitle
 import me.haroldmartin.golwallpaper.domain.CalendarAgenda
 import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.OverlayCorner
@@ -20,11 +23,27 @@ import java.time.LocalDate
 @RunWith(AndroidJUnit4::class)
 class CalendarOverlayRendererTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val agenda = CalendarAgenda(
-        today = LocalDate.of(2026, 7, 11),
+    private val today = LocalDate.of(2026, 7, 11)
+    private val emptyAgenda = CalendarAgenda(
+        today = today,
         days = emptyList(),
         providedTitles = emptyMap(),
         overflowCount = 0,
+    )
+    private val populatedAgenda = CalendarAgenda(
+        today = today,
+        days = (0L..2L).map { offset ->
+            val date = today.plusDays(offset)
+            AgendaDay(
+                date = date,
+                events = listOf(
+                    agendaEvent(eventId = offset * 2, date = date, title = AgendaTitle.BUSY),
+                    agendaEvent(eventId = offset * 2 + 1, date = date, title = AgendaTitle.UNTITLED),
+                ),
+            )
+        },
+        providedTitles = emptyMap(),
+        overflowCount = 2,
     )
 
     @Test
@@ -40,7 +59,7 @@ class CalendarOverlayRendererTest {
             val bounds = drawCalendarOverlay(
                 context = context,
                 bitmap = bitmap,
-                agenda = agenda,
+                agenda = emptyAgenda,
                 settings = CalendarOverlaySettings(isEnabled = true, size = size),
                 backgroundColor = Color.WHITE,
             )
@@ -51,20 +70,22 @@ class CalendarOverlayRendererTest {
 
     @Test
     fun everyCornerStaysInsideBitmap() {
-        OverlayCorner.entries.forEach { corner ->
-            val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-            val bounds = drawCalendarOverlay(
-                context = context,
-                bitmap = bitmap,
-                agenda = agenda,
-                settings = CalendarOverlaySettings(isEnabled = true, corner = corner),
-                backgroundColor = Color.WHITE,
-            )
-            assertTrue(bounds.left >= 0f)
-            assertTrue(bounds.top >= 0f)
-            assertTrue(bounds.right <= bitmap.width)
-            assertTrue(bounds.bottom <= bitmap.height)
-            bitmap.recycle()
+        listOf(emptyAgenda, populatedAgenda).forEach { agenda ->
+            OverlayCorner.entries.forEach { corner ->
+                val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+                val bounds = drawCalendarOverlay(
+                    context = context,
+                    bitmap = bitmap,
+                    agenda = agenda,
+                    settings = CalendarOverlaySettings(isEnabled = true, corner = corner),
+                    backgroundColor = Color.WHITE,
+                )
+                assertTrue(bounds.left >= 0f)
+                assertTrue(bounds.top >= 0f)
+                assertTrue(bounds.right <= bitmap.width)
+                assertTrue(bounds.bottom <= bitmap.height)
+                bitmap.recycle()
+            }
         }
     }
 
@@ -85,4 +106,13 @@ class CalendarOverlayRendererTest {
         assertEquals(Color.WHITE, bitmap.getPixel(999, 999))
         bitmap.recycle()
     }
+
+    private fun agendaEvent(eventId: Long, date: LocalDate, title: AgendaTitle) = AgendaEvent(
+        eventId = eventId,
+        calendarId = 1,
+        date = date,
+        startMillis = 0,
+        isAllDay = false,
+        title = title,
+    )
 }

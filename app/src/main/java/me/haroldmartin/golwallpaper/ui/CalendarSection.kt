@@ -47,24 +47,17 @@ import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 private val CALENDAR_LIST_MAX_HEIGHT = 360.dp
 
 @Composable
-@Suppress("LongParameterList")
 fun CalendarSection(
     settings: CalendarOverlaySettings,
     uiState: CalendarUiState,
-    onPermissionResult: (Boolean) -> Unit,
-    onOpenPicker: () -> Unit,
-    onDisable: () -> Unit,
-    onSettingsChange: (CalendarOverlaySettings) -> Unit,
-    onToggleDraft: (Long) -> Unit,
-    onConfirmPicker: () -> Unit,
-    onDismissPicker: () -> Unit,
+    callbacks: CalendarSectionCallbacks,
     modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
-        onResult = onPermissionResult,
+        onResult = callbacks.onPermissionResult,
     )
     val requestCalendarAccess = {
         if (
@@ -73,7 +66,7 @@ fun CalendarSection(
                 Manifest.permission.READ_CALENDAR,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            onOpenPicker()
+            callbacks.onOpenPicker()
         } else {
             permissionLauncher.launch(Manifest.permission.READ_CALENDAR)
         }
@@ -97,13 +90,13 @@ fun CalendarSection(
                 issue = uiState.issue,
                 onEnabledChange = { enabled ->
                     if (!enabled) {
-                        onDisable()
+                        callbacks.onDisable()
                     } else {
                         requestCalendarAccess()
                     }
                 },
                 onOpenPicker = requestCalendarAccess,
-                onSettingsChange = onSettingsChange,
+                onSettingsChange = callbacks.onSettingsChange,
             )
         }
     }
@@ -112,9 +105,9 @@ fun CalendarSection(
         CalendarPickerDialog(
             sources = uiState.sources,
             selectedIds = uiState.draftSelectedIds,
-            onToggle = onToggleDraft,
-            onConfirm = onConfirmPicker,
-            onDismiss = onDismissPicker,
+            onToggle = callbacks.onToggleDraft,
+            onConfirm = callbacks.onConfirmPicker,
+            onDismiss = callbacks.onDismissPicker,
         )
     }
 }

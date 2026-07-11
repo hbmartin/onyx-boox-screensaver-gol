@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GoL Screensaver</string>
+    <string name="app_name" translatable="false">GoL Screensaver</string>
     <string name="random">Random</string>
     <string name="fg_color">Foreground Color:</string>
     <string name="bg_color">Background Color:</string>
@@ -17,7 +17,6 @@
     <string name="cell_size_label">Cell Size:</string>
     <string name="update_interval_label">Update Interval:</string>
     <string name="show_stats_label">Show generation &amp; population on wallpaper</string>
-    <string name="auto_reseed_label">Auto-reseed when the board dies or stagnates</string>
     <string name="wallpaper_target_label">Apply To:</string>
     <string name="target_lock">Lock screen</string>
     <string name="target_home">Home screen</string>
@@ -46,7 +45,10 @@
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Step</string>
     <string name="preview_resync">Re-sync</string>
-    <string name="max_layers_warning">More than %1$d layers may update slowly on e-ink devices.</string>
+    <plurals name="max_layers_warning">
+        <item quantity="one">More than %1$d layer may update slowly on e-ink devices.</item>
+        <item quantity="other">More than %1$d layers may update slowly on e-ink devices.</item>
+    </plurals>
     <string name="calendar_section_title">Calendar overlay</string>
     <string name="calendar_enable">Show upcoming calendar events</string>
     <string name="calendar_choose">Choose calendars</string>

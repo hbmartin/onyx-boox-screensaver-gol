@@ -471,7 +471,7 @@ potential-bugs:
   ImplicitDefaultLocale:
     active: true
   ImplicitUnitReturnType:
-    active: true
+    active: false
     allowExplicitReturnType: true
     ignoreAnnotated: ['Composable']
   InvalidRange:

@@ -99,11 +99,15 @@ class AndroidCalendarRepository(
             CalendarContract.Instances.STATUS,
             CalendarContract.Instances.SELF_ATTENDEE_STATUS,
         )
+        val selection = "${CalendarContract.Instances.CALENDAR_ID} IN (" +
+            selectedCalendarIds.joinToString(separator = ",") { "?" } +
+            ")"
+        val selectionArgs = selectedCalendarIds.map(Long::toString).toTypedArray()
         resolver.query(
             uri,
             projection,
-            null,
-            null,
+            selection,
+            selectionArgs,
             CalendarContract.Instances.BEGIN,
         )?.use { cursor ->
             val eventIndex = cursor.getColumnIndexOrThrow(CalendarContract.Instances.EVENT_ID)
@@ -120,7 +124,6 @@ class AndroidCalendarRepository(
             buildList {
                 while (cursor.moveToNext()) {
                     val calendarId = cursor.getLong(calendarIndex)
-                    if (calendarId !in selectedCalendarIds) continue
                     val access = cursor.getInt(accessIndex)
                     add(
                         RawCalendarOccurrence(

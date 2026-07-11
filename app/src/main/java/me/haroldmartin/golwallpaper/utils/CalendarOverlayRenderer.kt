@@ -32,8 +32,6 @@ private const val LINE_HEIGHT_MULTIPLIER = 1.3f
 private const val BORDER_DIVISOR = 12f
 private const val MIN_BORDER_WIDTH = 1f
 private const val ELLIPSIS_WIDTH_FRACTION = 0.98f
-private const val OPAQUE_ALPHA = 0xFF000000.toInt()
-private const val RGB_MASK = 0x00FFFFFF
 
 fun drawCalendarOverlay(
     context: Context,
@@ -178,5 +176,3 @@ private fun OverlayCorner.bounds(
     }
     return RectF(left, top, left + cardWidth, top + cardHeight)
 }
-
-private fun Int.inverseRgb(): Int = (this xor RGB_MASK) or OPAQUE_ALPHA
