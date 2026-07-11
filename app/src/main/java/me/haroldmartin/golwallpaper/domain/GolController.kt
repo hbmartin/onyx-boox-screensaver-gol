@@ -269,3 +269,14 @@ internal fun parsePattern(pattern: String): Array<BooleanArray> {
 
 private val Patterns.asArray: Array<BooleanArray>
     get() = parsePattern(value)
+
+// Validates user-pasted RLE before it is applied, so an unparseable paste can be rejected
+// in the UI instead of silently falling back to a random grid at render time.
+@Suppress("SwallowedException")
+internal fun isParseablePattern(pattern: String): Boolean =
+    try {
+        parsePattern(pattern)
+        true
+    } catch (e: IllegalArgumentException) {
+        false
+    }

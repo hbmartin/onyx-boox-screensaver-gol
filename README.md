@@ -16,7 +16,8 @@ GoL Screensaver is an app that generates and updates screensavers for Onyx Boox 
   - Note that wallpaper will not update while the screen is locked, only on the next unlock -> lock.
 
 - Customizable foreground and background colors (chosen specifically for color e-ink)
-- Pattern picker for common Game of Life starting states
+- Pattern picker for common Game of Life starting states, or paste your own [RLE](https://golly.sourceforge.io/Help/formats.html) pattern from [LifeWiki](https://conwaylife.com/wiki/)
+- Optional auto-reseeding: when the board dies out or stagnates (a still life or period-2 oscillator), it restarts with fresh random noise
 - Configurable settings: cell size, update interval, and cellular automaton rule (Conway's Life, HighLife, Day & Night, Seeds, Life without Death)
 - Optional generation & population counter drawn on the wallpaper
 - Works on non-Onyx Android devices too: sets the lock screen (and/or home screen) wallpaper instead of the Onyx screensaver

@@ -1,5 +1,6 @@
 package me.haroldmartin.golwallpaper.data
 
+import me.haroldmartin.golwallpaper.domain.DEFAULT_AUTO_RESEED
 import me.haroldmartin.golwallpaper.domain.DEFAULT_BATTERY_THRESHOLD_PCT
 import me.haroldmartin.golwallpaper.domain.DEFAULT_BG
 import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
@@ -44,9 +45,11 @@ class ObserveUiStateImpl(val dataStore: UserDataStore) : ObserveUiState {
             )
         },
         dataStore[UserDataStore.Keys.BATTERY_THRESHOLD],
-    ) { settings, batteryThreshold ->
+        dataStore[UserDataStore.Keys.AUTO_RESEED],
+    ) { settings, batteryThreshold, autoReseed ->
         settings.copy(
             batteryThresholdPct = batteryThreshold ?: DEFAULT_BATTERY_THRESHOLD_PCT,
+            autoReseed = autoReseed ?: DEFAULT_AUTO_RESEED,
         )
     }
 }

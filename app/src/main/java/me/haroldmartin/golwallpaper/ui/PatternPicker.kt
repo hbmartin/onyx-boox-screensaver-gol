@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Patterns
+import me.haroldmartin.golwallpaper.domain.isParseablePattern
+import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.SMALL
@@ -73,6 +77,48 @@ fun PatternPicker(onClick: (String?) -> Unit) {
                     )
                 }
             }
+            RleInput(onApply = onClick)
         }
+    }
+}
+
+@Suppress("MultipleEmitters")
+@Composable
+private fun RleInput(onApply: (String) -> Unit) {
+    var text by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = { value ->
+            text = value
+            isError = false
+        },
+        isError = isError,
+        label = { Text(stringResource(R.string.paste_rle_label)) },
+        modifier = Modifier.fillMaxWidth(),
+    )
+    if (isError) {
+        Text(
+            text = stringResource(R.string.invalid_rle),
+            color = COLOR_SCHEME.error,
+        )
+    }
+    Button(
+        onClick = {
+            val rle = text.trim()
+            if (isParseablePattern(rle)) {
+                onApply(rle)
+                text = ""
+            } else {
+                isError = true
+            }
+        },
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = MEDIUM, vertical = 0.dp),
+            fontWeight = FontWeight.Normal,
+            text = stringResource(R.string.apply_rle),
+        )
     }
 }

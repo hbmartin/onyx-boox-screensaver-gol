@@ -5,6 +5,7 @@ package me.haroldmartin.golwallpaper.domain
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class RleParserTest {
@@ -169,6 +170,22 @@ class RleParserTest {
                 "${pattern.name} should contain at least one live cell",
             )
         }
+    }
+
+    @Test
+    fun `isParseablePattern accepts valid RLE`() {
+        assertTrue(isParseablePattern("bob\$2bo\$3o!"), "Valid RLE should be accepted")
+        assertTrue(
+            isParseablePattern("x = 3, y = 3, rule = B3/S23\nbob\$2bo\$3o!"),
+            "Valid RLE with a header should be accepted",
+        )
+    }
+
+    @Test
+    fun `isParseablePattern rejects invalid or empty RLE`() {
+        assertFalse(isParseablePattern(""), "Empty input should be rejected")
+        assertFalse(isParseablePattern("AZA"), "Illegal characters should be rejected")
+        assertFalse(isParseablePattern("#C only a comment"), "Comment-only input should be rejected")
     }
 
     @Test

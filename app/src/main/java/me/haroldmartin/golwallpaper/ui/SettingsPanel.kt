@@ -128,20 +128,34 @@ private fun SettingsOptions(
             onSelect = { target -> onSettingsChange(settings.copy(wallpaperTarget = target)) },
         )
     }
+    SwitchRow(
+        label = stringResource(R.string.show_stats_label),
+        checked = settings.isStatsVisible,
+        onCheckedChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
+    )
+    SwitchRow(
+        label = stringResource(R.string.auto_reseed_label),
+        checked = settings.autoReseed,
+        onCheckedChange = { enabled -> onSettingsChange(settings.copy(autoReseed = enabled)) },
+    )
+}
+
+@Composable
+private fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier.toggleable(
-            value = settings.isStatsVisible,
+            value = checked,
             role = Role.Switch,
-            onValueChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
+            onValueChange = onCheckedChange,
         ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Switch(
-            checked = settings.isStatsVisible,
+            checked = checked,
             onCheckedChange = null,
         )
-        Text(stringResource(R.string.show_stats_label))
+        Text(label)
     }
 }
 

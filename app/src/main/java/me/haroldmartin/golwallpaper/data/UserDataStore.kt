@@ -37,12 +37,14 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         object FG_COLOR : Keys<Int>(intPreferencesKey("fg_color"))
         object BG_COLOR : Keys<Int>(intPreferencesKey("bg_color"))
         object GAME_STATE : Keys<String>(stringPreferencesKey("game_state"))
+        object GAME_STATE_PREV : Keys<String>(stringPreferencesKey("game_state_prev"))
         object CELL_SIZE : Keys<Int>(intPreferencesKey("cell_size"))
         object UPDATE_INTERVAL_MINS : Keys<Long>(longPreferencesKey("update_interval_mins"))
         object RULE : Keys<String>(stringPreferencesKey("rule"))
         object SHOW_STATS : Keys<Boolean>(booleanPreferencesKey("show_stats"))
         object WALLPAPER_TARGET : Keys<String>(stringPreferencesKey("wallpaper_target"))
         object BATTERY_THRESHOLD : Keys<Int>(intPreferencesKey("battery_threshold"))
+        object AUTO_RESEED : Keys<Boolean>(booleanPreferencesKey("auto_reseed"))
         object GENERATION : Keys<Int>(intPreferencesKey("generation"))
     }
 }

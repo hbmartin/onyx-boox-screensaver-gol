@@ -34,4 +34,8 @@ class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
         require(pct in 0..PERCENT_MAX) { "Battery threshold must be 0..$PERCENT_MAX: $pct" }
         dataStore[UserDataStore.Keys.BATTERY_THRESHOLD] = pct
     }
+
+    override suspend fun setAutoReseed(enabled: Boolean) {
+        dataStore[UserDataStore.Keys.AUTO_RESEED] = enabled
+    }
 }
