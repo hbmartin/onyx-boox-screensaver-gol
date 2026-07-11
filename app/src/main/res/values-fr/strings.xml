@@ -29,4 +29,19 @@
     <string name="rule_day_and_night">Jour et Nuit</string>
     <string name="rule_seeds">Graines</string>
     <string name="rule_life_without_death">Vie sans Mort</string>
+    <string name="layers_title">Calques</string>
+    <string name="add_layer">Ajouter un calque</string>
+    <string name="delete_layer">Supprimer le calque</string>
+    <string name="layer_number">Calque %1$d</string>
+    <string name="enable_layer">Activer le calque</string>
+    <string name="move_layer_up">Déplacer le calque vers le haut</string>
+    <string name="move_layer_down">Déplacer le calque vers le bas</string>
+    <string name="preview_title">Aperçu composite</string>
+    <string name="preview_play">Lecture</string>
+    <string name="preview_pause">Pause</string>
+    <string name="preview_step">Étape</string>
+    <string name="preview_resync">Resynchroniser</string>
+    <string name="foreground_color">Couleur de premier plan :</string>
+    <string name="background_color">Couleur d’arrière-plan :</string>
+    <string name="max_layers_warning">Plus de %1$d calques peuvent ralentir les mises à jour sur les appareils à encre électronique.</string>
 </resources>

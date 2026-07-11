@@ -189,6 +189,14 @@ class RleParserTest {
     }
 
     @Test
+    fun `isParseablePattern rejects oversized RLE`() {
+        assertFalse(
+            isParseablePattern("o".repeat(100_001)),
+            "Oversized input should be rejected before parsing",
+        )
+    }
+
+    @Test
     fun `blank rows are preserved when centering in controller`() {
         // "o2$o" is a live cell, a blank row, then another live cell (height 3, width 1).
         val controller = GolController(5, 5, initialPattern = "o2\$o!")

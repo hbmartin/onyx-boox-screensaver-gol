@@ -32,6 +32,13 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    @Suppress("NoCallbacksInFunctions")
+    suspend fun <T : Any> update(key: Keys<T>, transform: (T?) -> T) {
+        dataStore.edit { preferences ->
+            preferences[key.prefsKey] = transform(preferences[key.prefsKey])
+        }
+    }
+
     @Suppress("ClassName")
     sealed class Keys<T : Any>(val prefsKey: Preferences.Key<T>) {
         object FG_COLOR : Keys<Int>(intPreferencesKey("fg_color"))
@@ -46,5 +53,6 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         object BATTERY_THRESHOLD : Keys<Int>(intPreferencesKey("battery_threshold"))
         object AUTO_RESEED : Keys<Boolean>(booleanPreferencesKey("auto_reseed"))
         object GENERATION : Keys<Int>(intPreferencesKey("generation"))
+        object LAYERS : Keys<String>(stringPreferencesKey("layers"))
     }
 }
