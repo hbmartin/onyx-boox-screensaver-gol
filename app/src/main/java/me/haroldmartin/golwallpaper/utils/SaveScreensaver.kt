@@ -9,10 +9,12 @@ import androidx.compose.ui.graphics.toArgb
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
+import me.haroldmartin.golwallpaper.domain.DEFAULT_AUTO_RESEED
 import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
 import me.haroldmartin.golwallpaper.domain.DEFAULT_RULE
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
+import me.haroldmartin.golwallpaper.domain.shouldReseed
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
@@ -35,22 +37,13 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
 
             val (rows, cols) = resolution.toRowsCols(cellSize)
 
-            val gridController = pattern?.let {
-                newController(rows = rows, cols = cols, state = it, rule = rule)
-            } ?: newController(
+            val (gridController, generation) = buildController(
                 rows = rows,
                 cols = cols,
-                state = dataStore[Keys.GAME_STATE].first(),
                 rule = rule,
-            ).apply { update() }
-
-            val generation = if (pattern != null) {
-                0
-            } else {
-                (dataStore[Keys.GENERATION].first() ?: 0) + 1
-            }
+                pattern = pattern,
+            )
             dataStore[Keys.GENERATION] = generation
-            dataStore[Keys.GAME_STATE] = gridController.toString()
 
             val bitmap = createBitmapFromBooleanArray(
                 width = resolution.width,
@@ -82,6 +75,57 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
 
             bitmap.recycle()
             Log.d(TAG, "wallpaper updated, ${getAppMemoryUsage(context)}")
+        }
+    }
+
+    // Produces the controller to render this frame and the generation counter to display.
+    // An explicit `pattern` starts a fresh game at generation 0; otherwise the stored game
+    // state is advanced one step, reseeding first if the board has died or stagnated.
+    private suspend fun buildController(
+        rows: Int,
+        cols: Int,
+        rule: String,
+        pattern: String?,
+    ): Pair<GolController, Int> =
+        if (pattern != null) {
+            val controller = newController(rows = rows, cols = cols, state = pattern, rule = rule)
+            val state = controller.toString()
+            dataStore[Keys.GAME_STATE] = state
+            dataStore[Keys.GAME_STATE_PREV] = state
+            controller to 0
+        } else {
+            advanceController(rows = rows, cols = cols, rule = rule)
+        }
+
+    // Advances the stored game one generation. When auto-reseed is enabled and the resulting
+    // board is dead or stagnant (equal to either of the last two generations), the board is
+    // reseeded with random noise and the generation counter restarts at 0. GAME_STATE holds
+    // the latest generation and GAME_STATE_PREV the one before it, so period-2 oscillators
+    // (which match the generation two steps back) are detected.
+    private suspend fun advanceController(
+        rows: Int,
+        cols: Int,
+        rule: String,
+    ): Pair<GolController, Int> {
+        val prevState = dataStore[Keys.GAME_STATE].first()
+        val prevPrevState = dataStore[Keys.GAME_STATE_PREV].first()
+        val controller = newController(rows = rows, cols = cols, state = prevState, rule = rule)
+            .apply { update() }
+        val newState = controller.toString()
+        val autoReseed = dataStore[Keys.AUTO_RESEED].first() ?: DEFAULT_AUTO_RESEED
+
+        return if (autoReseed &&
+            shouldReseed(controller.population, newState, prevState, prevPrevState)
+        ) {
+            controller.reset(pattern = null)
+            val reseeded = controller.toString()
+            dataStore[Keys.GAME_STATE] = reseeded
+            dataStore[Keys.GAME_STATE_PREV] = reseeded
+            controller to 0
+        } else {
+            dataStore[Keys.GAME_STATE] = newState
+            dataStore[Keys.GAME_STATE_PREV] = prevState ?: newState
+            controller to ((dataStore[Keys.GENERATION].first() ?: 0) + 1)
         }
     }
 

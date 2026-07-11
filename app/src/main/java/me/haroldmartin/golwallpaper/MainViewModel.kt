@@ -52,6 +52,7 @@ class MainViewModel(
         val isRedrawNeeded = settings.copy(
             updateIntervalMins = current.updateIntervalMins,
             batteryThresholdPct = current.batteryThresholdPct,
+            autoReseed = current.autoReseed,
         ) != current
 
         if (settings.cellSize != current.cellSize) {
@@ -68,6 +69,9 @@ class MainViewModel(
         }
         if (settings.batteryThresholdPct != current.batteryThresholdPct) {
             saveSettings.setBatteryThreshold(settings.batteryThresholdPct)
+        }
+        if (settings.autoReseed != current.autoReseed) {
+            saveSettings.setAutoReseed(settings.autoReseed)
         }
         if (settings.updateIntervalMins != current.updateIntervalMins) {
             saveSettings.setUpdateIntervalMins(settings.updateIntervalMins)

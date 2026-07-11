@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# WorkManager instantiates workers reflectively by class name, so the worker and
+# its (Context, WorkerParameters) constructor must survive minification.
+-keep class me.haroldmartin.golwallpaper.WallpaperWorker {
+    <init>(android.content.Context, androidx.work.WorkerParameters);
+}
