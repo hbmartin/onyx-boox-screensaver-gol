@@ -8,6 +8,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 object LayersSerializer {
+    private const val ID = "id"
     private const val FG = "fg"
     private const val RULE = "rule"
     private const val STATE = "state"
@@ -19,6 +20,7 @@ object LayersSerializer {
         layers.forEach { layer ->
             array.put(
                 JSONObject()
+                    .put(ID, layer.id)
                     .put(FG, layer.fgColor)
                     .put(RULE, layer.rule)
                     .put(STATE, layer.state ?: JSONObject.NULL)
@@ -48,6 +50,7 @@ object LayersSerializer {
         state = if (isNull(STATE)) null else optString(STATE),
         generation = optInt(GENERATION, 0).coerceAtLeast(0),
         isEnabled = optBoolean(ENABLED, true),
+        id = getString(ID),
     )
 
     private fun defaultLayers(): List<Layer> = listOf(Layer())

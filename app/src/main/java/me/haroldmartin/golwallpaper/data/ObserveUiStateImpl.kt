@@ -9,8 +9,10 @@ import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.ObserveUiState
 import me.haroldmartin.golwallpaper.domain.UiState
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 
 class ObserveUiStateImpl(val dataStore: UserDataStore) : ObserveUiState {
     override operator fun invoke(): Flow<UiState> = combine(
@@ -23,7 +25,7 @@ class ObserveUiStateImpl(val dataStore: UserDataStore) : ObserveUiState {
             settings = settings,
             layers = LayersSerializer.decode(layers),
         )
-    }
+    }.flowOn(Dispatchers.Default)
 
     private fun observeSettings(): Flow<GolSettings> = combine(
         combine(

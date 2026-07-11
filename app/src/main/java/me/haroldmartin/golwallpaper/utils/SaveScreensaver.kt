@@ -28,18 +28,27 @@ private const val OPAQUE_ALPHA = 0xFF000000.toInt()
 private const val RGB_MASK = 0x00FFFFFF
 
 class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineDispatcher) {
+    @Suppress("AvoidVarsExceptWithDelegate")
     suspend operator fun invoke(context: Context, showHint: Boolean, step: Boolean = true) {
         withContext(ioDispatcher) {
             val resolution = getScreenResolution(context)
             val bgColor = getBgColor()
             val cellSize = (dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE).coerceAtLeast(1)
             val (rows, cols) = resolution.toRowsCols(cellSize)
-            val storedLayers = LayersSerializer.decode(dataStore[Keys.LAYERS].first())
-            val processed = storedLayers.map { layer ->
-                processLayer(layer = layer, rows = rows, cols = cols, step = step, bgColor = bgColor)
+            var processed = emptyList<ProcessedLayer>()
+            dataStore.update(Keys.LAYERS) { storedLayers ->
+                processed = LayersSerializer.decode(storedLayers).map { layer ->
+                    processLayer(
+                        layer = layer,
+                        rows = rows,
+                        cols = cols,
+                        step = step,
+                        bgColor = bgColor,
+                    )
+                }
+                LayersSerializer.encode(processed.map(ProcessedLayer::layer))
             }
             val updatedLayers = processed.map(ProcessedLayer::layer)
-            dataStore[Keys.LAYERS] = LayersSerializer.encode(updatedLayers)
 
             val bitmap = createCompositeBitmap(
                 width = resolution.width,
@@ -111,7 +120,9 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             setOnyxScreensaver(context, bitmap, showHint)
         } else {
             val target = WallpaperTarget.fromString(dataStore[Keys.WALLPAPER_TARGET].first())
-            setDeviceWallpaper(context, bitmap, target)
+            if (!setDeviceWallpaper(context, bitmap, target)) {
+                Log.e(TAG, "Failed to set device wallpaper")
+            }
         }
     }
 

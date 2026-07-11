@@ -41,7 +41,5 @@
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Étape</string>
     <string name="preview_resync">Resynchroniser</string>
-    <string name="foreground_color">Couleur de premier plan :</string>
-    <string name="background_color">Couleur d’arrière-plan :</string>
     <string name="max_layers_warning">Plus de %1$d calques peuvent ralentir les mises à jour sur les appareils à encre électronique.</string>
 </resources>

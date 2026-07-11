@@ -41,7 +41,5 @@
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Schritt</string>
     <string name="preview_resync">Neu synchronisieren</string>
-    <string name="foreground_color">Vordergrundfarbe:</string>
-    <string name="background_color">Hintergrundfarbe:</string>
     <string name="max_layers_warning">Mehr als %1$d Ebenen können auf E-Ink-Geräten langsam aktualisiert werden.</string>
 </resources>

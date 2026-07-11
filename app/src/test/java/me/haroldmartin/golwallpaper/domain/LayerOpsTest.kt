@@ -5,6 +5,7 @@ import me.haroldmartin.golwallpaper.ui.theme.Colors
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 
 class LayerOpsTest {
@@ -16,7 +17,9 @@ class LayerOpsTest {
     fun `add appends a default layer using the requested color`() {
         val result = LayerOps.addDefault(listOf(first), nextColor = 9)
 
-        assertEquals(listOf(first, Layer(fgColor = 9)), result)
+        assertSame(first, result.first())
+        assertEquals(9, result.last().fgColor)
+        assertNotEquals(first.id, result.last().id)
     }
 
     @Test
@@ -57,9 +60,14 @@ class LayerOpsTest {
     @Test
     fun `next unused color chooses palette order and wraps after exhaustion`() {
         val firstPaletteColor = Colors.ALL.first().value.toArgb()
+        val secondPaletteColor = Colors.ALL[1].value.toArgb()
         val paletteLayers = Colors.ALL.map { color -> Layer(fgColor = color.value.toArgb()) }
 
         assertEquals(firstPaletteColor, LayerOps.nextUnusedColor(emptyList()))
+        assertEquals(
+            secondPaletteColor,
+            LayerOps.nextUnusedColor(listOf(Layer(fgColor = firstPaletteColor))),
+        )
         assertEquals(firstPaletteColor, LayerOps.nextUnusedColor(paletteLayers))
     }
 }

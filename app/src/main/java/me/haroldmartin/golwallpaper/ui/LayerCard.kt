@@ -59,7 +59,7 @@ fun LayerCard(
             )
             if (isExpanded) {
                 ColorPicker(
-                    label = stringResource(R.string.foreground_color),
+                    label = stringResource(R.string.fg_color),
                     selectedColor = layer.fgColor,
                     onClick = callbacks.onColorChange,
                 )
