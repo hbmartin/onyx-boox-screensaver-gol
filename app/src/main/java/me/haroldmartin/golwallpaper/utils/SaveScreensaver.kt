@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.net.toUri
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
@@ -102,7 +101,7 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
         val uriAndFakePath = saveBitmapToPictures(
             context = context,
             bitmap = bitmap,
-            fileName = "screenshot_${System.currentTimeMillis()}.png",
+            fileName = "$SCREENSHOT_FILE_PREFIX${System.currentTimeMillis()}.png",
         )
 
         if (uriAndFakePath == null) {
@@ -111,10 +110,9 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
         }
 
         Log.d(TAG, "saved bitmap, ${getAppMemoryUsage(context)}")
-        dataStore[Keys.PREV_IMAGE_URI].first()?.let {
-            deleteImage(context, it.toUri())
-        }
-        dataStore[Keys.PREV_IMAGE_URI] = uriAndFakePath.first.toString()
+        // Sweep every leftover screenshot except the one we just saved, so orphans from a
+        // killed process or a failed delete never accumulate in the user's Downloads folder.
+        deleteOrphanedScreenshots(context, keep = uriAndFakePath.first)
 
         context.setScreensaver(
             uriAndFakePath.second,

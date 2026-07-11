@@ -14,6 +14,9 @@ import java.io.OutputStream
 private const val TAG = "SavImage"
 private const val QUALITY = 100
 
+/** Shared prefix for every screensaver image the app writes to the Downloads collection. */
+internal const val SCREENSHOT_FILE_PREFIX = "screenshot_"
+
 fun saveBitmapToInternalStorage(context: Context, bitmap: Bitmap, fileName: String): String? {
     val dir = context.getFilesDir()
     val file = File(dir, fileName)
