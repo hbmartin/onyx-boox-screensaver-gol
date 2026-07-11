@@ -1,6 +1,7 @@
 package me.haroldmartin.golwallpaper.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
@@ -15,11 +16,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private const val USER_PREFERENCES_NAME = "user_preferences"
+private const val TAG = "UserDataStore"
 
 @Suppress("PropertyName")
 private val Context.dataStore by preferencesDataStore(
     name = USER_PREFERENCES_NAME,
-    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+    corruptionHandler = ReplaceFileCorruptionHandler { exception ->
+        Log.e(TAG, "User preferences corrupted, resetting to defaults", exception)
+        emptyPreferences()
+    },
 )
 
 class UserDataStore(private val dataStore: DataStore<Preferences>) {
