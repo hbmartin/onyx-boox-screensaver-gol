@@ -98,15 +98,17 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         CalendarSection(
             settings = uiState.calendarOverlaySettings,
             uiState = calendarUiState,
-            callbacks = CalendarSectionCallbacks(
-                onPermissionResult = viewModel::onCalendarPermissionResult,
-                onOpenPicker = viewModel::openCalendarPicker,
-                onDisable = { viewModel.disableCalendarOverlay(context) },
-                onSettingsChange = { settings -> viewModel.updateCalendarOverlay(context, settings) },
-                onToggleDraft = viewModel::toggleDraftCalendar,
-                onConfirmPicker = { viewModel.confirmCalendarSelection(context) },
-                onDismissPicker = viewModel::dismissCalendarPicker,
-            ),
+            callbacks = remember(viewModel, context) {
+                CalendarSectionCallbacks(
+                    onPermissionResult = viewModel::onCalendarPermissionResult,
+                    onOpenPicker = viewModel::openCalendarPicker,
+                    onDisable = { viewModel.disableCalendarOverlay(context) },
+                    onSettingsChange = { settings -> viewModel.updateCalendarOverlay(context, settings) },
+                    onToggleDraft = viewModel::toggleDraftCalendar,
+                    onConfirmPicker = { viewModel.confirmCalendarSelection(context) },
+                    onDismissPicker = viewModel::dismissCalendarPicker,
+                )
+            },
         )
         LayersSection(
             layers = uiState.layers,
