@@ -41,7 +41,5 @@
     <string name="preview_pause">Пауза</string>
     <string name="preview_step">Шаг</string>
     <string name="preview_resync">Синхронизировать</string>
-    <string name="foreground_color">Цвет переднего плана:</string>
-    <string name="background_color">Цвет фона:</string>
     <string name="max_layers_warning">Более %1$d слоёв могут медленно обновляться на устройствах с электронными чернилами.</string>
 </resources>

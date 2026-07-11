@@ -19,8 +19,7 @@ fun createCompositeBitmap(
     layers.forEach { layer ->
         val numRows = layer.grid.size
         val numCols = layer.grid.firstOrNull()?.size ?: 0
-        require(numRows > 0) { "Rows must be greater than 0" }
-        require(numCols > 0) { "Columns must be greater than 0" }
+        if (numRows == 0 || numCols == 0) return@forEach
         paint.color = layer.fgColor
 
         layer.grid.forEachIndexed { row, cells ->

@@ -30,6 +30,8 @@ import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
 import me.haroldmartin.golwallpaper.utils.RenderLayer
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
 import me.haroldmartin.golwallpaper.utils.createCompositeBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,6 +70,9 @@ class MainViewModel(
     val previewImage: StateFlow<ImageBitmap?> = _previewImage.asStateFlow()
     private val _isPreviewPlaying = MutableStateFlow(false)
     val isPreviewPlaying: StateFlow<Boolean> = _isPreviewPlaying.asStateFlow()
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var previewRenderJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -196,18 +201,29 @@ class MainViewModel(
     }
 
     private fun renderPreview() {
-        val bitmap = createCompositeBitmap(
-            width = PREVIEW_WIDTH,
-            height = PREVIEW_HEIGHT,
-            backgroundColor = previewBackground.value,
-            layers = previewLayers.value.filter(PreviewLayer::isEnabled).map { previewLayer ->
-                RenderLayer(
-                    grid = previewLayer.controller.grid,
-                    fgColor = previewLayer.fgColor,
-                )
-            },
-        )
-        _previewImage.value = bitmap.asImageBitmap()
+        val background = previewBackground.value
+        val layers = previewLayers.value.filter(PreviewLayer::isEnabled).map { previewLayer ->
+            RenderLayer(
+                grid = Array(previewLayer.controller.grid.size) { row ->
+                    previewLayer.controller.grid[row].clone()
+                },
+                fgColor = previewLayer.fgColor,
+            )
+        }
+        previewRenderJob?.cancel()
+        previewRenderJob = viewModelScope.launch(Dispatchers.Default) {
+            val bitmap = createCompositeBitmap(
+                width = PREVIEW_WIDTH,
+                height = PREVIEW_HEIGHT,
+                backgroundColor = background,
+                layers = layers,
+            )
+            if (currentCoroutineContext().isActive) {
+                _previewImage.value = bitmap.asImageBitmap()
+            } else {
+                bitmap.recycle()
+            }
+        }
     }
 
     private fun Layer.toPreviewLayer(background: Int): PreviewLayer = PreviewLayer(

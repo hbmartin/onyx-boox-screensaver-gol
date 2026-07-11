@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import me.haroldmartin.golwallpaper.R
@@ -25,20 +26,22 @@ fun LayersSection(
     ) {
         Text(stringResource(R.string.layers_title))
         layers.forEachIndexed { index, layer ->
-            LayerCard(
-                layer = layer,
-                index = index,
-                layerCount = layers.size,
-                callbacks = LayerCallbacks(
-                    onEnabledChange = { enabled -> callbacks.onEnabledChange(index, enabled) },
-                    onMoveUp = { callbacks.onMoveUp(index) },
-                    onMoveDown = { callbacks.onMoveDown(index) },
-                    onDelete = { callbacks.onRemove(index) },
-                    onColorChange = { color -> callbacks.onColorChange(index, color) },
-                    onRuleChange = { rule -> callbacks.onRuleChange(index, rule) },
-                    onResetPattern = { pattern -> callbacks.onResetPattern(index, pattern) },
-                ),
-            )
+            key(layer.id) {
+                LayerCard(
+                    layer = layer,
+                    index = index,
+                    layerCount = layers.size,
+                    callbacks = LayerCallbacks(
+                        onEnabledChange = { enabled -> callbacks.onEnabledChange(index, enabled) },
+                        onMoveUp = { callbacks.onMoveUp(index) },
+                        onMoveDown = { callbacks.onMoveDown(index) },
+                        onDelete = { callbacks.onRemove(index) },
+                        onColorChange = { color -> callbacks.onColorChange(index, color) },
+                        onRuleChange = { rule -> callbacks.onRuleChange(index, rule) },
+                        onResetPattern = { pattern -> callbacks.onResetPattern(index, pattern) },
+                    ),
+                )
+            }
         }
         if (layers.size >= SOFT_LAYER_CAP) {
             Text(stringResource(R.string.max_layers_warning, SOFT_LAYER_CAP))

@@ -94,7 +94,7 @@ private fun SettingsOptions(
     onSettingsChange: (GolSettings) -> Unit,
 ) = Column(verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
     ColorPicker(
-        label = stringResource(R.string.background_color),
+        label = stringResource(R.string.bg_color),
         selectedColor = backgroundColor,
         onClick = onBackgroundColorChange,
     )
