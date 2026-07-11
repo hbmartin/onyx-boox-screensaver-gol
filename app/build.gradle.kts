@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "me.haroldmartin.golwallpaper"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 2
         versionName = "1.1"
 

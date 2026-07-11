@@ -8,12 +8,14 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 composeBom = "2026.06.01"
+#noinspection GradleDependency
 onyxsdkDevice = "1.2.32"
 datastore = "1.2.1"
 detekt = "1.23.8"
 androidxWork = "2.11.2"
 updatesCheck = "0.54.0"
 hbmartinRules = "0.1.7"
+#noinspection NewerVersionAvailable
 composeRules = "0.4.23"
 json = "20260522"
 

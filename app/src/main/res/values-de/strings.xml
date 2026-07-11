@@ -6,6 +6,9 @@
     <string name="freeze_alert">HINWEIS! Du musst das Einfrieren deaktivieren, damit sich das Spiel aktualisiert:\nEinstellungen > Apps &amp; Benachrichtigungen > Einfrieren > GoL Screensaver (AUS)</string>
     <string name="reset_pattern">Startmuster zurücksetzen</string>
     <string name="random_noise">Zufallsrauschen</string>
+    <string name="paste_rle_label">RLE-Muster einfügen</string>
+    <string name="apply_rle">Eingefügtes Muster anwenden</string>
+    <string name="invalid_rle">Kein gültiges RLE-Muster</string>
     <string name="ran_newline_dom">ZU\nFALL</string>
     <string name="report_issue">Fehler melden oder Funktion vorschlagen</string>
     <string name="settings">Einstellungen</string>
@@ -41,7 +44,10 @@
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Schritt</string>
     <string name="preview_resync">Neu synchronisieren</string>
-    <string name="max_layers_warning">Mehr als %1$d Ebenen können auf E-Ink-Geräten langsam aktualisiert werden.</string>
+    <plurals name="max_layers_warning">
+        <item quantity="one">Mehr als %1$d Ebene kann auf E-Ink-Geräten langsam aktualisiert werden.</item>
+        <item quantity="other">Mehr als %1$d Ebenen können auf E-Ink-Geräten langsam aktualisiert werden.</item>
+    </plurals>
     <string name="calendar_section_title">Kalenderüberlagerung</string>
     <string name="calendar_enable">Anstehende Kalendertermine anzeigen</string>
     <string name="calendar_choose">Kalender auswählen</string>

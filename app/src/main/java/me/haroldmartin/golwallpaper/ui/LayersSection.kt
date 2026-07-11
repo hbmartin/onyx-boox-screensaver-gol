@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Layer
@@ -44,7 +45,7 @@ fun LayersSection(
             }
         }
         if (layers.size >= SOFT_LAYER_CAP) {
-            Text(stringResource(R.string.max_layers_warning, SOFT_LAYER_CAP))
+            Text(pluralStringResource(R.plurals.max_layers_warning, SOFT_LAYER_CAP, SOFT_LAYER_CAP))
         }
         Button(onClick = callbacks.onAdd) {
             Text(stringResource(R.string.add_layer))

@@ -6,6 +6,9 @@
     <string name="freeze_alert">注意！必须关闭应用冻结，游戏才能自动更新：\n设置 > 应用和通知 > 冻结设置 > GoL Screensaver（关闭）</string>
     <string name="reset_pattern">重置初始图案</string>
     <string name="random_noise">随机噪点</string>
+    <string name="paste_rle_label">粘贴 RLE 图案</string>
+    <string name="apply_rle">应用粘贴的图案</string>
+    <string name="invalid_rle">RLE 图案无效</string>
     <string name="ran_newline_dom">随\n机</string>
     <string name="report_issue">报告问题或请求功能</string>
     <string name="settings">设置</string>
@@ -41,7 +44,9 @@
     <string name="preview_pause">暂停</string>
     <string name="preview_step">单步</string>
     <string name="preview_resync">重新同步</string>
-    <string name="max_layers_warning">超过 %1$d 个图层可能会使电子墨水设备更新缓慢。</string>
+    <plurals name="max_layers_warning">
+        <item quantity="other">超过 %1$d 个图层可能会使电子墨水设备更新缓慢。</item>
+    </plurals>
     <string name="calendar_section_title">日历叠加层</string>
     <string name="calendar_enable">显示即将到来的日历事件</string>
     <string name="calendar_choose">选择日历</string>

@@ -165,7 +165,7 @@ fun buildCalendarAgenda(
     val titles = visible.mapNotNull { event ->
         val rawTitle = occurrences.firstOrNull { occurrence ->
             occurrence.eventId == event.eventId && occurrence.calendarId == event.calendarId
-        }?.title?.trim()
+        }?.run { title?.trim() }
         if (event.title == AgendaTitle.PROVIDED && !rawTitle.isNullOrEmpty()) event.key to rawTitle else null
     }.toMap()
 

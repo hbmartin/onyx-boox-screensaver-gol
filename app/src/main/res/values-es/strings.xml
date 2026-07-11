@@ -6,6 +6,9 @@
     <string name="freeze_alert">¡NOTA! Debes desactivar la congelación para que el juego se actualice:\nAjustes > Aplicaciones y notificaciones > Congelación > GoL Screensaver (OFF)</string>
     <string name="reset_pattern">Restablecer patrón inicial</string>
     <string name="random_noise">Ruido aleatorio</string>
+    <string name="paste_rle_label">Pegar patrón RLE</string>
+    <string name="apply_rle">Aplicar patrón pegado</string>
+    <string name="invalid_rle">No es un patrón RLE válido</string>
     <string name="ran_newline_dom">A\nZAR</string>
     <string name="report_issue">Informar de un problema o pedir una función</string>
     <string name="settings">Ajustes</string>
@@ -41,7 +44,11 @@
     <string name="preview_pause">Pausa</string>
     <string name="preview_step">Paso</string>
     <string name="preview_resync">Sincronizar</string>
-    <string name="max_layers_warning">Más de %1$d capas pueden actualizarse lentamente en dispositivos de tinta electrónica.</string>
+    <plurals name="max_layers_warning">
+        <item quantity="one">Más de %1$d capa puede actualizarse lentamente en dispositivos de tinta electrónica.</item>
+        <item quantity="many">Más de %1$d capas pueden actualizarse lentamente en dispositivos de tinta electrónica.</item>
+        <item quantity="other">Más de %1$d capas pueden actualizarse lentamente en dispositivos de tinta electrónica.</item>
+    </plurals>
     <string name="calendar_section_title">Superposición de calendario</string>
     <string name="calendar_enable">Mostrar próximos eventos</string>
     <string name="calendar_choose">Elegir calendarios</string>
@@ -67,6 +74,7 @@
     <string name="calendar_no_events">No hay próximos eventos</string>
     <plurals name="calendar_more_events">
         <item quantity="one">+%1$d más</item>
+        <item quantity="many">+%1$d más</item>
         <item quantity="other">+%1$d más</item>
     </plurals>
     <string name="calendar_all_day">Todo el día</string>

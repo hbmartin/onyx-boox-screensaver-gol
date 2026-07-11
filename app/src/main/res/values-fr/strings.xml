@@ -6,6 +6,9 @@
     <string name="freeze_alert">ATTENTION ! Vous devez désactiver le gel de l\'application pour que le jeu se mette à jour :\nParamètres > Applications et notifications > Gel > GoL Screensaver (OFF)</string>
     <string name="reset_pattern">Réinitialiser le motif de départ</string>
     <string name="random_noise">Bruit aléatoire</string>
+    <string name="paste_rle_label">Coller un motif RLE</string>
+    <string name="apply_rle">Appliquer le motif collé</string>
+    <string name="invalid_rle">Motif RLE non valide</string>
     <string name="ran_newline_dom">HA\nSARD</string>
     <string name="report_issue">Signaler un problème ou demander une fonctionnalité</string>
     <string name="settings">Paramètres</string>
@@ -41,7 +44,11 @@
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Étape</string>
     <string name="preview_resync">Resynchroniser</string>
-    <string name="max_layers_warning">Plus de %1$d calques peuvent ralentir les mises à jour sur les appareils à encre électronique.</string>
+    <plurals name="max_layers_warning">
+        <item quantity="one">Plus de %1$d calque peut ralentir les mises à jour sur les appareils à encre électronique.</item>
+        <item quantity="many">Plus de %1$d calques peuvent ralentir les mises à jour sur les appareils à encre électronique.</item>
+        <item quantity="other">Plus de %1$d calques peuvent ralentir les mises à jour sur les appareils à encre électronique.</item>
+    </plurals>
     <string name="calendar_section_title">Superposition du calendrier</string>
     <string name="calendar_enable">Afficher les événements à venir</string>
     <string name="calendar_choose">Choisir les calendriers</string>
@@ -67,6 +74,7 @@
     <string name="calendar_no_events">Aucun événement à venir</string>
     <plurals name="calendar_more_events">
         <item quantity="one">+%1$d autre</item>
+        <item quantity="many">+%1$d autres</item>
         <item quantity="other">+%1$d autres</item>
     </plurals>
     <string name="calendar_all_day">Toute la journée</string>

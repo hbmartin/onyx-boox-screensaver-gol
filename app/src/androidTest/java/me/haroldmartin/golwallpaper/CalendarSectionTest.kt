@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.CalendarSource
 import me.haroldmartin.golwallpaper.ui.CalendarSection
+import me.haroldmartin.golwallpaper.ui.CalendarSectionCallbacks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -40,13 +41,15 @@ class CalendarSectionTest {
                     draftSelectedIds = setOf(7),
                     isPickerVisible = true,
                 ),
-                onPermissionResult = {},
-                onOpenPicker = {},
-                onDisable = {},
-                onSettingsChange = {},
-                onToggleDraft = toggledId::set,
-                onConfirmPicker = { isConfirmed.set(true) },
-                onDismissPicker = {},
+                callbacks = CalendarSectionCallbacks(
+                    onPermissionResult = {},
+                    onOpenPicker = {},
+                    onDisable = {},
+                    onSettingsChange = {},
+                    onToggleDraft = toggledId::set,
+                    onConfirmPicker = { isConfirmed.set(true) },
+                    onDismissPicker = {},
+                ),
             )
         }
 

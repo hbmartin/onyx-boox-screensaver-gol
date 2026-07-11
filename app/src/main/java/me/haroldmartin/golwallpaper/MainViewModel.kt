@@ -305,7 +305,7 @@ class MainViewModel(
     fun disableCalendarOverlay(context: Context) = viewModelScope.launch {
         val updated = uiState.value.calendarOverlaySettings.copy(isEnabled = false)
         calendarSettingsStore.save(updated)
-        previewAgenda.value = null
+        refreshCalendarAgenda(updated)
         renderPreview()
         saveScreenSaver(context, showHint = true, step = false)
     }

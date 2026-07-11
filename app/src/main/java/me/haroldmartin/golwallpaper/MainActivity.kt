@@ -3,7 +3,9 @@ package me.haroldmartin.golwallpaper
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import me.haroldmartin.golwallpaper.ui.theme.GoLWallpaperTheme
@@ -14,7 +16,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             GoLWallpaperTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen()
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        MainScreen()
+                    }
                 }
             }
         }

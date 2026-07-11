@@ -28,8 +28,6 @@ import kotlinx.coroutines.withContext
 
 private const val TAG = "SaveWallpaper"
 private const val ONYX_SCREENSAVER_TYPE = 16
-private const val OPAQUE_ALPHA = 0xFF000000.toInt()
-private const val RGB_MASK = 0x00FFFFFF
 
 class SaveScreensaver(
     val dataStore: UserDataStore,
@@ -192,8 +190,6 @@ private data class ProcessedLayer(
     val renderLayer: RenderLayer? = null,
     val population: Int = 0,
 )
-
-private fun Int.inverseRgb(): Int = (this xor RGB_MASK) or OPAQUE_ALPHA
 
 private fun Resolution.toRowsCols(cellSize: Int): Pair<Int, Int> {
     val rows = width / cellSize

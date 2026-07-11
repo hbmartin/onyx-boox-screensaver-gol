@@ -6,7 +6,13 @@ import java.time.ZoneId
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
@@ -54,7 +60,7 @@ class LoadCalendarAgendaTest {
     }
 
     @Test
-    fun `valid source produces an agenda without persisting event details`() {
+    fun `valid source produces an agenda with a provided title lookup`() {
         runBlocking {
             val repository = FakeCalendarRepository(
                 calendars = listOf(
@@ -90,6 +96,58 @@ class LoadCalendarAgendaTest {
                 .events
                 .single()
             assertEquals(7L, event.eventId)
+            assertEquals("Planning", available.agenda.providedTitles[event.key])
+        }
+    }
+
+    @Test
+    fun `calendar query failure returns sources unavailable`() {
+        runBlocking {
+            val repository = FakeCalendarRepository(
+                calendarFailure = IllegalStateException("calendar provider unavailable"),
+            )
+
+            assertEquals(
+                CalendarAgendaResult.SourcesUnavailable,
+                loader(repository)(
+                    CalendarOverlaySettings(isEnabled = true, selectedCalendarIds = setOf(1)),
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `occurrence query failure returns sources unavailable`() {
+        runBlocking {
+            val repository = FakeCalendarRepository(
+                calendars = listOf(primaryCalendar()),
+                occurrenceFailure = IllegalStateException("instance query unavailable"),
+            )
+
+            assertEquals(
+                CalendarAgendaResult.SourcesUnavailable,
+                loader(repository)(
+                    CalendarOverlaySettings(isEnabled = true, selectedCalendarIds = setOf(1)),
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `cancellation during occurrence query is rethrown`() {
+        runBlocking {
+            val repository = FakeCalendarRepository(
+                calendars = listOf(primaryCalendar()),
+                cancelOccurrenceQuery = true,
+            )
+
+            val result = async {
+                loader(repository)(
+                    CalendarOverlaySettings(isEnabled = true, selectedCalendarIds = setOf(1)),
+                )
+            }
+
+            assertFailsWith<CancellationException> { result.await() }
         }
     }
 
@@ -98,12 +156,22 @@ class LoadCalendarAgendaTest {
         clock = Clock.fixed(instant, zone),
         zoneId = { zone },
     )
+
+    private fun primaryCalendar() = CalendarSource(
+        id = 1,
+        displayName = "Primary",
+        accountName = "account",
+        isPrimary = true,
+    )
 }
 
 private class FakeCalendarRepository(
     private val hasPermission: Boolean = true,
     private val calendars: List<CalendarSource> = emptyList(),
     private val occurrences: List<RawCalendarOccurrence> = emptyList(),
+    private val calendarFailure: Exception? = null,
+    private val occurrenceFailure: Exception? = null,
+    private val cancelOccurrenceQuery: Boolean = false,
 ) : CalendarRepository {
     val calendarQueries = AtomicInteger()
     val occurrenceQueries = AtomicInteger()
@@ -112,6 +180,7 @@ private class FakeCalendarRepository(
 
     override suspend fun getCalendars(): List<CalendarSource> {
         calendarQueries.incrementAndGet()
+        calendarFailure?.let { throw it }
         return calendars
     }
 
@@ -121,6 +190,11 @@ private class FakeCalendarRepository(
         endMillis: Long,
     ): List<RawCalendarOccurrence> {
         occurrenceQueries.incrementAndGet()
+        if (cancelOccurrenceQuery) {
+            currentCoroutineContext().cancel(CancellationException("calendar query cancelled"))
+            currentCoroutineContext().ensureActive()
+        }
+        occurrenceFailure?.let { throw it }
         return occurrences
     }
 

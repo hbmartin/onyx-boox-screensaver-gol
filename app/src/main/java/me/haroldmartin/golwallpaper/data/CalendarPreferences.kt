@@ -2,10 +2,12 @@ package me.haroldmartin.golwallpaper.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import me.haroldmartin.golwallpaper.domain.CalendarHorizon
@@ -24,6 +26,7 @@ class CalendarPreferences(
     context: Context,
     scope: CoroutineScope,
     private val dataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = scope,
         produceFile = { File(context.noBackupFilesDir, CALENDAR_PREFERENCES_FILE) },
     ),
