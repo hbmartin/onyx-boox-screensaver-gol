@@ -17,9 +17,12 @@
     <string name="target_lock">锁屏</string>
     <string name="target_home">主屏幕</string>
     <string name="target_both">两者</string>
+    <string name="battery_threshold_label">电量低于此值时暂停更新：</string>
+    <string name="battery_threshold_off">关闭</string>
     <string name="minutes_format">%1$d 分钟</string>
     <string name="hours_format">%1$d 小时</string>
     <string name="pixels_format">%1$d 像素</string>
+    <string name="percent_format">%1$d%%</string>
     <string name="stats_overlay">第 %1$d 代 · %2$d 个细胞</string>
     <string name="rule_conway">康威生命游戏</string>
     <string name="rule_high_life">HighLife</string>

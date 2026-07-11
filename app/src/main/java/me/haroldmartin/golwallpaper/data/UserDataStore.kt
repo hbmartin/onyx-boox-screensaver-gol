@@ -43,6 +43,7 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         object RULE : Keys<String>(stringPreferencesKey("rule"))
         object SHOW_STATS : Keys<Boolean>(booleanPreferencesKey("show_stats"))
         object WALLPAPER_TARGET : Keys<String>(stringPreferencesKey("wallpaper_target"))
+        object BATTERY_THRESHOLD : Keys<Int>(intPreferencesKey("battery_threshold"))
         object GENERATION : Keys<Int>(intPreferencesKey("generation"))
     }
 }

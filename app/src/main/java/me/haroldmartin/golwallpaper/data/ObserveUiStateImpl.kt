@@ -1,5 +1,6 @@
 package me.haroldmartin.golwallpaper.data
 
+import me.haroldmartin.golwallpaper.domain.DEFAULT_BATTERY_THRESHOLD_PCT
 import me.haroldmartin.golwallpaper.domain.DEFAULT_BG
 import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
 import me.haroldmartin.golwallpaper.domain.DEFAULT_FG
@@ -27,18 +28,25 @@ class ObserveUiStateImpl(val dataStore: UserDataStore) : ObserveUiState {
     }
 
     private fun observeSettings(): Flow<GolSettings> = combine(
-        flow = dataStore[UserDataStore.Keys.CELL_SIZE],
-        flow2 = dataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS],
-        flow3 = dataStore[UserDataStore.Keys.RULE],
-        flow4 = dataStore[UserDataStore.Keys.SHOW_STATS],
-        flow5 = dataStore[UserDataStore.Keys.WALLPAPER_TARGET],
-    ) { cellSize, intervalMins, rule, showStats, target ->
-        GolSettings(
-            cellSize = cellSize ?: DEFAULT_CELL_SIZE,
-            updateIntervalMins = intervalMins ?: DEFAULT_UPDATE_INTERVAL_MINS,
-            rule = rule ?: DEFAULT_RULE,
-            isStatsVisible = showStats ?: DEFAULT_SHOW_STATS,
-            wallpaperTarget = WallpaperTarget.fromString(target),
+        combine(
+            flow = dataStore[UserDataStore.Keys.CELL_SIZE],
+            flow2 = dataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS],
+            flow3 = dataStore[UserDataStore.Keys.RULE],
+            flow4 = dataStore[UserDataStore.Keys.SHOW_STATS],
+            flow5 = dataStore[UserDataStore.Keys.WALLPAPER_TARGET],
+        ) { cellSize, intervalMins, rule, showStats, target ->
+            GolSettings(
+                cellSize = cellSize ?: DEFAULT_CELL_SIZE,
+                updateIntervalMins = intervalMins ?: DEFAULT_UPDATE_INTERVAL_MINS,
+                rule = rule ?: DEFAULT_RULE,
+                isStatsVisible = showStats ?: DEFAULT_SHOW_STATS,
+                wallpaperTarget = WallpaperTarget.fromString(target),
+            )
+        },
+        dataStore[UserDataStore.Keys.BATTERY_THRESHOLD],
+    ) { settings, batteryThreshold ->
+        settings.copy(
+            batteryThresholdPct = batteryThreshold ?: DEFAULT_BATTERY_THRESHOLD_PCT,
         )
     }
 }
