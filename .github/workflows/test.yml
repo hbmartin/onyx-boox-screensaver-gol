@@ -17,13 +17,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: 'gradle'
-          cache-dependency-path: |
-            gradlew
-            settings.gradle.kts
-            build.gradle.kts
-            app/build.gradle.kts
-      - name: Run Detekt on the detekt rules
-        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1 # v3.5.0
-        with:
-          arguments: test
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - name: Run unit tests
+        run: ./gradlew test

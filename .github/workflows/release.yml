@@ -17,16 +17,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: 'gradle'
-          cache-dependency-path: |
-            gradlew
-            settings.gradle.kts
-            build.gradle.kts
-            app/build.gradle.kts
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
       - name: Build Release APK
-        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1 # v3.5.0
-        with:
-          arguments: assembleRelease
+        run: ./gradlew assembleRelease
       - uses: r0adkll/sign-android-release@dbeba6b98a60b0fd540c02443c7f428cdedf0e7f # v1.0.4
         name: Sign app APK
         # ID used to access action output
