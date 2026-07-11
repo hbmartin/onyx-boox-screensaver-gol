@@ -73,16 +73,6 @@ data class AgendaEvent(
     val startMillis: Long,
     val isAllDay: Boolean,
     val title: AgendaTitle,
-) {
-    val key: AgendaEventKey get() = AgendaEventKey(eventId = eventId, calendarId = calendarId, date = date)
-}
-
-// Stable identity for an agenda entry, independent of rendering-derived fields. A multi-day
-// all-day event yields one key per date, so provided titles map to the correct occurrence.
-data class AgendaEventKey(
-    val eventId: Long,
-    val calendarId: Long,
-    val date: LocalDate,
 )
 
 enum class AgendaTitle {
