@@ -42,4 +42,37 @@
     <string name="preview_step">Paso</string>
     <string name="preview_resync">Sincronizar</string>
     <string name="max_layers_warning">Más de %1$d capas pueden actualizarse lentamente en dispositivos de tinta electrónica.</string>
+    <string name="calendar_section_title">Superposición de calendario</string>
+    <string name="calendar_enable">Mostrar próximos eventos</string>
+    <string name="calendar_choose">Elegir calendarios</string>
+    <string name="calendar_done">Listo</string>
+    <string name="calendar_cancel">Cancelar</string>
+    <string name="calendar_primary">Calendario principal</string>
+    <string name="calendar_permission_required">Se necesita acceso al calendario. Activa de nuevo la superposición para concederlo.</string>
+    <string name="calendar_no_sources">No hay calendarios visibles y sincronizados disponibles.</string>
+    <string name="calendar_sources_unavailable">Los calendarios seleccionados no están disponibles. Actualiza la selección.</string>
+    <string name="calendar_horizon">Periodo:</string>
+    <string name="calendar_horizon_today">Hoy</string>
+    <string name="calendar_horizon_24_hours">24 horas</string>
+    <string name="calendar_horizon_7_days">7 días</string>
+    <string name="calendar_position">Posición:</string>
+    <string name="calendar_top_left">Arriba izquierda</string>
+    <string name="calendar_top_right">Arriba derecha</string>
+    <string name="calendar_bottom_left">Abajo izquierda</string>
+    <string name="calendar_bottom_right">Abajo derecha</string>
+    <string name="calendar_size">Tamaño:</string>
+    <string name="calendar_small">Pequeño</string>
+    <string name="calendar_medium">Mediano</string>
+    <string name="calendar_large">Grande</string>
+    <string name="calendar_no_events">No hay próximos eventos</string>
+    <plurals name="calendar_more_events">
+        <item quantity="one">+%1$d más</item>
+        <item quantity="other">+%1$d más</item>
+    </plurals>
+    <string name="calendar_all_day">Todo el día</string>
+    <string name="calendar_busy">Ocupado</string>
+    <string name="calendar_untitled">Evento sin título</string>
+    <string name="calendar_today">Hoy</string>
+    <string name="calendar_tomorrow">Mañana</string>
+    <string name="calendar_event_format">%1$s — %2$s</string>
 </resources>

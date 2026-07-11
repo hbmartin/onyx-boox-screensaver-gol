@@ -47,4 +47,37 @@
     <string name="preview_step">Step</string>
     <string name="preview_resync">Re-sync</string>
     <string name="max_layers_warning">More than %1$d layers may update slowly on e-ink devices.</string>
+    <string name="calendar_section_title">Calendar overlay</string>
+    <string name="calendar_enable">Show upcoming calendar events</string>
+    <string name="calendar_choose">Choose calendars</string>
+    <string name="calendar_done">Done</string>
+    <string name="calendar_cancel">Cancel</string>
+    <string name="calendar_primary">Primary calendar</string>
+    <string name="calendar_permission_required">Calendar access is required. Enable the overlay again to grant access.</string>
+    <string name="calendar_no_sources">No visible, synced calendars are available.</string>
+    <string name="calendar_sources_unavailable">Selected calendars are unavailable. Choose calendars to update the selection.</string>
+    <string name="calendar_horizon">Event horizon:</string>
+    <string name="calendar_horizon_today">Today</string>
+    <string name="calendar_horizon_24_hours">24 hours</string>
+    <string name="calendar_horizon_7_days">7 days</string>
+    <string name="calendar_position">Position:</string>
+    <string name="calendar_top_left">Top left</string>
+    <string name="calendar_top_right">Top right</string>
+    <string name="calendar_bottom_left">Bottom left</string>
+    <string name="calendar_bottom_right">Bottom right</string>
+    <string name="calendar_size">Size:</string>
+    <string name="calendar_small">Small</string>
+    <string name="calendar_medium">Medium</string>
+    <string name="calendar_large">Large</string>
+    <string name="calendar_no_events">No upcoming events</string>
+    <plurals name="calendar_more_events">
+        <item quantity="one">+%1$d more</item>
+        <item quantity="other">+%1$d more</item>
+    </plurals>
+    <string name="calendar_all_day">All day</string>
+    <string name="calendar_busy">Busy</string>
+    <string name="calendar_untitled">Untitled event</string>
+    <string name="calendar_today">Today</string>
+    <string name="calendar_tomorrow">Tomorrow</string>
+    <string name="calendar_event_format">%1$s — %2$s</string>
 </resources>

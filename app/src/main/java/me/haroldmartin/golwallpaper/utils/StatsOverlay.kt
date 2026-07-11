@@ -8,9 +8,20 @@ import android.graphics.Typeface
 private const val TEXT_SIZE_DIVISOR = 40f
 private const val TEXT_PADDING_DIVISOR = 2f
 
+enum class StatsOverlayPosition {
+    BOTTOM_LEFT,
+    BOTTOM_RIGHT,
+}
+
 // Draws the given text in the bottom-left corner of the bitmap on top of an opaque
 // background box so it stays readable over live cells.
-fun drawStatsOverlay(bitmap: Bitmap, text: String, textColor: Int, backgroundColor: Int) {
+fun drawStatsOverlay(
+    bitmap: Bitmap,
+    text: String,
+    textColor: Int,
+    backgroundColor: Int,
+    position: StatsOverlayPosition = StatsOverlayPosition.BOTTOM_LEFT,
+) {
     val canvas = Canvas(bitmap)
     val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = textColor
@@ -22,12 +33,15 @@ fun drawStatsOverlay(bitmap: Bitmap, text: String, textColor: Int, backgroundCol
     val baseline = bitmap.height - padding - fontMetrics.descent
     val backgroundPaint = Paint().apply { color = backgroundColor }
 
+    val boxWidth = padding + textPaint.measureText(text) + padding
+    val left = if (position == StatsOverlayPosition.BOTTOM_LEFT) 0f else bitmap.width - boxWidth
+
     canvas.drawRect(
-        0f,
+        left,
         baseline + fontMetrics.ascent - padding,
-        padding + textPaint.measureText(text) + padding,
+        left + boxWidth,
         bitmap.height.toFloat(),
         backgroundPaint,
     )
-    canvas.drawText(text, padding, baseline, textPaint)
+    canvas.drawText(text, left + padding, baseline, textPaint)
 }

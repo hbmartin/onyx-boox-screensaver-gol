@@ -8,14 +8,22 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import me.haroldmartin.golwallpaper.domain.CalendarAgenda
+import me.haroldmartin.golwallpaper.domain.CalendarAgendaResult
+import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
+import me.haroldmartin.golwallpaper.domain.CalendarRepository
+import me.haroldmartin.golwallpaper.domain.CalendarSettingsStore
+import me.haroldmartin.golwallpaper.domain.CalendarSource
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.Layer
+import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
 import me.haroldmartin.golwallpaper.domain.SaveBgColor
 import me.haroldmartin.golwallpaper.domain.SaveLayers
 import me.haroldmartin.golwallpaper.domain.SaveSettings
 import me.haroldmartin.golwallpaper.domain.UiState
 import me.haroldmartin.golwallpaper.domain.addLayer
+import me.haroldmartin.golwallpaper.domain.initialCalendarSelection
 import me.haroldmartin.golwallpaper.domain.moveDown
 import me.haroldmartin.golwallpaper.domain.moveUp
 import me.haroldmartin.golwallpaper.domain.parsePattern
@@ -30,15 +38,24 @@ import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
 import me.haroldmartin.golwallpaper.utils.RenderLayer
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
 import me.haroldmartin.golwallpaper.utils.createCompositeBitmap
-import kotlinx.coroutines.Dispatchers
+import me.haroldmartin.golwallpaper.utils.drawCalendarOverlay
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -49,13 +66,32 @@ private const val PREVIEW_WIDTH = 360
 private const val PREVIEW_HEIGHT = 480
 private const val PREVIEW_ROWS = 48
 private const val PREVIEW_COLUMNS = 36
+private const val CALENDAR_CHANGE_DEBOUNCE_MILLIS = 500L
 
-@Suppress("TooManyFunctions")
+enum class CalendarUiIssue {
+    PERMISSION_REQUIRED,
+    NO_CALENDARS,
+    SOURCES_UNAVAILABLE,
+}
+
+data class CalendarUiState(
+    val sources: List<CalendarSource> = emptyList(),
+    val draftSelectedIds: Set<Long> = emptySet(),
+    val isPickerVisible: Boolean = false,
+    val issue: CalendarUiIssue? = null,
+)
+
+@Suppress("TooManyFunctions", "LongParameterList")
 class MainViewModel(
     private val saveBgColor: SaveBgColor,
     private val saveLayers: SaveLayers,
     private val saveSettings: SaveSettings,
     private val saveScreenSaver: SaveScreensaver,
+    private val calendarSettingsStore: CalendarSettingsStore,
+    private val calendarRepository: CalendarRepository,
+    private val loadCalendarAgenda: LoadCalendarAgenda,
+    private val appContext: Context,
+    private val renderDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     val uiState: StateFlow<UiState> = AppContainer.observeUiState()
         .stateIn(
@@ -68,15 +104,21 @@ class MainViewModel(
     private val previewBackground = MutableStateFlow(Color.White.toArgb())
     private val _previewImage = MutableStateFlow<ImageBitmap?>(null)
     val previewImage: StateFlow<ImageBitmap?> = _previewImage.asStateFlow()
-    private val _isPreviewPlaying = MutableStateFlow(false)
-    val isPreviewPlaying: StateFlow<Boolean> = _isPreviewPlaying.asStateFlow()
+    private val previewPlayingMutable = MutableStateFlow(false)
+    val previewPlaying: StateFlow<Boolean> = previewPlayingMutable.asStateFlow()
+    private val previewAgenda = MutableStateFlow<CalendarAgenda?>(null)
+    private val _calendarUiState = MutableStateFlow(CalendarUiState())
+    val calendarUiState: StateFlow<CalendarUiState> = _calendarUiState.asStateFlow()
 
     @Suppress("AvoidVarsExceptWithDelegate")
     private var previewRenderJob: Job? = null
 
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var calendarObservationJob: Job? = null
+
     init {
         viewModelScope.launch {
-            _isPreviewPlaying.collectLatest { isPlaying ->
+            previewPlayingMutable.collectLatest { isPlaying ->
                 while (isPlaying && currentCoroutineContext().isActive) {
                     advancePreview()
                     renderPreview()
@@ -91,6 +133,11 @@ class MainViewModel(
         saveLayers = AppContainer.saveLayers,
         saveSettings = AppContainer.saveSettings,
         saveScreenSaver = AppContainer.saveScreensaver,
+        calendarSettingsStore = AppContainer.calendarPreferences,
+        calendarRepository = AppContainer.calendarRepository,
+        loadCalendarAgenda = AppContainer.loadCalendarAgenda,
+        appContext = AppContainer.applicationContext,
+        renderDispatcher = AppContainer.defaultDispatcher(),
     )
 
     fun setBgColor(context: Context, color: Int) = viewModelScope.launch {
@@ -154,11 +201,11 @@ class MainViewModel(
     }
 
     fun playPreview() {
-        _isPreviewPlaying.value = true
+        previewPlayingMutable.value = true
     }
 
     fun pausePreview() {
-        _isPreviewPlaying.value = false
+        previewPlayingMutable.value = false
     }
 
     fun stepPreview() = viewModelScope.launch {
@@ -174,7 +221,141 @@ class MainViewModel(
         )
         previewBackground.value = background
         previewLayers.value = state.layers.map { layer -> layer.toPreviewLayer(background) }
+        refreshCalendarAgenda()
         renderPreview()
+    }
+
+    fun onCalendarPermissionResult(granted: Boolean) {
+        if (granted) {
+            openCalendarPicker()
+        } else {
+            _calendarUiState.value = _calendarUiState.value.copy(
+                isPickerVisible = false,
+                issue = CalendarUiIssue.PERMISSION_REQUIRED,
+            )
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun openCalendarPicker() = viewModelScope.launch {
+        if (!calendarRepository.hasPermission()) {
+            _calendarUiState.value = _calendarUiState.value.copy(
+                issue = CalendarUiIssue.PERMISSION_REQUIRED,
+            )
+            return@launch
+        }
+        val sources = try {
+            calendarRepository.getCalendars()
+        } catch (exception: Exception) {
+            currentCoroutineContext().ensureActive()
+            _calendarUiState.value = _calendarUiState.value.copy(
+                issue = CalendarUiIssue.SOURCES_UNAVAILABLE,
+            )
+            return@launch
+        }
+        if (sources.isEmpty()) {
+            _calendarUiState.value = _calendarUiState.value.copy(
+                sources = emptyList(),
+                isPickerVisible = false,
+                issue = CalendarUiIssue.NO_CALENDARS,
+            )
+            return@launch
+        }
+        val initialSelection = initialCalendarSelection(
+            sources = sources,
+            storedIds = uiState.value.calendarOverlaySettings.selectedCalendarIds,
+        )
+        _calendarUiState.value = CalendarUiState(
+            sources = sources,
+            draftSelectedIds = initialSelection,
+            isPickerVisible = true,
+        )
+    }
+
+    fun toggleDraftCalendar(calendarId: Long) {
+        val current = _calendarUiState.value
+        val selected = if (calendarId in current.draftSelectedIds) {
+            current.draftSelectedIds - calendarId
+        } else {
+            current.draftSelectedIds + calendarId
+        }
+        _calendarUiState.value = current.copy(draftSelectedIds = selected)
+    }
+
+    fun dismissCalendarPicker() {
+        _calendarUiState.value = _calendarUiState.value.copy(isPickerVisible = false)
+    }
+
+    fun confirmCalendarSelection(context: Context) = viewModelScope.launch {
+        val selectedIds = _calendarUiState.value.draftSelectedIds
+        val updated = uiState.value.calendarOverlaySettings.copy(
+            isEnabled = selectedIds.isNotEmpty(),
+            selectedCalendarIds = selectedIds,
+        )
+        calendarSettingsStore.save(updated)
+        _calendarUiState.value = _calendarUiState.value.copy(
+            isPickerVisible = false,
+            issue = null,
+        )
+        refreshCalendarAgenda(updated)
+        renderPreview()
+        saveScreenSaver(context, showHint = true, step = false)
+    }
+
+    fun disableCalendarOverlay(context: Context) = viewModelScope.launch {
+        val updated = uiState.value.calendarOverlaySettings.copy(isEnabled = false)
+        calendarSettingsStore.save(updated)
+        previewAgenda.value = null
+        renderPreview()
+        saveScreenSaver(context, showHint = true, step = false)
+    }
+
+    fun updateCalendarOverlay(
+        context: Context,
+        settings: CalendarOverlaySettings,
+    ) = viewModelScope.launch {
+        calendarSettingsStore.save(settings)
+        refreshCalendarAgenda(settings)
+        renderPreview()
+        saveScreenSaver(context, showHint = true, step = false)
+    }
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    fun startCalendarObservation() {
+        if (calendarObservationJob != null) return
+        calendarObservationJob = viewModelScope.launch {
+            val initialAgenda = previewAgenda.value
+            refreshCalendarAgenda()
+            if (previewAgenda.value != initialAgenda) {
+                renderPreview()
+                if (uiState.value.calendarOverlaySettings.isEnabled) {
+                    saveScreenSaver(appContext, showHint = false, step = false)
+                }
+            }
+            uiState.map { state -> state.calendarOverlaySettings.isEnabled }
+                .distinctUntilChanged()
+                .flatMapLatest { isEnabled ->
+                    if (isEnabled && calendarRepository.hasPermission()) {
+                        calendarRepository.observeChanges()
+                    } else {
+                        emptyFlow()
+                    }
+                }
+                .debounce(CALENDAR_CHANGE_DEBOUNCE_MILLIS)
+                .collect {
+                    val oldAgenda = previewAgenda.value
+                    refreshCalendarAgenda()
+                    if (previewAgenda.value != oldAgenda) {
+                        renderPreview()
+                        saveScreenSaver(appContext, showHint = false, step = false)
+                    }
+                }
+        }
+    }
+
+    fun stopCalendarObservation() {
+        calendarObservationJob?.cancel()
+        calendarObservationJob = null
     }
 
     fun openIssues(context: Context) {
@@ -194,14 +375,15 @@ class MainViewModel(
         }
 
     private fun advancePreview() {
-        previewLayers.value = previewLayers.value.map { previewLayer ->
+        previewLayers.value = previewLayers.value.onEach { previewLayer ->
             if (previewLayer.isEnabled) previewLayer.controller.update()
-            previewLayer
         }
     }
 
     private fun renderPreview() {
         val background = previewBackground.value
+        val agenda = previewAgenda.value
+        val calendarSettings = uiState.value.calendarOverlaySettings
         val layers = previewLayers.value.filter(PreviewLayer::isEnabled).map { previewLayer ->
             RenderLayer(
                 grid = Array(previewLayer.controller.grid.size) { row ->
@@ -211,17 +393,49 @@ class MainViewModel(
             )
         }
         previewRenderJob?.cancel()
-        previewRenderJob = viewModelScope.launch(Dispatchers.Default) {
+        previewRenderJob = viewModelScope.launch(renderDispatcher) {
             val bitmap = createCompositeBitmap(
                 width = PREVIEW_WIDTH,
                 height = PREVIEW_HEIGHT,
                 backgroundColor = background,
                 layers = layers,
             )
+            if (agenda != null) {
+                drawCalendarOverlay(
+                    context = appContext,
+                    bitmap = bitmap,
+                    agenda = agenda,
+                    settings = calendarSettings,
+                    backgroundColor = background,
+                )
+            }
             if (currentCoroutineContext().isActive) {
                 _previewImage.value = bitmap.asImageBitmap()
             } else {
                 bitmap.recycle()
+            }
+        }
+    }
+
+    private suspend fun refreshCalendarAgenda(
+        settings: CalendarOverlaySettings = uiState.value.calendarOverlaySettings,
+    ) {
+        when (val result = loadCalendarAgenda(settings)) {
+            is CalendarAgendaResult.Available -> {
+                previewAgenda.value = result.agenda
+                _calendarUiState.value = _calendarUiState.value.copy(issue = null)
+            }
+            CalendarAgendaResult.PermissionMissing -> {
+                previewAgenda.value = null
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    issue = if (settings.isEnabled) CalendarUiIssue.PERMISSION_REQUIRED else null,
+                )
+            }
+            CalendarAgendaResult.SourcesUnavailable -> {
+                previewAgenda.value = null
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    issue = if (settings.isEnabled) CalendarUiIssue.SOURCES_UNAVAILABLE else null,
+                )
             }
         }
     }
@@ -235,12 +449,27 @@ class MainViewModel(
     @Suppress("SwallowedException")
     private fun previewController(state: String?, rule: String): GolController = try {
         if (state == null) {
-            GolController(PREVIEW_ROWS, PREVIEW_COLUMNS, ".", rule).apply { reset(pattern = null) }
+            GolController(
+                rows = PREVIEW_ROWS,
+                columns = PREVIEW_COLUMNS,
+                initialPattern = ".",
+                rule = rule,
+            ).apply { reset(pattern = null) }
         } else {
-            GolController(PREVIEW_ROWS, PREVIEW_COLUMNS, state.toPreviewPattern(), rule)
+            GolController(
+                rows = PREVIEW_ROWS,
+                columns = PREVIEW_COLUMNS,
+                initialPattern = state.toPreviewPattern(),
+                rule = rule,
+            )
         }
     } catch (exception: IllegalArgumentException) {
-        GolController(PREVIEW_ROWS, PREVIEW_COLUMNS, ".", rule).apply { reset(pattern = null) }
+        GolController(
+            rows = PREVIEW_ROWS,
+            columns = PREVIEW_COLUMNS,
+            initialPattern = ".",
+            rule = rule,
+        ).apply { reset(pattern = null) }
     }
 
     private fun resolvePreviewColor(color: Int, except: Set<Int>): Int =

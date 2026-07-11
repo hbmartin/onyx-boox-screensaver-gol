@@ -42,4 +42,37 @@
     <string name="preview_step">Étape</string>
     <string name="preview_resync">Resynchroniser</string>
     <string name="max_layers_warning">Plus de %1$d calques peuvent ralentir les mises à jour sur les appareils à encre électronique.</string>
+    <string name="calendar_section_title">Superposition du calendrier</string>
+    <string name="calendar_enable">Afficher les événements à venir</string>
+    <string name="calendar_choose">Choisir les calendriers</string>
+    <string name="calendar_done">Terminé</string>
+    <string name="calendar_cancel">Annuler</string>
+    <string name="calendar_primary">Calendrier principal</string>
+    <string name="calendar_permission_required">L’accès au calendrier est requis. Réactivez la superposition pour l’autoriser.</string>
+    <string name="calendar_no_sources">Aucun calendrier visible et synchronisé n’est disponible.</string>
+    <string name="calendar_sources_unavailable">Les calendriers sélectionnés sont indisponibles. Modifiez la sélection.</string>
+    <string name="calendar_horizon">Période :</string>
+    <string name="calendar_horizon_today">Aujourd’hui</string>
+    <string name="calendar_horizon_24_hours">24 heures</string>
+    <string name="calendar_horizon_7_days">7 jours</string>
+    <string name="calendar_position">Position :</string>
+    <string name="calendar_top_left">En haut à gauche</string>
+    <string name="calendar_top_right">En haut à droite</string>
+    <string name="calendar_bottom_left">En bas à gauche</string>
+    <string name="calendar_bottom_right">En bas à droite</string>
+    <string name="calendar_size">Taille :</string>
+    <string name="calendar_small">Petite</string>
+    <string name="calendar_medium">Moyenne</string>
+    <string name="calendar_large">Grande</string>
+    <string name="calendar_no_events">Aucun événement à venir</string>
+    <plurals name="calendar_more_events">
+        <item quantity="one">+%1$d autre</item>
+        <item quantity="other">+%1$d autres</item>
+    </plurals>
+    <string name="calendar_all_day">Toute la journée</string>
+    <string name="calendar_busy">Occupé</string>
+    <string name="calendar_untitled">Événement sans titre</string>
+    <string name="calendar_today">Aujourd’hui</string>
+    <string name="calendar_tomorrow">Demain</string>
+    <string name="calendar_event_format">%1$s — %2$s</string>
 </resources>
