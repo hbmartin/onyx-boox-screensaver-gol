@@ -4,6 +4,7 @@ import me.haroldmartin.golwallpaper.domain.SaveSettings
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 
 private val RULE_REGEX = Regex("""B\d*/S\d*""", RegexOption.IGNORE_CASE)
+private const val PERCENT_MAX = 100
 
 class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
     override suspend fun setCellSize(size: Int) {
@@ -27,5 +28,10 @@ class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
 
     override suspend fun setWallpaperTarget(target: WallpaperTarget) {
         dataStore[UserDataStore.Keys.WALLPAPER_TARGET] = target.name
+    }
+
+    override suspend fun setBatteryThreshold(pct: Int) {
+        require(pct in 0..PERCENT_MAX) { "Battery threshold must be 0..$PERCENT_MAX: $pct" }
+        dataStore[UserDataStore.Keys.BATTERY_THRESHOLD] = pct
     }
 }

@@ -17,9 +17,12 @@
     <string name="target_lock">Écran de verrouillage</string>
     <string name="target_home">Écran d\'accueil</string>
     <string name="target_both">Les deux</string>
+    <string name="battery_threshold_label">Suspendre les mises à jour sous batterie :</string>
+    <string name="battery_threshold_off">Désactivé</string>
     <string name="minutes_format">%1$d min</string>
     <string name="hours_format">%1$d h</string>
     <string name="pixels_format">%1$d px</string>
+    <string name="percent_format">%1$d%%</string>
     <string name="stats_overlay">Gén. %1$d · Pop. %2$d</string>
     <string name="rule_conway">Vie de Conway</string>
     <string name="rule_high_life">HighLife</string>

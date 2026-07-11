@@ -39,6 +39,9 @@ private val CELL_SIZES = listOf(5, 10, 20, 40)
 
 @Suppress("MagicNumber")
 private val UPDATE_INTERVALS_MINS = listOf(15L, 30L, 60L, 180L, 720L, 1440L)
+
+@Suppress("MagicNumber")
+private val BATTERY_THRESHOLDS = listOf(0, 10, 20, 30, 50)
 private const val MINS_PER_HOUR = 60L
 private val SELECTED_BORDER = 2.dp
 private val UNSELECTED_BORDER = 1.dp
@@ -105,6 +108,14 @@ private fun SettingsOptions(
         selected = settings.updateIntervalMins,
         onSelect = { mins -> onSettingsChange(settings.copy(updateIntervalMins = mins)) },
     )
+    OptionRow(
+        label = stringResource(R.string.battery_threshold_label),
+        options = BATTERY_THRESHOLDS.map { pct ->
+            batteryThresholdLabel(pct) to pct
+        },
+        selected = settings.batteryThresholdPct,
+        onSelect = { pct -> onSettingsChange(settings.copy(batteryThresholdPct = pct)) },
+    )
     if (showWallpaperTarget) {
         OptionRow(
             label = stringResource(R.string.wallpaper_target_label),
@@ -144,6 +155,13 @@ private fun RulePreset.displayName(): String = stringResource(
         RulePreset.LIFE_WITHOUT_DEATH -> R.string.rule_life_without_death
     },
 )
+
+@Composable
+private fun batteryThresholdLabel(pct: Int): String = if (pct <= 0) {
+    stringResource(R.string.battery_threshold_off)
+} else {
+    stringResource(R.string.percent_format, pct)
+}
 
 @Composable
 private fun intervalLabel(mins: Long): String = if (mins < MINS_PER_HOUR) {

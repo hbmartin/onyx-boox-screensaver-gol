@@ -49,8 +49,10 @@ class MainViewModel(
 
     fun updateSettings(context: Context, settings: GolSettings) = viewModelScope.launch {
         val current = uiState.value.settings
-        val isRedrawNeeded =
-            settings.copy(updateIntervalMins = current.updateIntervalMins) != current
+        val isRedrawNeeded = settings.copy(
+            updateIntervalMins = current.updateIntervalMins,
+            batteryThresholdPct = current.batteryThresholdPct,
+        ) != current
 
         if (settings.cellSize != current.cellSize) {
             saveSettings.setCellSize(settings.cellSize)
@@ -63,6 +65,9 @@ class MainViewModel(
         }
         if (settings.wallpaperTarget != current.wallpaperTarget) {
             saveSettings.setWallpaperTarget(settings.wallpaperTarget)
+        }
+        if (settings.batteryThresholdPct != current.batteryThresholdPct) {
+            saveSettings.setBatteryThreshold(settings.batteryThresholdPct)
         }
         if (settings.updateIntervalMins != current.updateIntervalMins) {
             saveSettings.setUpdateIntervalMins(settings.updateIntervalMins)

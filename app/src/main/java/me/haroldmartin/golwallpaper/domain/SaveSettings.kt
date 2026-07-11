@@ -6,4 +6,5 @@ interface SaveSettings {
     suspend fun setRule(rule: String)
     suspend fun setShowStats(show: Boolean)
     suspend fun setWallpaperTarget(target: WallpaperTarget)
+    suspend fun setBatteryThreshold(pct: Int)
 }

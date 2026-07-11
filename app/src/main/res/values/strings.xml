@@ -18,9 +18,12 @@
     <string name="target_lock">Lock screen</string>
     <string name="target_home">Home screen</string>
     <string name="target_both">Both</string>
+    <string name="battery_threshold_label">Pause updates below battery:</string>
+    <string name="battery_threshold_off">Off</string>
     <string name="minutes_format">%1$d min</string>
     <string name="hours_format">%1$d h</string>
     <string name="pixels_format">%1$d px</string>
+    <string name="percent_format">%1$d%%</string>
     <string name="stats_overlay">Gen %1$d · Pop %2$d</string>
     <string name="rule_conway">Conway\'s Life</string>
     <string name="rule_high_life">HighLife</string>
