@@ -104,7 +104,7 @@ class CalendarOverlayTest {
     }
 
     @Test
-    fun `provided titles are keyed per occurrence date for multi day events`() {
+    fun `provided titles are keyed by event id for multi day events`() {
         val start = LocalDate.of(2026, 7, 11).atStartOfDay(ZoneOffset.UTC).toInstant()
         val end = LocalDate.of(2026, 7, 14).atStartOfDay(ZoneOffset.UTC).toInstant()
         val agenda = buildCalendarAgenda(
@@ -116,9 +116,8 @@ class CalendarOverlayTest {
         val events = agenda.days.flatMap(AgendaDay::events)
 
         assertEquals(3, events.size)
-        events.forEach { event -> assertEquals("Conference", agenda.providedTitles[event.key]) }
-        // Distinct keys per date so overlapping occurrences never share a title slot.
-        assertEquals(events.size, events.map(AgendaEvent::key).toSet().size)
+        events.forEach { event -> assertEquals("Conference", agenda.providedTitles[event.eventId]) }
+        assertEquals(mapOf(1L to "Conference"), agenda.providedTitles)
     }
 
     @Test

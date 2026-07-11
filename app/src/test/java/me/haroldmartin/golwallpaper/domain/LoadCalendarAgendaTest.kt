@@ -3,10 +3,12 @@ package me.haroldmartin.golwallpaper.domain
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
@@ -96,7 +98,7 @@ class LoadCalendarAgendaTest {
                 .events
                 .single()
             assertEquals(7L, event.eventId)
-            assertEquals("Planning", available.agenda.providedTitles[event.key])
+            assertEquals("Planning", available.agenda.providedTitles[event.eventId])
         }
     }
 
@@ -141,13 +143,19 @@ class LoadCalendarAgendaTest {
                 cancelOccurrenceQuery = true,
             )
 
+            // A coroutine whose job is cancelled can never complete normally, so awaiting
+            // alone cannot tell a rethrown cancellation from a swallowed one; the flag can.
+            val completedNormally = AtomicBoolean(false)
             val result = async {
-                loader(repository)(
+                val outcome = loader(repository)(
                     CalendarOverlaySettings(isEnabled = true, selectedCalendarIds = setOf(1)),
                 )
+                completedNormally.set(true)
+                outcome
             }
 
             assertFailsWith<CancellationException> { result.await() }
+            assertFalse(completedNormally.get())
         }
     }
 

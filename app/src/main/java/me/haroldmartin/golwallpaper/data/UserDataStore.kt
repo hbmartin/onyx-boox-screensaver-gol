@@ -2,9 +2,11 @@ package me.haroldmartin.golwallpaper.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -17,6 +19,7 @@ private const val USER_PREFERENCES_NAME = "user_preferences"
 @Suppress("PropertyName")
 private val Context.dataStore by preferencesDataStore(
     name = USER_PREFERENCES_NAME,
+    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
 )
 
 class UserDataStore(private val dataStore: DataStore<Preferences>) {

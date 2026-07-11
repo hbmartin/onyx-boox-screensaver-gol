@@ -99,7 +99,7 @@ data class AgendaDay(
 data class CalendarAgenda(
     val today: LocalDate,
     val days: List<AgendaDay>,
-    val providedTitles: Map<AgendaEventKey, String>,
+    val providedTitles: Map<Long, String>,
     val overflowCount: Int,
 )
 
@@ -166,7 +166,7 @@ fun buildCalendarAgenda(
         val rawTitle = occurrences.firstOrNull { occurrence ->
             occurrence.eventId == event.eventId && occurrence.calendarId == event.calendarId
         }?.run { title?.trim() }
-        if (event.title == AgendaTitle.PROVIDED && !rawTitle.isNullOrEmpty()) event.key to rawTitle else null
+        if (event.title == AgendaTitle.PROVIDED && !rawTitle.isNullOrEmpty()) event.eventId to rawTitle else null
     }.toMap()
 
     return CalendarAgenda(
