@@ -9,23 +9,29 @@ import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.ObserveUiState
 import me.haroldmartin.golwallpaper.domain.UiState
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 
-class ObserveUiStateImpl(val dataStore: UserDataStore) : ObserveUiState {
+class ObserveUiStateImpl(
+    val dataStore: UserDataStore,
+    private val calendarPreferences: CalendarPreferences,
+    private val defaultDispatcher: CoroutineDispatcher,
+) : ObserveUiState {
     override operator fun invoke(): Flow<UiState> = combine(
-        dataStore[UserDataStore.Keys.LAYERS],
-        dataStore[UserDataStore.Keys.BG_COLOR],
-        observeSettings(),
-    ) { layers, bgColor, settings ->
+        flow = dataStore[UserDataStore.Keys.LAYERS],
+        flow2 = dataStore[UserDataStore.Keys.BG_COLOR],
+        flow3 = observeSettings(),
+        flow4 = calendarPreferences.settings,
+    ) { layers, bgColor, settings, calendarSettings ->
         UiState(
             bgColor = bgColor ?: DEFAULT_BG,
             settings = settings,
+            calendarOverlaySettings = calendarSettings,
             layers = LayersSerializer.decode(layers),
         )
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(defaultDispatcher)
 
     private fun observeSettings(): Flow<GolSettings> = combine(
         combine(

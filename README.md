@@ -20,6 +20,10 @@ GoL Screensaver is an app that generates and updates screensavers for Onyx Boox 
 - Optional auto-reseeding: when the board dies out or stagnates (a still life or period-2 oscillator), it restarts with fresh random noise
 - Configurable settings: cell size, update interval, and cellular automaton rule (Conway's Life, HighLife, Day & Night, Seeds, Life without Death)
 - Optional generation & population counter drawn on the wallpaper
+- Optional upcoming-calendar overlay using calendars already synced to the device
+  - Calendar access is read-only and opt-in; users choose exactly which visible calendars contribute
+  - Event titles can appear on the lock screen. Private events are shown as “Busy,” and event details are never cached by the app
+  - Calendar content refreshes with the normal wallpaper schedule or while the app is open; no separate background calendar job is scheduled
 - Works on non-Onyx Android devices too: sets the lock screen (and/or home screen) wallpaper instead of the Onyx screensaver
 - Translated into German, Spanish, French, Russian, and Simplified Chinese
 
@@ -33,6 +37,7 @@ GoL Screensaver is an app that generates and updates screensavers for Onyx Boox 
    - (Optional) Choose foreground and background colors in the app
    - (Optional) Pick a starting pattern 
    - (Optional) Open Settings to change the rule, cell size, update interval, or to show the generation & population counter
+   - (Optional) Open Calendar overlay, grant read access, choose calendars, and select the horizon, corner, and size
    - (Optional) Tap "Generate Next Step" to advance the Game of Life and update your wallpaper
 
 ## 🤝 Contributing

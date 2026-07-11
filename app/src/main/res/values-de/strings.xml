@@ -42,4 +42,37 @@
     <string name="preview_step">Schritt</string>
     <string name="preview_resync">Neu synchronisieren</string>
     <string name="max_layers_warning">Mehr als %1$d Ebenen können auf E-Ink-Geräten langsam aktualisiert werden.</string>
+    <string name="calendar_section_title">Kalenderüberlagerung</string>
+    <string name="calendar_enable">Anstehende Kalendertermine anzeigen</string>
+    <string name="calendar_choose">Kalender auswählen</string>
+    <string name="calendar_done">Fertig</string>
+    <string name="calendar_cancel">Abbrechen</string>
+    <string name="calendar_primary">Hauptkalender</string>
+    <string name="calendar_permission_required">Kalenderzugriff ist erforderlich. Aktiviere die Überlagerung erneut, um Zugriff zu gewähren.</string>
+    <string name="calendar_no_sources">Keine sichtbaren, synchronisierten Kalender verfügbar.</string>
+    <string name="calendar_sources_unavailable">Ausgewählte Kalender sind nicht verfügbar. Aktualisiere die Auswahl.</string>
+    <string name="calendar_horizon">Zeitraum:</string>
+    <string name="calendar_horizon_today">Heute</string>
+    <string name="calendar_horizon_24_hours">24 Stunden</string>
+    <string name="calendar_horizon_7_days">7 Tage</string>
+    <string name="calendar_position">Position:</string>
+    <string name="calendar_top_left">Oben links</string>
+    <string name="calendar_top_right">Oben rechts</string>
+    <string name="calendar_bottom_left">Unten links</string>
+    <string name="calendar_bottom_right">Unten rechts</string>
+    <string name="calendar_size">Größe:</string>
+    <string name="calendar_small">Klein</string>
+    <string name="calendar_medium">Mittel</string>
+    <string name="calendar_large">Groß</string>
+    <string name="calendar_no_events">Keine anstehenden Termine</string>
+    <plurals name="calendar_more_events">
+        <item quantity="one">+%1$d weiterer</item>
+        <item quantity="other">+%1$d weitere</item>
+    </plurals>
+    <string name="calendar_all_day">Ganztägig</string>
+    <string name="calendar_busy">Belegt</string>
+    <string name="calendar_untitled">Termin ohne Titel</string>
+    <string name="calendar_today">Heute</string>
+    <string name="calendar_tomorrow">Morgen</string>
+    <string name="calendar_event_format">%1$s — %2$s</string>
 </resources>

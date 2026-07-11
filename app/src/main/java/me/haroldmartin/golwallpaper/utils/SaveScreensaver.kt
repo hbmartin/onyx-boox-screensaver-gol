@@ -7,13 +7,17 @@ import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import me.haroldmartin.golwallpaper.R
+import me.haroldmartin.golwallpaper.data.CalendarPreferences
 import me.haroldmartin.golwallpaper.data.LayersSerializer
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
+import me.haroldmartin.golwallpaper.domain.CalendarAgendaResult
 import me.haroldmartin.golwallpaper.domain.DEFAULT_BG
 import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.Layer
+import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
+import me.haroldmartin.golwallpaper.domain.OverlayCorner
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
@@ -27,27 +31,19 @@ private const val ONYX_SCREENSAVER_TYPE = 16
 private const val OPAQUE_ALPHA = 0xFF000000.toInt()
 private const val RGB_MASK = 0x00FFFFFF
 
-class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineDispatcher) {
-    @Suppress("AvoidVarsExceptWithDelegate")
+class SaveScreensaver(
+    val dataStore: UserDataStore,
+    private val calendarPreferences: CalendarPreferences,
+    private val loadCalendarAgenda: LoadCalendarAgenda,
+    val ioDispatcher: CoroutineDispatcher,
+) {
     suspend operator fun invoke(context: Context, showHint: Boolean, step: Boolean = true) {
         withContext(ioDispatcher) {
             val resolution = getScreenResolution(context)
             val bgColor = getBgColor()
             val cellSize = (dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE).coerceAtLeast(1)
             val (rows, cols) = resolution.toRowsCols(cellSize)
-            var processed = emptyList<ProcessedLayer>()
-            dataStore.update(Keys.LAYERS) { storedLayers ->
-                processed = LayersSerializer.decode(storedLayers).map { layer ->
-                    processLayer(
-                        layer = layer,
-                        rows = rows,
-                        cols = cols,
-                        step = step,
-                        bgColor = bgColor,
-                    )
-                }
-                LayersSerializer.encode(processed.map(ProcessedLayer::layer))
-            }
+            val processed = advanceLayers(rows = rows, cols = cols, step = step, bgColor = bgColor)
             val updatedLayers = processed.map(ProcessedLayer::layer)
 
             val bitmap = createCompositeBitmap(
@@ -56,6 +52,21 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
                 backgroundColor = bgColor,
                 layers = processed.mapNotNull(ProcessedLayer::renderLayer),
             )
+
+            val calendarSettings = calendarPreferences.settings.first()
+            val calendarResult = loadCalendarAgenda(calendarSettings)
+            val isCalendarDrawn = if (calendarResult is CalendarAgendaResult.Available) {
+                drawCalendarOverlay(
+                    context = context,
+                    bitmap = bitmap,
+                    agenda = calendarResult.agenda,
+                    settings = calendarSettings,
+                    backgroundColor = bgColor,
+                )
+                true
+            } else {
+                false
+            }
 
             if (dataStore[Keys.SHOW_STATS].first() == true) {
                 drawStatsOverlay(
@@ -67,6 +78,13 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
                     ),
                     textColor = bgColor.inverseRgb(),
                     backgroundColor = bgColor,
+                    position = if (
+                        isCalendarDrawn && calendarSettings.corner == OverlayCorner.BOTTOM_LEFT
+                    ) {
+                        StatsOverlayPosition.BOTTOM_RIGHT
+                    } else {
+                        StatsOverlayPosition.BOTTOM_LEFT
+                    },
                 )
             }
 
@@ -74,6 +92,20 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             bitmap.recycle()
             Log.d(TAG, "wallpaper updated, ${getAppMemoryUsage(context)}")
         }
+    }
+
+    // Decode, advance, and persist the layers in a single atomic update so overlapping
+    // saves (worker + UI) cannot lose each other's generation increments.
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private suspend fun advanceLayers(rows: Int, cols: Int, step: Boolean, bgColor: Int): List<ProcessedLayer> {
+        var processed = emptyList<ProcessedLayer>()
+        dataStore.update(Keys.LAYERS) { storedLayers ->
+            processed = LayersSerializer.decode(storedLayers).map { layer ->
+                processLayer(layer = layer, rows = rows, cols = cols, step = step, bgColor = bgColor)
+            }
+            LayersSerializer.encode(processed.map(ProcessedLayer::layer))
+        }
+        return processed
     }
 
     private fun processLayer(
@@ -126,7 +158,7 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
         }
     }
 
-    private suspend fun setOnyxScreensaver(context: Context, bitmap: Bitmap, showHint: Boolean) {
+    private fun setOnyxScreensaver(context: Context, bitmap: Bitmap, showHint: Boolean) {
         val uriAndFakePath = saveBitmapToPictures(
             context = context,
             bitmap = bitmap,

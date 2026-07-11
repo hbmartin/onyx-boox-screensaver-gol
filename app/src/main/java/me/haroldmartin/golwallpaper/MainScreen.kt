@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.haroldmartin.golwallpaper.ui.CalendarSection
 import me.haroldmartin.golwallpaper.ui.CompositePreview
 import me.haroldmartin.golwallpaper.ui.LayersCallbacks
 import me.haroldmartin.golwallpaper.ui.LayersSection
@@ -39,19 +40,36 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val previewImage by viewModel.previewImage.collectAsStateWithLifecycle()
-    val isPreviewPlaying by viewModel.isPreviewPlaying.collectAsStateWithLifecycle()
+    val isPreviewPlaying by viewModel.previewPlaying.collectAsStateWithLifecycle()
+    val calendarUiState by viewModel.calendarUiState.collectAsStateWithLifecycle()
     val isOnyx = remember { isOnyxDevice() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner, viewModel) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) viewModel.pausePreview()
+            if (event == Lifecycle.Event.ON_START) {
+                viewModel.startCalendarObservation()
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                viewModel.pausePreview()
+                viewModel.stopCalendarObservation()
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            viewModel.startCalendarObservation()
+        }
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            viewModel.stopCalendarObservation()
+        }
     }
 
-    LaunchedEffect(uiState.layers, uiState.bgColor, uiState.settings.cellSize) {
+    LaunchedEffect(
+        uiState.layers,
+        uiState.bgColor,
+        uiState.settings.cellSize,
+        uiState.calendarOverlaySettings,
+    ) {
         viewModel.resyncPreview()
     }
 
@@ -78,6 +96,17 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             showWallpaperTarget = !isOnyx,
             onBackgroundColorChange = { color -> viewModel.setBgColor(context, color) },
             onSettingsChange = { settings -> viewModel.updateSettings(context, settings) },
+        )
+        CalendarSection(
+            settings = uiState.calendarOverlaySettings,
+            uiState = calendarUiState,
+            onPermissionResult = viewModel::onCalendarPermissionResult,
+            onOpenPicker = viewModel::openCalendarPicker,
+            onDisable = { viewModel.disableCalendarOverlay(context) },
+            onSettingsChange = { settings -> viewModel.updateCalendarOverlay(context, settings) },
+            onToggleDraft = viewModel::toggleDraftCalendar,
+            onConfirmPicker = { viewModel.confirmCalendarSelection(context) },
+            onDismissPicker = viewModel::dismissCalendarPicker,
         )
         LayersSection(
             layers = uiState.layers,

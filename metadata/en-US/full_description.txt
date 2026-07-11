@@ -4,6 +4,7 @@ Features:
 - Auto-updating screensaver based on Conway's Game of Life
 - Customizable foreground and background colors (chosen specifically for color e-ink)
 - Pattern picker for common Game of Life starting states.
+- Optional read-only upcoming-calendar overlay with selectable device calendars, time horizon, position, and size
 
 Usage:
 - Install the app on using F-Droid or building from source.
@@ -13,5 +14,11 @@ Usage:
 - Launch the app!
    - (Optional) Choose foreground and background colors in the app
    - (Optional) Pick a starting pattern
+   - (Optional) Enable the calendar overlay and choose which synced calendars may appear on the screensaver
    - (Optional) Tap "Generate Next Step" to advance the Game of Life and update your wallpaper
 
+Calendar privacy and refresh:
+- Calendar permission is optional and read-only
+- Event titles may be visible on the lock screen; private events are displayed as “Busy”
+- Event details are not cached, and calendar settings do not transfer to another device
+- Calendar content refreshes with the regular wallpaper job or while the app is open

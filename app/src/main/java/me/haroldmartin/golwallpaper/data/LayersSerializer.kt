@@ -6,6 +6,7 @@ import me.haroldmartin.golwallpaper.domain.Layer
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.UUID
 
 object LayersSerializer {
     private const val ID = "id"
@@ -50,7 +51,7 @@ object LayersSerializer {
         state = if (isNull(STATE)) null else optString(STATE),
         generation = optInt(GENERATION, 0).coerceAtLeast(0),
         isEnabled = optBoolean(ENABLED, true),
-        id = getString(ID),
+        id = optString(ID).ifEmpty { UUID.randomUUID().toString() },
     )
 
     private fun defaultLayers(): List<Layer> = listOf(Layer())

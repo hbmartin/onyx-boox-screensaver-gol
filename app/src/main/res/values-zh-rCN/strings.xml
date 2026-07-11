@@ -42,4 +42,36 @@
     <string name="preview_step">单步</string>
     <string name="preview_resync">重新同步</string>
     <string name="max_layers_warning">超过 %1$d 个图层可能会使电子墨水设备更新缓慢。</string>
+    <string name="calendar_section_title">日历叠加层</string>
+    <string name="calendar_enable">显示即将到来的日历事件</string>
+    <string name="calendar_choose">选择日历</string>
+    <string name="calendar_done">完成</string>
+    <string name="calendar_cancel">取消</string>
+    <string name="calendar_primary">主日历</string>
+    <string name="calendar_permission_required">需要日历访问权限。请再次启用叠加层以授予权限。</string>
+    <string name="calendar_no_sources">没有可用的已同步可见日历。</string>
+    <string name="calendar_sources_unavailable">所选日历不可用。请更新选择。</string>
+    <string name="calendar_horizon">时间范围：</string>
+    <string name="calendar_horizon_today">今天</string>
+    <string name="calendar_horizon_24_hours">24 小时</string>
+    <string name="calendar_horizon_7_days">7 天</string>
+    <string name="calendar_position">位置：</string>
+    <string name="calendar_top_left">左上</string>
+    <string name="calendar_top_right">右上</string>
+    <string name="calendar_bottom_left">左下</string>
+    <string name="calendar_bottom_right">右下</string>
+    <string name="calendar_size">大小：</string>
+    <string name="calendar_small">小</string>
+    <string name="calendar_medium">中</string>
+    <string name="calendar_large">大</string>
+    <string name="calendar_no_events">没有即将到来的事件</string>
+    <plurals name="calendar_more_events">
+        <item quantity="other">另有 %1$d 项</item>
+    </plurals>
+    <string name="calendar_all_day">全天</string>
+    <string name="calendar_busy">忙碌</string>
+    <string name="calendar_untitled">无标题事件</string>
+    <string name="calendar_today">今天</string>
+    <string name="calendar_tomorrow">明天</string>
+    <string name="calendar_event_format">%1$s — %2$s</string>
 </resources>
