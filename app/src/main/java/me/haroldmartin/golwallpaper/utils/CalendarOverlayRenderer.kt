@@ -130,7 +130,7 @@ private fun AgendaEvent.displayText(context: Context, agenda: CalendarAgenda): S
     val displayTitle = when (title) {
         AgendaTitle.BUSY -> context.getString(R.string.calendar_busy)
         AgendaTitle.UNTITLED -> context.getString(R.string.calendar_untitled)
-        AgendaTitle.PROVIDED -> agenda.providedTitles[this].orEmpty()
+        AgendaTitle.PROVIDED -> agenda.providedTitles[key].orEmpty()
     }
     return context.getString(R.string.calendar_event_format, time, displayTitle)
 }

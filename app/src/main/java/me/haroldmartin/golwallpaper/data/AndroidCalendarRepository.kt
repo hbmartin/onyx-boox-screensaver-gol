@@ -36,16 +36,24 @@ class AndroidCalendarRepository(
             CalendarContract.Calendars.ACCOUNT_NAME,
             CalendarContract.Calendars.IS_PRIMARY,
         )
+        // Include synced calendars as well as device-local calendars, which are visible
+        // but report SYNC_EVENTS = 0 because they are not backed by a sync account.
         val selection = buildString {
             append("${CalendarContract.Calendars.VISIBLE} = 1")
-            append(" AND ${CalendarContract.Calendars.SYNC_EVENTS} = 1")
+            append(
+                " AND (${CalendarContract.Calendars.SYNC_EVENTS} = 1" +
+                    " OR ${CalendarContract.Calendars.ACCOUNT_TYPE} = ?)",
+            )
             append(" AND ${CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL} >= ?")
         }
         resolver.query(
             CalendarContract.Calendars.CONTENT_URI,
             projection,
             selection,
-            arrayOf(CalendarContract.Calendars.CAL_ACCESS_READ.toString()),
+            arrayOf(
+                CalendarContract.ACCOUNT_TYPE_LOCAL,
+                CalendarContract.Calendars.CAL_ACCESS_READ.toString(),
+            ),
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
         )?.use { cursor ->
             val idIndex = cursor.getColumnIndexOrThrow(CalendarContract.Calendars._ID)
