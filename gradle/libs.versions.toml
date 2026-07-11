@@ -1,21 +1,21 @@
 [versions]
 agp = "9.2.1"
-kotlin = "2.2.10"
-coreKtx = "1.16.0"
+kotlin = "2.4.0"
+coreKtx = "1.19.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.9.0"
-activityCompose = "1.10.1"
-composeBom = "2025.05.00"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.11.0"
+activityCompose = "1.13.0"
+composeBom = "2026.06.01"
 onyxsdkDevice = "1.2.32"
-datastore = "1.1.6"
+datastore = "1.2.1"
 detekt = "1.23.8"
-androidxWork = "2.10.1"
-updatesCheck = "0.52.0"
+androidxWork = "2.11.2"
+updatesCheck = "0.54.0"
 hbmartinRules = "0.1.7"
-composeRules = "0.4.22"
-json = "20250517"
+composeRules = "0.4.23"
+json = "20260522"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,4 +47,3 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 updatesCheck = { id = "com.github.ben-manes.versions", version.ref = "updatesCheck" }
-

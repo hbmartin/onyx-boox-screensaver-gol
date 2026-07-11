@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace = "me.haroldmartin.golwallpaper"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "me.haroldmartin.golwallpaper"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 35
         versionCode = 2
         versionName = "1.1"
