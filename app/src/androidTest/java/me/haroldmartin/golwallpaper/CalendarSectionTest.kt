@@ -9,6 +9,7 @@ import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.CalendarSource
 import me.haroldmartin.golwallpaper.ui.CalendarSection
 import me.haroldmartin.golwallpaper.ui.CalendarSectionCallbacks
+import me.haroldmartin.golwallpaper.ui.theme.GoLWallpaperTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -26,38 +27,43 @@ class CalendarSectionTest {
     fun pickerShowsCalendarIdentityAndForwardsSelection() {
         val toggledId = AtomicReference<Long?>()
         val isConfirmed = AtomicBoolean(false)
+        val isDismissed = AtomicBoolean(false)
         composeRule.setContent {
-            CalendarSection(
-                settings = CalendarOverlaySettings(),
-                uiState = CalendarUiState(
-                    sources = listOf(
-                        CalendarSource(
-                            id = 7,
-                            displayName = "Work",
-                            accountName = "person@example.com",
-                            isPrimary = true,
+            GoLWallpaperTheme {
+                CalendarSection(
+                    settings = CalendarOverlaySettings(),
+                    uiState = CalendarUiState(
+                        sources = listOf(
+                            CalendarSource(
+                                id = 7,
+                                displayName = "Work",
+                                accountName = "person@example.com",
+                                isPrimary = true,
+                            ),
                         ),
+                        draftSelectedIds = setOf(7),
+                        isPickerVisible = true,
                     ),
-                    draftSelectedIds = setOf(7),
-                    isPickerVisible = true,
-                ),
-                callbacks = CalendarSectionCallbacks(
-                    onPermissionResult = {},
-                    onOpenPicker = {},
-                    onDisable = {},
-                    onSettingsChange = {},
-                    onToggleDraft = toggledId::set,
-                    onConfirmPicker = { isConfirmed.set(true) },
-                    onDismissPicker = {},
-                ),
-            )
+                    callbacks = CalendarSectionCallbacks(
+                        onPermissionResult = {},
+                        onOpenPicker = {},
+                        onDisable = {},
+                        onSettingsChange = {},
+                        onToggleDraft = toggledId::set,
+                        onConfirmPicker = { isConfirmed.set(true) },
+                        onDismissPicker = { isDismissed.set(true) },
+                    ),
+                )
+            }
         }
 
         composeRule.onNodeWithText("Work").assertIsDisplayed().performClick()
         composeRule.onNodeWithText("person@example.com").assertIsDisplayed()
-        composeRule.onNodeWithText("Done").performClick()
+        composeRule.onNodeWithText("Done").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("Cancel").assertIsDisplayed().performClick()
 
         assertEquals(7L, toggledId.get())
         assertTrue(isConfirmed.get())
+        assertTrue(isDismissed.get())
     }
 }

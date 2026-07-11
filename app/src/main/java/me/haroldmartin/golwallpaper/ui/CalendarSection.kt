@@ -15,11 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +39,7 @@ import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.CalendarSource
 import me.haroldmartin.golwallpaper.domain.OverlayCorner
 import me.haroldmartin.golwallpaper.domain.OverlaySize
+import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
@@ -134,7 +133,7 @@ private fun CalendarOptions(
     }
     if (issue != null) Text(text = issue.displayText())
     if (settings.isEnabled) {
-        Button(onClick = onOpenPicker) {
+        AppButton(onClick = onOpenPicker) {
             Text(stringResource(R.string.calendar_choose))
         }
         OptionRow(
@@ -194,10 +193,10 @@ private fun CalendarPickerDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text(stringResource(R.string.calendar_done)) }
+            AppButton(onClick = onConfirm) { Text(stringResource(R.string.calendar_done)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.calendar_cancel)) }
+            AppButton(onClick = onDismiss) { Text(stringResource(R.string.calendar_cancel)) }
         },
     )
 }

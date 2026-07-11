@@ -2,7 +2,6 @@ package me.haroldmartin.golwallpaper.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -11,6 +10,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Layer
+import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
 private const val SOFT_LAYER_CAP = 10
@@ -47,7 +47,7 @@ fun LayersSection(
         if (layers.size >= SOFT_LAYER_CAP) {
             Text(pluralStringResource(R.plurals.max_layers_warning, SOFT_LAYER_CAP, SOFT_LAYER_CAP))
         }
-        Button(onClick = callbacks.onAdd) {
+        AppButton(onClick = callbacks.onAdd) {
             Text(stringResource(R.string.add_layer))
         }
     }
