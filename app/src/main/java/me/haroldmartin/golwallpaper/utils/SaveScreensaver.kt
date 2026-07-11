@@ -28,26 +28,13 @@ private const val OPAQUE_ALPHA = 0xFF000000.toInt()
 private const val RGB_MASK = 0x00FFFFFF
 
 class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineDispatcher) {
-    @Suppress("AvoidVarsExceptWithDelegate")
     suspend operator fun invoke(context: Context, showHint: Boolean, step: Boolean = true) {
         withContext(ioDispatcher) {
             val resolution = getScreenResolution(context)
             val bgColor = getBgColor()
             val cellSize = (dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE).coerceAtLeast(1)
             val (rows, cols) = resolution.toRowsCols(cellSize)
-            var processed = emptyList<ProcessedLayer>()
-            dataStore.update(Keys.LAYERS) { storedLayers ->
-                processed = LayersSerializer.decode(storedLayers).map { layer ->
-                    processLayer(
-                        layer = layer,
-                        rows = rows,
-                        cols = cols,
-                        step = step,
-                        bgColor = bgColor,
-                    )
-                }
-                LayersSerializer.encode(processed.map(ProcessedLayer::layer))
-            }
+            val processed = advanceLayers(rows = rows, cols = cols, step = step, bgColor = bgColor)
             val updatedLayers = processed.map(ProcessedLayer::layer)
 
             val bitmap = createCompositeBitmap(
@@ -74,6 +61,20 @@ class SaveScreensaver(val dataStore: UserDataStore, val ioDispatcher: CoroutineD
             bitmap.recycle()
             Log.d(TAG, "wallpaper updated, ${getAppMemoryUsage(context)}")
         }
+    }
+
+    // Decode, advance, and persist the layers in a single atomic update so overlapping
+    // saves (worker + UI) cannot lose each other's generation increments.
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private suspend fun advanceLayers(rows: Int, cols: Int, step: Boolean, bgColor: Int): List<ProcessedLayer> {
+        var processed = emptyList<ProcessedLayer>()
+        dataStore.update(Keys.LAYERS) { storedLayers ->
+            processed = LayersSerializer.decode(storedLayers).map { layer ->
+                processLayer(layer = layer, rows = rows, cols = cols, step = step, bgColor = bgColor)
+            }
+            LayersSerializer.encode(processed.map(ProcessedLayer::layer))
+        }
+        return processed
     }
 
     private fun processLayer(

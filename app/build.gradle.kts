@@ -57,6 +57,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
+    testImplementation(libs.json)
 
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
