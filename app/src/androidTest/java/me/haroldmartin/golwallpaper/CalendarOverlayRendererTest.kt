@@ -12,8 +12,12 @@ import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.OverlayCorner
 import me.haroldmartin.golwallpaper.domain.OverlaySize
 import me.haroldmartin.golwallpaper.utils.StatsOverlayPosition
+import me.haroldmartin.golwallpaper.utils.DeviceOverlays
+import me.haroldmartin.golwallpaper.utils.RenderLayer
+import me.haroldmartin.golwallpaper.utils.RenderStats
 import me.haroldmartin.golwallpaper.utils.drawCalendarOverlay
 import me.haroldmartin.golwallpaper.utils.drawStatsOverlay
+import me.haroldmartin.golwallpaper.utils.renderDeviceBitmap
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -103,6 +107,35 @@ class CalendarOverlayRendererTest {
         )
 
         assertEquals(Color.RED, bitmap.getPixel(0, 999))
+        assertEquals(Color.WHITE, bitmap.getPixel(999, 999))
+        bitmap.recycle()
+    }
+
+    @Test
+    fun sharedDeviceRendererMovesStatsAwayFromBottomLeftCalendar() {
+        val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+
+        renderDeviceBitmap(
+            context = context,
+            bitmap = bitmap,
+            backgroundColor = Color.WHITE,
+            layers = listOf(
+                RenderLayer(
+                    grid = arrayOf(booleanArrayOf(true)),
+                    fgColor = Color.BLACK,
+                ),
+            ),
+            overlays = DeviceOverlays(
+                calendarAgenda = emptyAgenda,
+                calendarSettings = CalendarOverlaySettings(
+                    isEnabled = true,
+                    corner = OverlayCorner.BOTTOM_LEFT,
+                ),
+                stats = RenderStats(generation = 4, population = 12),
+            ),
+        )
+
+        assertEquals(Color.BLACK, bitmap.getPixel(0, 999))
         assertEquals(Color.WHITE, bitmap.getPixel(999, 999))
         bitmap.recycle()
     }

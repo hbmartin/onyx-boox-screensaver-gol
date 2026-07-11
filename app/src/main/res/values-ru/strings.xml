@@ -40,6 +40,10 @@
     <string name="move_layer_up">Переместить слой вверх</string>
     <string name="move_layer_down">Переместить слой вниз</string>
     <string name="preview_title">Предпросмотр композиции</string>
+    <string name="preview_open">Предпросмотр</string>
+    <string name="preview_close">Закрыть</string>
+    <string name="preview_rendering">Создание предпросмотра…</string>
+    <string name="preview_fullscreen_description">Полноэкранный предпросмотр обоев</string>
     <string name="preview_play">Пуск</string>
     <string name="preview_pause">Пауза</string>
     <string name="preview_step">Шаг</string>

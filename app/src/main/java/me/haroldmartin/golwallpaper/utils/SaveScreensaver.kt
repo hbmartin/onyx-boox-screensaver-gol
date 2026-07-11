@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.data.CalendarPreferences
 import me.haroldmartin.golwallpaper.data.LayersSerializer
 import me.haroldmartin.golwallpaper.data.UserDataStore
@@ -17,7 +16,6 @@ import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
-import me.haroldmartin.golwallpaper.domain.OverlayCorner
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
@@ -44,47 +42,32 @@ class SaveScreensaver(
             val processed = advanceLayers(rows = rows, cols = cols, step = step, bgColor = bgColor)
             val updatedLayers = processed.map(ProcessedLayer::layer)
 
-            val bitmap = createCompositeBitmap(
-                width = resolution.width,
-                height = resolution.height,
-                backgroundColor = bgColor,
-                layers = processed.mapNotNull(ProcessedLayer::renderLayer),
-            )
-
             val calendarSettings = calendarPreferences.settings.first()
             val calendarResult = loadCalendarAgenda(calendarSettings)
-            val isCalendarDrawn = if (calendarResult is CalendarAgendaResult.Available) {
-                drawCalendarOverlay(
-                    context = context,
-                    bitmap = bitmap,
-                    agenda = calendarResult.agenda,
-                    settings = calendarSettings,
-                    backgroundColor = bgColor,
+            val stats = if (dataStore[Keys.SHOW_STATS].first() == true) {
+                RenderStats(
+                    generation = updatedLayers.filter(Layer::isEnabled).maxOfOrNull(Layer::generation) ?: 0,
+                    population = processed.sumOf(ProcessedLayer::population),
                 )
-                true
             } else {
-                false
+                null
             }
-
-            if (dataStore[Keys.SHOW_STATS].first() == true) {
-                drawStatsOverlay(
-                    bitmap = bitmap,
-                    text = context.getString(
-                        R.string.stats_overlay,
-                        updatedLayers.filter(Layer::isEnabled).maxOfOrNull(Layer::generation) ?: 0,
-                        processed.sumOf(ProcessedLayer::population),
-                    ),
-                    textColor = bgColor.inverseRgb(),
-                    backgroundColor = bgColor,
-                    position = if (
-                        isCalendarDrawn && calendarSettings.corner == OverlayCorner.BOTTOM_LEFT
-                    ) {
-                        StatsOverlayPosition.BOTTOM_RIGHT
-                    } else {
-                        StatsOverlayPosition.BOTTOM_LEFT
-                    },
-                )
-            }
+            val bitmap = Bitmap.createBitmap(
+                resolution.width,
+                resolution.height,
+                Bitmap.Config.ARGB_8888,
+            )
+            renderDeviceBitmap(
+                context = context,
+                bitmap = bitmap,
+                backgroundColor = bgColor,
+                layers = processed.mapNotNull(ProcessedLayer::renderLayer),
+                overlays = DeviceOverlays(
+                    calendarAgenda = (calendarResult as? CalendarAgendaResult.Available)?.agenda,
+                    calendarSettings = calendarSettings,
+                    stats = stats,
+                ),
+            )
 
             dispatchBitmap(context = context, bitmap = bitmap, showHint = showHint)
             bitmap.recycle()

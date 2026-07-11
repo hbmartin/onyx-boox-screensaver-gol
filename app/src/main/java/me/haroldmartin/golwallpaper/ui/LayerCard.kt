@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.RulePreset
-import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
@@ -43,7 +44,10 @@ fun LayerCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, COLOR_SCHEME.secondary),
+            .border(1.dp, MaterialTheme.colorScheme.outline),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
     ) {
         Column(
             modifier = Modifier.padding(MEDIUM),

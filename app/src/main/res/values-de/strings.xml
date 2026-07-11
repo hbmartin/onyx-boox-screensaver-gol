@@ -40,6 +40,10 @@
     <string name="move_layer_up">Ebene nach oben verschieben</string>
     <string name="move_layer_down">Ebene nach unten verschieben</string>
     <string name="preview_title">Kompositvorschau</string>
+    <string name="preview_open">Vorschau</string>
+    <string name="preview_close">Schließen</string>
+    <string name="preview_rendering">Vorschau wird gerendert…</string>
+    <string name="preview_fullscreen_description">Vollbild-Hintergrundvorschau</string>
     <string name="preview_play">Start</string>
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Schritt</string>

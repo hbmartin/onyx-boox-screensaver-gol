@@ -40,6 +40,10 @@
     <string name="move_layer_up">Mover capa arriba</string>
     <string name="move_layer_down">Mover capa abajo</string>
     <string name="preview_title">Vista previa compuesta</string>
+    <string name="preview_open">Vista previa</string>
+    <string name="preview_close">Cerrar</string>
+    <string name="preview_rendering">Generando vista previa…</string>
+    <string name="preview_fullscreen_description">Vista previa del fondo de pantalla a pantalla completa</string>
     <string name="preview_play">Reproducir</string>
     <string name="preview_pause">Pausa</string>
     <string name="preview_step">Paso</string>
