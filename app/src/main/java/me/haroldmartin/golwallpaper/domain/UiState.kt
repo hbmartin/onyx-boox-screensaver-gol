@@ -4,7 +4,7 @@ const val DEFAULT_FG = 0xFF000000.toInt()
 const val DEFAULT_BG = 0xFFFFFFFF.toInt()
 
 data class UiState(
-    val fgColor: Int = DEFAULT_FG,
     val bgColor: Int = DEFAULT_BG,
     val settings: GolSettings = GolSettings(),
+    val layers: List<Layer> = listOf(Layer()),
 )

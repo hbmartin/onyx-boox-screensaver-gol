@@ -4,6 +4,7 @@ import android.content.Context
 import me.haroldmartin.golwallpaper.data.ObserveUiStateImpl
 import me.haroldmartin.golwallpaper.data.SaveBgColorImpl
 import me.haroldmartin.golwallpaper.data.SaveFgColorImpl
+import me.haroldmartin.golwallpaper.data.SaveLayersImpl
 import me.haroldmartin.golwallpaper.data.SaveSettingsImpl
 import me.haroldmartin.golwallpaper.data.UserDataStore
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
@@ -17,6 +18,7 @@ object AppContainer {
     val observeUiState get() = ObserveUiStateImpl(userDataStore)
     val saveBgColor get() = SaveBgColorImpl(userDataStore)
     val saveFgColor get() = SaveFgColorImpl(userDataStore)
+    val saveLayers get() = SaveLayersImpl(userDataStore)
     val saveSettings get() = SaveSettingsImpl(userDataStore)
     val saveScreensaver get() = SaveScreensaver(userDataStore, Dispatchers.IO)
 

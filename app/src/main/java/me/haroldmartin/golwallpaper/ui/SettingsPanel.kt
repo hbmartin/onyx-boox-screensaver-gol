@@ -47,9 +47,12 @@ private val SELECTED_BORDER = 2.dp
 private val UNSELECTED_BORDER = 1.dp
 
 @Composable
+@Suppress("LongParameterList")
 fun SettingsPanel(
+    backgroundColor: Int,
     settings: GolSettings,
     showWallpaperTarget: Boolean,
+    onBackgroundColorChange: (Int) -> Unit,
     onSettingsChange: (GolSettings) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -72,8 +75,10 @@ fun SettingsPanel(
         }
         if (areSettingsVisible) {
             SettingsOptions(
+                backgroundColor = backgroundColor,
                 settings = settings,
                 showWallpaperTarget = showWallpaperTarget,
+                onBackgroundColorChange = onBackgroundColorChange,
                 onSettingsChange = onSettingsChange,
             )
         }
@@ -82,15 +87,16 @@ fun SettingsPanel(
 
 @Composable
 private fun SettingsOptions(
+    backgroundColor: Int,
     settings: GolSettings,
     showWallpaperTarget: Boolean,
+    onBackgroundColorChange: (Int) -> Unit,
     onSettingsChange: (GolSettings) -> Unit,
 ) = Column(verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
-    OptionRow(
-        label = stringResource(R.string.rule_label),
-        options = RulePreset.entries.map { it.displayName() to it.rule },
-        selected = settings.rule,
-        onSelect = { rule -> onSettingsChange(settings.copy(rule = rule)) },
+    ColorPicker(
+        label = stringResource(R.string.background_color),
+        selectedColor = backgroundColor,
+        onClick = onBackgroundColorChange,
     )
     OptionRow(
         label = stringResource(R.string.cell_size_label),
@@ -133,11 +139,6 @@ private fun SettingsOptions(
         checked = settings.isStatsVisible,
         onCheckedChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
     )
-    SwitchRow(
-        label = stringResource(R.string.auto_reseed_label),
-        checked = settings.autoReseed,
-        onCheckedChange = { enabled -> onSettingsChange(settings.copy(autoReseed = enabled)) },
-    )
 }
 
 @Composable
@@ -160,7 +161,7 @@ private fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean
 }
 
 @Composable
-private fun RulePreset.displayName(): String = stringResource(
+internal fun RulePreset.displayName(): String = stringResource(
     when (this) {
         RulePreset.CONWAY -> R.string.rule_conway
         RulePreset.HIGH_LIFE -> R.string.rule_high_life
@@ -185,7 +186,7 @@ private fun intervalLabel(mins: Long): String = if (mins < MINS_PER_HOUR) {
 }
 
 @Composable
-private fun <T> OptionRow(
+internal fun <T> OptionRow(
     label: String,
     options: List<Pair<String, T>>,
     selected: T,

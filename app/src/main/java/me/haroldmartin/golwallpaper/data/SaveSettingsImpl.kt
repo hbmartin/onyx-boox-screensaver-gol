@@ -3,7 +3,6 @@ package me.haroldmartin.golwallpaper.data
 import me.haroldmartin.golwallpaper.domain.SaveSettings
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 
-private val RULE_REGEX = Regex("""B\d*/S\d*""", RegexOption.IGNORE_CASE)
 private const val PERCENT_MAX = 100
 
 class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
@@ -17,11 +16,6 @@ class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
         dataStore[UserDataStore.Keys.UPDATE_INTERVAL_MINS] = mins
     }
 
-    override suspend fun setRule(rule: String) {
-        require(RULE_REGEX.matches(rule)) { "Rule must match B<digits>/S<digits>: $rule" }
-        dataStore[UserDataStore.Keys.RULE] = rule
-    }
-
     override suspend fun setShowStats(show: Boolean) {
         dataStore[UserDataStore.Keys.SHOW_STATS] = show
     }
@@ -33,9 +27,5 @@ class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
     override suspend fun setBatteryThreshold(pct: Int) {
         require(pct in 0..PERCENT_MAX) { "Battery threshold must be 0..$PERCENT_MAX: $pct" }
         dataStore[UserDataStore.Keys.BATTERY_THRESHOLD] = pct
-    }
-
-    override suspend fun setAutoReseed(enabled: Boolean) {
-        dataStore[UserDataStore.Keys.AUTO_RESEED] = enabled
     }
 }

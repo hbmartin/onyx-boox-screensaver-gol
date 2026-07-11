@@ -8,6 +8,7 @@ private const val RULE_SIZE = 9
 private val DEFAULT_PATTERN = Patterns.HERRINGBONE_AGAR_P14
 private val HEADER_REGEX = Regex("""^\s*x\s*=.*""", RegexOption.IGNORE_CASE)
 private const val DECIMAL_BASE = 10
+private const val MAX_PATTERN_LENGTH = 100_000
 
 class GolController(
     private val rows: Int,
@@ -274,9 +275,13 @@ private val Patterns.asArray: Array<BooleanArray>
 // in the UI instead of silently falling back to a random grid at render time.
 @Suppress("SwallowedException")
 internal fun isParseablePattern(pattern: String): Boolean =
-    try {
-        parsePattern(pattern)
-        true
-    } catch (e: IllegalArgumentException) {
+    if (pattern.length > MAX_PATTERN_LENGTH) {
         false
+    } else {
+        try {
+            parsePattern(pattern)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
     }

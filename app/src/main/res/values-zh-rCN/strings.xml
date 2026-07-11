@@ -29,4 +29,19 @@
     <string name="rule_day_and_night">昼与夜</string>
     <string name="rule_seeds">种子</string>
     <string name="rule_life_without_death">不死生命</string>
+    <string name="layers_title">图层</string>
+    <string name="add_layer">添加图层</string>
+    <string name="delete_layer">删除图层</string>
+    <string name="layer_number">图层 %1$d</string>
+    <string name="enable_layer">启用图层</string>
+    <string name="move_layer_up">上移图层</string>
+    <string name="move_layer_down">下移图层</string>
+    <string name="preview_title">合成预览</string>
+    <string name="preview_play">播放</string>
+    <string name="preview_pause">暂停</string>
+    <string name="preview_step">单步</string>
+    <string name="preview_resync">重新同步</string>
+    <string name="foreground_color">前景颜色：</string>
+    <string name="background_color">背景颜色：</string>
+    <string name="max_layers_warning">超过 %1$d 个图层可能会使电子墨水设备更新缓慢。</string>
 </resources>

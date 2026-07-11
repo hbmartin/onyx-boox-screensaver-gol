@@ -34,4 +34,19 @@
     <string name="rule_day_and_night">Day &amp; Night</string>
     <string name="rule_seeds">Seeds</string>
     <string name="rule_life_without_death">Life without Death</string>
+    <string name="layers_title">Layers</string>
+    <string name="add_layer">Add layer</string>
+    <string name="delete_layer">Delete layer</string>
+    <string name="layer_number">Layer %1$d</string>
+    <string name="enable_layer">Enable layer</string>
+    <string name="move_layer_up">Move layer up</string>
+    <string name="move_layer_down">Move layer down</string>
+    <string name="preview_title">Composite preview</string>
+    <string name="preview_play">Play</string>
+    <string name="preview_pause">Pause</string>
+    <string name="preview_step">Step</string>
+    <string name="preview_resync">Re-sync</string>
+    <string name="foreground_color">Foreground color:</string>
+    <string name="background_color">Background color:</string>
+    <string name="max_layers_warning">More than %1$d layers may update slowly on e-ink devices.</string>
 </resources>

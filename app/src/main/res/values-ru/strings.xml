@@ -29,4 +29,19 @@
     <string name="rule_day_and_night">День и ночь</string>
     <string name="rule_seeds">Семена</string>
     <string name="rule_life_without_death">Жизнь без смерти</string>
+    <string name="layers_title">Слои</string>
+    <string name="add_layer">Добавить слой</string>
+    <string name="delete_layer">Удалить слой</string>
+    <string name="layer_number">Слой %1$d</string>
+    <string name="enable_layer">Включить слой</string>
+    <string name="move_layer_up">Переместить слой вверх</string>
+    <string name="move_layer_down">Переместить слой вниз</string>
+    <string name="preview_title">Предпросмотр композиции</string>
+    <string name="preview_play">Пуск</string>
+    <string name="preview_pause">Пауза</string>
+    <string name="preview_step">Шаг</string>
+    <string name="preview_resync">Синхронизировать</string>
+    <string name="foreground_color">Цвет переднего плана:</string>
+    <string name="background_color">Цвет фона:</string>
+    <string name="max_layers_warning">Более %1$d слоёв могут медленно обновляться на устройствах с электронными чернилами.</string>
 </resources>

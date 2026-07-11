@@ -5,7 +5,6 @@ const val DEFAULT_UPDATE_INTERVAL_MINS = 15L
 const val DEFAULT_RULE = "B3/S23"
 const val DEFAULT_SHOW_STATS = false
 const val DEFAULT_BATTERY_THRESHOLD_PCT = 0
-const val DEFAULT_AUTO_RESEED = false
 
 enum class WallpaperTarget {
     LOCK,
@@ -30,9 +29,7 @@ enum class RulePreset(val rule: String) {
 data class GolSettings(
     val cellSize: Int = DEFAULT_CELL_SIZE,
     val updateIntervalMins: Long = DEFAULT_UPDATE_INTERVAL_MINS,
-    val rule: String = DEFAULT_RULE,
     val isStatsVisible: Boolean = DEFAULT_SHOW_STATS,
     val wallpaperTarget: WallpaperTarget = WallpaperTarget.LOCK,
     val batteryThresholdPct: Int = DEFAULT_BATTERY_THRESHOLD_PCT,
-    val autoReseed: Boolean = DEFAULT_AUTO_RESEED,
 )

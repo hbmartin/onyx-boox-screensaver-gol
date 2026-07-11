@@ -16,10 +16,11 @@ private const val TAG = "CleanupScreenshots"
  * killed process or a failed delete can orphan files that then accumulate in the user's Downloads
  * folder forever. Sweeping on every save keeps only the image currently in use.
  *
+ * @param context context used to access the Downloads collection.
  * @param keep the just-saved image that must survive the sweep, or `null` to remove them all.
  * @return the number of orphaned images deleted.
  */
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "AvoidVarsExceptWithDelegate", "NestedBlockDepth")
 fun deleteOrphanedScreenshots(context: Context, keep: Uri?): Int {
     val resolver = context.contentResolver
     val collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI

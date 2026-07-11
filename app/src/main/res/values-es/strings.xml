@@ -29,4 +29,19 @@
     <string name="rule_day_and_night">Día y Noche</string>
     <string name="rule_seeds">Semillas</string>
     <string name="rule_life_without_death">Vida sin Muerte</string>
+    <string name="layers_title">Capas</string>
+    <string name="add_layer">Añadir capa</string>
+    <string name="delete_layer">Eliminar capa</string>
+    <string name="layer_number">Capa %1$d</string>
+    <string name="enable_layer">Activar capa</string>
+    <string name="move_layer_up">Mover capa arriba</string>
+    <string name="move_layer_down">Mover capa abajo</string>
+    <string name="preview_title">Vista previa compuesta</string>
+    <string name="preview_play">Reproducir</string>
+    <string name="preview_pause">Pausa</string>
+    <string name="preview_step">Paso</string>
+    <string name="preview_resync">Sincronizar</string>
+    <string name="foreground_color">Color de primer plano:</string>
+    <string name="background_color">Color de fondo:</string>
+    <string name="max_layers_warning">Más de %1$d capas pueden actualizarse lentamente en dispositivos de tinta electrónica.</string>
 </resources>

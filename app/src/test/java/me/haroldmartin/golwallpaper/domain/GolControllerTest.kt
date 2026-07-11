@@ -1,4 +1,4 @@
-@file:Suppress("IllegalIdentifier")
+@file:Suppress("IllegalIdentifier", "AvoidVarsExceptWithDelegate", "DontForceCast")
 
 package me.haroldmartin.golwallpaper.domain
 

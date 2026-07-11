@@ -29,4 +29,19 @@
     <string name="rule_day_and_night">Day &amp; Night</string>
     <string name="rule_seeds">Seeds</string>
     <string name="rule_life_without_death">Leben ohne Tod</string>
+    <string name="layers_title">Ebenen</string>
+    <string name="add_layer">Ebene hinzufügen</string>
+    <string name="delete_layer">Ebene löschen</string>
+    <string name="layer_number">Ebene %1$d</string>
+    <string name="enable_layer">Ebene aktivieren</string>
+    <string name="move_layer_up">Ebene nach oben verschieben</string>
+    <string name="move_layer_down">Ebene nach unten verschieben</string>
+    <string name="preview_title">Kompositvorschau</string>
+    <string name="preview_play">Start</string>
+    <string name="preview_pause">Pause</string>
+    <string name="preview_step">Schritt</string>
+    <string name="preview_resync">Neu synchronisieren</string>
+    <string name="foreground_color">Vordergrundfarbe:</string>
+    <string name="background_color">Hintergrundfarbe:</string>
+    <string name="max_layers_warning">Mehr als %1$d Ebenen können auf E-Ink-Geräten langsam aktualisiert werden.</string>
 </resources>

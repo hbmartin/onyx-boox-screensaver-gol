@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -17,8 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import me.haroldmartin.golwallpaper.ui.ColorPicker
-import me.haroldmartin.golwallpaper.ui.PatternPicker
+import me.haroldmartin.golwallpaper.ui.CompositePreview
+import me.haroldmartin.golwallpaper.ui.LayersCallbacks
+import me.haroldmartin.golwallpaper.ui.LayersSection
 import me.haroldmartin.golwallpaper.ui.SettingsPanel
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.XXLARGE
@@ -26,39 +30,62 @@ import me.haroldmartin.golwallpaper.utils.isOnyxDevice
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
+@Suppress("LongMethod")
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val previewImage by viewModel.previewImage.collectAsStateWithLifecycle()
+    val isPreviewPlaying by viewModel.isPreviewPlaying.collectAsStateWithLifecycle()
     val isOnyx = remember { isOnyxDevice() }
+
+    LaunchedEffect(uiState.layers, uiState.bgColor, uiState.settings.cellSize) {
+        viewModel.resyncPreview()
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(XXLARGE),
         verticalArrangement = Arrangement.spacedBy(XXLARGE),
     ) {
         if (isOnyx) {
             Text(stringResource(R.string.freeze_alert))
         }
-        ColorPicker(
-            label = stringResource(id = R.string.fg_color),
-            selectedColor = uiState.fgColor,
-        ) { color ->
-            viewModel.setFgColor(context, color)
-        }
-        ColorPicker(
-            label = stringResource(id = R.string.bg_color),
-            selectedColor = uiState.bgColor,
-        ) { color ->
-            viewModel.setBgColor(context, color)
-        }
-        PatternPicker { pattern ->
-            viewModel.reset(context, pattern)
-        }
+        CompositePreview(
+            image = previewImage,
+            isPlaying = isPreviewPlaying,
+            onPlayPause = if (isPreviewPlaying) viewModel::pausePreview else viewModel::playPreview,
+            onStep = viewModel::stepPreview,
+            onResync = viewModel::resyncPreview,
+        )
         SettingsPanel(
+            backgroundColor = uiState.bgColor,
             settings = uiState.settings,
             showWallpaperTarget = !isOnyx,
+            onBackgroundColorChange = { color -> viewModel.setBgColor(context, color) },
             onSettingsChange = { settings -> viewModel.updateSettings(context, settings) },
+        )
+        LayersSection(
+            layers = uiState.layers,
+            callbacks = LayersCallbacks(
+                onAdd = { viewModel.addLayer(context) },
+                onRemove = { index -> viewModel.removeLayer(context, index) },
+                onMoveUp = { index -> viewModel.moveLayerUp(context, index) },
+                onMoveDown = { index -> viewModel.moveLayerDown(context, index) },
+                onEnabledChange = { index, enabled ->
+                    viewModel.setLayerEnabled(context, index, enabled)
+                },
+                onColorChange = { index, color ->
+                    viewModel.setLayerFgColor(context, index, color)
+                },
+                onRuleChange = { index, rule ->
+                    viewModel.setLayerRule(context, index, rule)
+                },
+                onResetPattern = { index, pattern ->
+                    viewModel.resetLayer(context, index, pattern)
+                },
+            ),
         )
         Button(
             modifier = Modifier.border(1.dp, COLOR_SCHEME.secondary),
