@@ -14,7 +14,7 @@ detekt = "1.23.8"
 androidxWork = "2.11.2"
 updatesCheck = "0.54.0"
 hbmartinRules = "0.1.7"
-composeRules = "0.4.23"
+composeRules = "0.6.2"
 json = "20260522"
 
 [libraries]
