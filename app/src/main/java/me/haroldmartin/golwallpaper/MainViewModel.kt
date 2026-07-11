@@ -14,6 +14,7 @@ import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.CalendarRepository
 import me.haroldmartin.golwallpaper.domain.CalendarSettingsStore
 import me.haroldmartin.golwallpaper.domain.CalendarSource
+import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.Layer
@@ -26,7 +27,6 @@ import me.haroldmartin.golwallpaper.domain.addLayer
 import me.haroldmartin.golwallpaper.domain.initialCalendarSelection
 import me.haroldmartin.golwallpaper.domain.moveDown
 import me.haroldmartin.golwallpaper.domain.moveUp
-import me.haroldmartin.golwallpaper.domain.parsePattern
 import me.haroldmartin.golwallpaper.domain.removeLayer
 import me.haroldmartin.golwallpaper.domain.resetPattern
 import me.haroldmartin.golwallpaper.domain.setEnabled
@@ -36,9 +36,15 @@ import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
 import me.haroldmartin.golwallpaper.utils.RenderLayer
+import me.haroldmartin.golwallpaper.utils.Resolution
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
 import me.haroldmartin.golwallpaper.utils.createCompositeBitmap
 import me.haroldmartin.golwallpaper.utils.drawCalendarOverlay
+import me.haroldmartin.golwallpaper.utils.getScreenResolution
+import me.haroldmartin.golwallpaper.utils.height
+import me.haroldmartin.golwallpaper.utils.scaledToFit
+import me.haroldmartin.golwallpaper.utils.toRowsCols
+import me.haroldmartin.golwallpaper.utils.width
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -62,10 +68,8 @@ import kotlinx.coroutines.launch
 
 private const val STOP_TIMEOUT_MILLIS = 5000L
 private const val PREVIEW_DELAY_MILLIS = 500L
-private const val PREVIEW_WIDTH = 360
-private const val PREVIEW_HEIGHT = 480
-private const val PREVIEW_ROWS = 48
-private const val PREVIEW_COLUMNS = 36
+private const val PREVIEW_MAX_WIDTH = 360
+private const val PREVIEW_MAX_HEIGHT = 480
 private const val CALENDAR_CHANGE_DEBOUNCE_MILLIS = 500L
 
 enum class CalendarUiIssue {
@@ -109,6 +113,9 @@ class MainViewModel(
     private val previewAgenda = MutableStateFlow<CalendarAgenda?>(null)
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
     val calendarUiState: StateFlow<CalendarUiState> = _calendarUiState.asStateFlow()
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var previewGeometry = PreviewGeometry()
 
     @Suppress("AvoidVarsExceptWithDelegate")
     private var previewRenderJob: Job? = null
@@ -215,12 +222,18 @@ class MainViewModel(
 
     fun resyncPreview() = viewModelScope.launch {
         val state = uiState.value
+        previewGeometry = createPreviewGeometry(
+            resolution = getScreenResolution(appContext),
+            cellSize = state.settings.cellSize,
+        )
         val background = resolvePreviewColor(
             color = state.bgColor,
             except = setOf(Color.Black.toArgb()),
         )
         previewBackground.value = background
-        previewLayers.value = state.layers.map { layer -> layer.toPreviewLayer(background) }
+        previewLayers.value = state.layers.map { layer ->
+            layer.toPreviewLayer(background = background, geometry = previewGeometry)
+        }
         refreshCalendarAgenda()
         renderPreview()
     }
@@ -384,6 +397,7 @@ class MainViewModel(
         val background = previewBackground.value
         val agenda = previewAgenda.value
         val calendarSettings = uiState.value.calendarOverlaySettings
+        val geometry = previewGeometry
         val layers = previewLayers.value.filter(PreviewLayer::isEnabled).map { previewLayer ->
             RenderLayer(
                 grid = Array(previewLayer.controller.grid.size) { row ->
@@ -395,8 +409,8 @@ class MainViewModel(
         previewRenderJob?.cancel()
         previewRenderJob = viewModelScope.launch(renderDispatcher) {
             val bitmap = createCompositeBitmap(
-                width = PREVIEW_WIDTH,
-                height = PREVIEW_HEIGHT,
+                width = geometry.bitmapResolution.width,
+                height = geometry.bitmapResolution.height,
                 backgroundColor = background,
                 layers = layers,
             )
@@ -440,33 +454,44 @@ class MainViewModel(
         }
     }
 
-    private fun Layer.toPreviewLayer(background: Int): PreviewLayer = PreviewLayer(
-        controller = previewController(state = state, rule = rule),
-        fgColor = resolvePreviewColor(fgColor, except = setOf(background)),
-        isEnabled = isEnabled,
-    )
+    private fun Layer.toPreviewLayer(background: Int, geometry: PreviewGeometry): PreviewLayer =
+        PreviewLayer(
+            controller = previewController(
+                state = state,
+                rule = rule,
+                rows = geometry.rows,
+                columns = geometry.columns,
+            ),
+            fgColor = resolvePreviewColor(fgColor, except = setOf(background)),
+            isEnabled = isEnabled,
+        )
 
     @Suppress("SwallowedException")
-    private fun previewController(state: String?, rule: String): GolController = try {
+    private fun previewController(
+        state: String?,
+        rule: String,
+        rows: Int,
+        columns: Int,
+    ): GolController = try {
         if (state == null) {
             GolController(
-                rows = PREVIEW_ROWS,
-                columns = PREVIEW_COLUMNS,
+                rows = rows,
+                columns = columns,
                 initialPattern = ".",
                 rule = rule,
             ).apply { reset(pattern = null) }
         } else {
             GolController(
-                rows = PREVIEW_ROWS,
-                columns = PREVIEW_COLUMNS,
-                initialPattern = state.toPreviewPattern(),
+                rows = rows,
+                columns = columns,
+                initialPattern = state,
                 rule = rule,
             )
         }
     } catch (exception: IllegalArgumentException) {
         GolController(
-            rows = PREVIEW_ROWS,
-            columns = PREVIEW_COLUMNS,
+            rows = rows,
+            columns = columns,
             initialPattern = ".",
             rule = rule,
         ).apply { reset(pattern = null) }
@@ -482,15 +507,19 @@ private data class PreviewLayer(
     val isEnabled: Boolean,
 )
 
-private fun String.toPreviewPattern(): String {
-    val source = parsePattern(this)
-    val sourceColumns = source.maxOf { row -> row.size }
-    return Array(PREVIEW_ROWS) { row ->
-        BooleanArray(PREVIEW_COLUMNS) { column ->
-            val sourceRow = source[(row * source.size) / PREVIEW_ROWS]
-            sourceRow.getOrElse((column * sourceColumns) / PREVIEW_COLUMNS) { false }
-        }
-    }.joinToString("$") { row ->
-        row.joinToString("") { isAlive -> if (isAlive) "A" else "." }
-    }
+private data class PreviewGeometry(
+    val bitmapResolution: Resolution = Resolution(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT),
+    val rows: Int = PREVIEW_MAX_HEIGHT / DEFAULT_CELL_SIZE,
+    val columns: Int = PREVIEW_MAX_WIDTH / DEFAULT_CELL_SIZE,
+)
+
+private fun createPreviewGeometry(resolution: Resolution, cellSize: Int): PreviewGeometry {
+    val wallpaperResolution = resolution.takeIf { it.width > 0 && it.height > 0 }
+        ?: Resolution(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT)
+    val (rows, columns) = wallpaperResolution.toRowsCols(cellSize)
+    return PreviewGeometry(
+        bitmapResolution = wallpaperResolution.scaledToFit(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT),
+        rows = rows,
+        columns = columns,
+    )
 }

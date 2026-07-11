@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Patterns
 import me.haroldmartin.golwallpaper.domain.isParseablePattern
+import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
@@ -57,7 +57,7 @@ fun PatternPicker(onClick: (String?) -> Unit) {
                 .verticalScroll(patternsScrollState)
                 .padding(SMALL),
         ) {
-            Button(
+            AppButton(
                 onClick = { onClick(null) },
             ) {
                 Text(
@@ -67,7 +67,7 @@ fun PatternPicker(onClick: (String?) -> Unit) {
                 )
             }
             Patterns.entries.forEach { pattern ->
-                Button(
+                AppButton(
                     onClick = { onClick(pattern.value) },
                 ) {
                     Text(
@@ -104,7 +104,7 @@ private fun RleInput(onApply: (String) -> Unit) {
             color = COLOR_SCHEME.error,
         )
     }
-    Button(
+    AppButton(
         onClick = {
             val rle = text.trim()
             if (isParseablePattern(rle)) {

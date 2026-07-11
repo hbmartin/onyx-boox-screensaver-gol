@@ -6,17 +6,33 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Display
 import android.view.WindowManager
+import kotlin.math.roundToInt
 
 typealias Resolution = Pair<Int, Int>
 
 val Resolution.width: Int get() = first
 val Resolution.height: Int get() = second
-val Resolution.ratio: Float
-    get() = if (width > height) {
-        width.toFloat() / height
-    } else {
-        height.toFloat() / width
-    }
+
+fun Resolution.toRowsCols(cellSize: Int): Pair<Int, Int> {
+    require(cellSize > 0) { "Cell size must be positive" }
+    val rows = (height / cellSize).coerceAtLeast(1)
+    val cols = (width / cellSize).coerceAtLeast(1)
+    return rows to cols
+}
+
+fun Resolution.scaledToFit(maxWidth: Int, maxHeight: Int): Resolution {
+    require(width > 0 && height > 0) { "Resolution must be positive" }
+    require(maxWidth > 0 && maxHeight > 0) { "Bounds must be positive" }
+    val scale = minOf(
+        maxWidth.toDouble() / width,
+        maxHeight.toDouble() / height,
+        1.0,
+    )
+    return Resolution(
+        (width * scale).roundToInt().coerceAtLeast(1),
+        (height * scale).roundToInt().coerceAtLeast(1),
+    )
+}
 
 @Suppress("Deprecation")
 fun getScreenResolution(context: Context): Resolution {

@@ -8,11 +8,17 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
 
 val COLOR_SCHEME = lightColorScheme(
-    primary = White,
-    onPrimary = Black,
+    primary = Black,
+    onPrimary = White,
     secondary = Black,
+    onSecondary = White,
     tertiary = Gray,
+    onTertiary = Black,
     background = White,
+    onBackground = Black,
+    surface = White,
+    onSurface = Black,
+    outline = Black,
 )
 
 @Composable

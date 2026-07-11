@@ -191,12 +191,6 @@ private data class ProcessedLayer(
     val population: Int = 0,
 )
 
-private fun Resolution.toRowsCols(cellSize: Int): Pair<Int, Int> {
-    val rows = width / cellSize
-    val cols = height / (cellSize * ratio).toInt()
-    return rows to cols
-}
-
 private fun Context.setScreensaver(filePath: String, showHint: Boolean) {
     sendBroadcast(
         Intent("onyx.action.SCREENSAVER")

@@ -1,13 +1,11 @@
 package me.haroldmartin.golwallpaper
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,7 +16,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -30,7 +27,7 @@ import me.haroldmartin.golwallpaper.ui.CompositePreview
 import me.haroldmartin.golwallpaper.ui.LayersCallbacks
 import me.haroldmartin.golwallpaper.ui.LayersSection
 import me.haroldmartin.golwallpaper.ui.SettingsPanel
-import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
+import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.XXLARGE
 import me.haroldmartin.golwallpaper.utils.isOnyxDevice
 
@@ -131,14 +128,12 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 },
             ),
         )
-        Button(
-            modifier = Modifier.border(1.dp, COLOR_SCHEME.secondary),
+        AppButton(
             onClick = { viewModel.saveNextStep(context) },
         ) {
             Text(stringResource(R.string.next_step))
         }
-        Button(
-            modifier = Modifier.border(1.dp, COLOR_SCHEME.secondary),
+        AppButton(
             onClick = { viewModel.openIssues(context) },
         ) {
             Text(stringResource(R.string.report_issue))

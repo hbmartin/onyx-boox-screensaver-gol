@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +31,6 @@ import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.RulePreset
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
-import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.SMALL
@@ -211,14 +212,19 @@ internal fun <T> OptionRow(
 
 @Composable
 private fun OptionButton(name: String, isSelected: Boolean, onClick: () -> Unit) {
+    val colorScheme = MaterialTheme.colorScheme
     Button(
         modifier = Modifier
             .border(
                 width = if (isSelected) SELECTED_BORDER else UNSELECTED_BORDER,
-                color = if (isSelected) COLOR_SCHEME.primary else COLOR_SCHEME.secondary,
+                color = colorScheme.outline,
             )
             .semantics { selected = isSelected },
         onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorScheme.surface,
+            contentColor = colorScheme.onSurface,
+        ),
     ) {
         Text(
             text = name,
