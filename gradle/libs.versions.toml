@@ -14,7 +14,7 @@ datastore = "1.2.1"
 detekt = "1.23.8"
 androidxWork = "2.11.2"
 updatesCheck = "0.54.0"
-hbmartinRules = "0.1.7"
+hbmartinRules = "1.0.0"
 #noinspection NewerVersionAvailable
 composeRules = "0.4.28"
 json = "20260522"

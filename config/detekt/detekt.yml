@@ -1081,7 +1081,11 @@ formatting:
 HbmartinRuleSet:
   AvoidFirstOrLastOnList:
     active: true
+  AvoidGlobalScope:
+    active: true
   AvoidMutableCollections:
+    active: true
+  AvoidToIntOrThrowingConversions:
     active: true
   AvoidVarsExceptWithDelegate:
     active: true
@@ -1092,8 +1096,16 @@ HbmartinRuleSet:
     active: true
   MutableTypeShouldBePrivate:
     active: true
+  NoDeferredResultInPublicApi:
+    active: true
+  NoLateinitVar:
+    active: true
+    excludes: [ '**/AppContainer.kt' ]
   NoNotNullOperator:
     active: true
+  NoRunBlocking:
+    active: true
+    excludes: [ '**/test/**', '**/androidTest/**' ]
   NoVarsInConstructor:
     active: true
   NoCallbacksInFunctions:
