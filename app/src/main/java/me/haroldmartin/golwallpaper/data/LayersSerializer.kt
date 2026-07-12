@@ -13,6 +13,7 @@ object LayersSerializer {
     private const val FG = "fg"
     private const val RULE = "rule"
     private const val STATE = "state"
+    private const val STARTING_PATTERN = "startingPattern"
     private const val GENERATION = "gen"
     private const val ENABLED = "enabled"
 
@@ -25,6 +26,7 @@ object LayersSerializer {
                     .put(FG, layer.fgColor)
                     .put(RULE, layer.rule)
                     .put(STATE, layer.state ?: JSONObject.NULL)
+                    .put(STARTING_PATTERN, layer.startingPattern ?: JSONObject.NULL)
                     .put(GENERATION, layer.generation)
                     .put(ENABLED, layer.isEnabled),
             )
@@ -49,6 +51,7 @@ object LayersSerializer {
         fgColor = optInt(FG, DEFAULT_FG),
         rule = optString(RULE, DEFAULT_RULE),
         state = if (isNull(STATE)) null else optString(STATE),
+        startingPattern = if (isNull(STARTING_PATTERN)) null else optString(STARTING_PATTERN),
         generation = optInt(GENERATION, 0).coerceAtLeast(0),
         isEnabled = optBoolean(ENABLED, true),
         id = optString(ID).ifEmpty { UUID.randomUUID().toString() },

@@ -7,5 +7,5 @@ data class LayerCallbacks(
     val onDelete: () -> Unit,
     val onColorChange: (Int) -> Unit,
     val onRuleChange: (String) -> Unit,
-    val onResetPattern: (String?) -> Unit,
+    val onResetPattern: (String?, String?) -> Unit,
 )

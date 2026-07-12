@@ -1,7 +1,10 @@
 package me.haroldmartin.golwallpaper
 
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -65,5 +68,50 @@ class CalendarSectionTest {
         assertEquals(7L, toggledId.get())
         assertTrue(isConfirmed.get())
         assertTrue(isDismissed.get())
+    }
+
+    @Test
+    fun enabledOverlayShowsSelectedCalendars() {
+        composeRule.setContent {
+            GoLWallpaperTheme {
+                CalendarSection(
+                    settings = CalendarOverlaySettings(
+                        isEnabled = true,
+                        selectedCalendarIds = setOf(7, 8),
+                    ),
+                    uiState = CalendarUiState(
+                        sources = listOf(
+                            CalendarSource(
+                                id = 7,
+                                displayName = "Work",
+                                accountName = "person@example.com",
+                                isPrimary = true,
+                            ),
+                            CalendarSource(
+                                id = 8,
+                                displayName = "Personal",
+                                accountName = "person@example.com",
+                                isPrimary = false,
+                            ),
+                        ),
+                    ),
+                    callbacks = CalendarSectionCallbacks(
+                        onPermissionResult = {},
+                        onOpenPicker = {},
+                        onDisable = {},
+                        onSettingsChange = {},
+                        onToggleDraft = {},
+                        onConfirmPicker = {},
+                        onDismissPicker = {},
+                    ),
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("Calendar overlay").performClick()
+
+        composeRule.onAllNodesWithText("Selected calendars:").assertCountEquals(0)
+        composeRule.onNodeWithText("Work, Personal").assertIsDisplayed().assertHasClickAction()
+        composeRule.onAllNodesWithText("Choose calendars").assertCountEquals(0)
     }
 }

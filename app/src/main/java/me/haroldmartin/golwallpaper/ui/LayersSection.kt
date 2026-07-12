@@ -39,7 +39,9 @@ fun LayersSection(
                         onDelete = { callbacks.onRemove(index) },
                         onColorChange = { color -> callbacks.onColorChange(index, color) },
                         onRuleChange = { rule -> callbacks.onRuleChange(index, rule) },
-                        onResetPattern = { pattern -> callbacks.onResetPattern(index, pattern) },
+                        onResetPattern = { pattern, startingPattern ->
+                            callbacks.onResetPattern(index, pattern, startingPattern)
+                        },
                     ),
                 )
             }

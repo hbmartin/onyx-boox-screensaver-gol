@@ -1,5 +1,6 @@
 package me.haroldmartin.golwallpaper
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -33,6 +35,7 @@ import me.haroldmartin.golwallpaper.ui.SettingsPanel
 import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.XXLARGE
 import me.haroldmartin.golwallpaper.utils.isOnyxDevice
+import me.haroldmartin.golwallpaper.utils.openOnyxFreezeSettings
 
 private val PREVIEW_FAB_CLEARANCE = 80.dp
 
@@ -88,7 +91,12 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             verticalArrangement = Arrangement.spacedBy(XXLARGE),
         ) {
             if (isOnyx) {
-                Text(stringResource(R.string.freeze_alert))
+                Text(
+                    text = stringResource(R.string.freeze_alert),
+                    modifier = Modifier.clickable(role = Role.Button) {
+                        openOnyxFreezeSettings(context)
+                    },
+                )
             }
             SettingsPanel(
                 backgroundColor = uiState.bgColor,
@@ -128,16 +136,16 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     onRuleChange = { index, rule ->
                         viewModel.setLayerRule(context, index, rule)
                     },
-                    onResetPattern = { index, pattern ->
-                        viewModel.resetLayer(context, index, pattern)
+                    onResetPattern = { index, pattern, startingPattern ->
+                        viewModel.resetLayer(
+                            context = context,
+                            index = index,
+                            pattern = pattern,
+                            startingPattern = startingPattern,
+                        )
                     },
                 ),
             )
-            AppButton(
-                onClick = { viewModel.saveNextStep(context) },
-            ) {
-                Text(stringResource(R.string.next_step))
-            }
             AppButton(
                 onClick = { viewModel.openIssues(context) },
             ) {

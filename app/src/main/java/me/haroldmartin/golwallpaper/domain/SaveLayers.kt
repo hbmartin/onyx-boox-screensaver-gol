@@ -25,9 +25,17 @@ suspend fun SaveLayers.setRule(index: Int, rule: String) = mutate { layers ->
     LayerOps.updateAt(layers, index) { layer -> layer.copy(rule = rule) }
 }
 
-suspend fun SaveLayers.resetPattern(index: Int, pattern: String?) = mutate { layers ->
+suspend fun SaveLayers.resetPattern(
+    index: Int,
+    pattern: String?,
+    startingPattern: String?,
+) = mutate { layers ->
     LayerOps.updateAt(layers, index) { layer ->
-        layer.copy(state = pattern, generation = 0)
+        layer.copy(
+            state = pattern,
+            startingPattern = startingPattern,
+            generation = 0,
+        )
     }
 }
 

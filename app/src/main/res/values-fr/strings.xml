@@ -5,6 +5,8 @@
     <string name="next_step">Générer l\'étape suivante</string>
     <string name="freeze_alert">ATTENTION ! Vous devez désactiver le gel de l\'application pour que le jeu se mette à jour :\nParamètres > Applications et notifications > Gel > GoL Screensaver (OFF)</string>
     <string name="reset_pattern">Réinitialiser le motif de départ</string>
+    <string name="reset_pattern_selected">Réinitialiser le motif de départ : %1$s</string>
+    <string name="custom_rle">RLE personnalisé</string>
     <string name="random_noise">Bruit aléatoire</string>
     <string name="paste_rle_label">Coller un motif RLE</string>
     <string name="apply_rle">Appliquer le motif collé</string>
@@ -13,9 +15,11 @@
     <string name="report_issue">Signaler un problème ou demander une fonctionnalité</string>
     <string name="settings">Paramètres</string>
     <string name="rule_label">Règle du jeu :</string>
+    <string name="rule_selected">Règle du jeu : %1$s</string>
     <string name="cell_size_label">Taille des cellules :</string>
     <string name="update_interval_label">Intervalle de mise à jour :</string>
     <string name="show_stats_label">Afficher génération et population sur le fond d\'écran</string>
+    <string name="wrap_edges_label">Relier les bords de la grille</string>
     <string name="wallpaper_target_label">Appliquer à :</string>
     <string name="target_lock">Écran de verrouillage</string>
     <string name="target_home">Écran d\'accueil</string>
@@ -56,6 +60,8 @@
     <string name="calendar_section_title">Superposition du calendrier</string>
     <string name="calendar_enable">Afficher les événements à venir</string>
     <string name="calendar_choose">Choisir les calendriers</string>
+    <string name="calendar_selected">Calendriers sélectionnés :</string>
+    <string name="calendar_none_selected">Aucun sélectionné</string>
     <string name="calendar_done">Terminé</string>
     <string name="calendar_cancel">Annuler</string>
     <string name="calendar_primary">Calendrier principal</string>

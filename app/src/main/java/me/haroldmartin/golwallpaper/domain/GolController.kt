@@ -16,6 +16,7 @@ class GolController(
     private val birthRule: BooleanArray,
     private val surviveRule: BooleanArray,
     initialPattern: Array<BooleanArray>?,
+    private val areEdgesWrapped: Boolean = DEFAULT_WRAP_EDGES,
 ) {
     @Suppress("AvoidVarsExceptWithDelegate")
     var grid: Array<BooleanArray> = initialPattern?.let {
@@ -54,12 +55,14 @@ class GolController(
         columns: Int,
         initialPattern: String?,
         rule: String = DEFAULT_RULE,
+        areEdgesWrapped: Boolean = DEFAULT_WRAP_EDGES,
     ) : this(
         rows = rows,
         columns = columns,
         birthRule = rule.toBirthRule(),
         surviveRule = rule.toSurviveRule(),
         initialPattern = initialPattern?.let { parsePattern(it) },
+        areEdgesWrapped = areEdgesWrapped,
     )
 
     // The nested loops and unrolled neighbour counting are deliberate: this runs over every
@@ -74,6 +77,22 @@ class GolController(
         // Double buffered: compute the next generation into `buffer`, then swap it with `grid`
         // so each update allocates nothing.
         val next = buffer
+        if (areEdgesWrapped) {
+            updateWrapped(next)
+        } else {
+            updateDeadEdges(next)
+        }
+        buffer = grid
+        grid = next
+        return grid
+    }
+
+    @Suppress(
+        "AvoidVarsExceptWithDelegate",
+        "CyclomaticComplexMethod",
+        "CognitiveComplexMethod",
+    )
+    private fun updateWrapped(next: Array<BooleanArray>) {
         for (rowIndex in 0 until rows) {
             val above = grid[if (rowIndex == 0) rows - 1 else rowIndex - 1]
             val current = grid[rowIndex]
@@ -99,9 +118,38 @@ class GolController(
                 }
             }
         }
-        buffer = grid
-        grid = next
-        return grid
+    }
+
+    @Suppress(
+        "AvoidVarsExceptWithDelegate",
+        "NestedBlockDepth",
+        "CognitiveComplexMethod",
+    )
+    private fun updateDeadEdges(next: Array<BooleanArray>) {
+        for (rowIndex in 0 until rows) {
+            val nextRow = next[rowIndex]
+            for (columnIndex in 0 until columns) {
+                var liveNeighbours = 0
+                val firstRow = maxOf(0, rowIndex - 1)
+                val lastRow = minOf(rows - 1, rowIndex + 1)
+                val firstColumn = maxOf(0, columnIndex - 1)
+                val lastColumn = minOf(columns - 1, columnIndex + 1)
+                for (neighbourRow in firstRow..lastRow) {
+                    for (neighbourColumn in firstColumn..lastColumn) {
+                        if ((neighbourRow != rowIndex || neighbourColumn != columnIndex) &&
+                            grid[neighbourRow][neighbourColumn]
+                        ) {
+                            liveNeighbours++
+                        }
+                    }
+                }
+                nextRow[columnIndex] = if (grid[rowIndex][columnIndex]) {
+                    surviveRule[liveNeighbours]
+                } else {
+                    birthRule[liveNeighbours]
+                }
+            }
+        }
     }
 
     fun turnOnCell(rowIndex: Int, colIndex: Int) {

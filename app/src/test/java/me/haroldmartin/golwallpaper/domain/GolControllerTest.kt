@@ -382,6 +382,46 @@ class GolControllerTest {
     }
 
     @Test
+    fun `Dead Boundaries - Opposite Edges Are Not Neighbours`() {
+        // The corner cell only survives in toroidal mode because the cells at the opposite
+        // horizontal and vertical edges count as its two neighbours.
+        val controller = GolController(
+            rows = 3,
+            columns = 3,
+            initialPattern = "A.A$...\$A..",
+            rule = standardRule,
+            areEdgesWrapped = false,
+        )
+
+        controller.update()
+
+        assertFalse(
+            controller[0 to 0],
+            "Dead boundaries: opposite-edge cells must not count as neighbours",
+        )
+    }
+
+    @Test
+    fun `Dead Boundaries - Local Edge Neighbours Still Count`() {
+        // The top-center cell has two neighbours inside the grid and should survive even though
+        // the three positions beyond the top edge are treated as dead.
+        val controller = GolController(
+            rows = 3,
+            columns = 3,
+            initialPattern = "AAA$...\$...",
+            rule = standardRule,
+            areEdgesWrapped = false,
+        )
+
+        controller.update()
+
+        assertTrue(
+            controller[0 to 1],
+            "Dead boundaries: neighbours within the grid must still count",
+        )
+    }
+
+    @Test
     fun `Single Cell Grid`() {
         // Live cell
         var controller = GolController(1, 1, initialPattern = "A", rule = standardRule)

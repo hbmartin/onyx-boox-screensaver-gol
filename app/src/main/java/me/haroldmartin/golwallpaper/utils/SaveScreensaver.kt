@@ -13,6 +13,7 @@ import me.haroldmartin.golwallpaper.data.UserDataStore.Keys
 import me.haroldmartin.golwallpaper.domain.CalendarAgendaResult
 import me.haroldmartin.golwallpaper.domain.DEFAULT_BG
 import me.haroldmartin.golwallpaper.domain.DEFAULT_CELL_SIZE
+import me.haroldmartin.golwallpaper.domain.DEFAULT_WRAP_EDGES
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
@@ -39,7 +40,14 @@ class SaveScreensaver(
             val bgColor = getBgColor()
             val cellSize = (dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE).coerceAtLeast(1)
             val (rows, cols) = resolution.toRowsCols(cellSize)
-            val processed = advanceLayers(rows = rows, cols = cols, step = step, bgColor = bgColor)
+            val areEdgesWrapped = dataStore[Keys.WRAP_EDGES].first() ?: DEFAULT_WRAP_EDGES
+            val processed = advanceLayers(
+                rows = rows,
+                cols = cols,
+                step = step,
+                bgColor = bgColor,
+                areEdgesWrapped = areEdgesWrapped,
+            )
             val updatedLayers = processed.map(ProcessedLayer::layer)
 
             val calendarSettings = calendarPreferences.settings.first()
@@ -78,27 +86,48 @@ class SaveScreensaver(
     // Decode, advance, and persist the layers in a single atomic update so overlapping
     // saves (worker + UI) cannot lose each other's generation increments.
     @Suppress("AvoidVarsExceptWithDelegate")
-    private suspend fun advanceLayers(rows: Int, cols: Int, step: Boolean, bgColor: Int): List<ProcessedLayer> {
+    private suspend fun advanceLayers(
+        rows: Int,
+        cols: Int,
+        step: Boolean,
+        bgColor: Int,
+        areEdgesWrapped: Boolean,
+    ): List<ProcessedLayer> {
         var processed = emptyList<ProcessedLayer>()
         dataStore.update(Keys.LAYERS) { storedLayers ->
             processed = LayersSerializer.decode(storedLayers).map { layer ->
-                processLayer(layer = layer, rows = rows, cols = cols, step = step, bgColor = bgColor)
+                processLayer(
+                    layer = layer,
+                    rows = rows,
+                    cols = cols,
+                    step = step,
+                    bgColor = bgColor,
+                    areEdgesWrapped = areEdgesWrapped,
+                )
             }
             LayersSerializer.encode(processed.map(ProcessedLayer::layer))
         }
         return processed
     }
 
+    @Suppress("LongParameterList")
     private fun processLayer(
         layer: Layer,
         rows: Int,
         cols: Int,
         step: Boolean,
         bgColor: Int,
+        areEdgesWrapped: Boolean,
     ): ProcessedLayer {
         if (!layer.isEnabled) return ProcessedLayer(layer = layer)
 
-        val controller = newController(rows = rows, cols = cols, state = layer.state, rule = layer.rule)
+        val controller = newController(
+            rows = rows,
+            cols = cols,
+            state = layer.state,
+            rule = layer.rule,
+            areEdgesWrapped = areEdgesWrapped,
+        )
         if (step) controller.update()
         val updatedLayer = layer.copy(
             state = controller.toString(),
@@ -114,17 +143,41 @@ class SaveScreensaver(
         )
     }
 
-    private fun newController(rows: Int, cols: Int, state: String?, rule: String): GolController =
+    private fun newController(
+        rows: Int,
+        cols: Int,
+        state: String?,
+        rule: String,
+        areEdgesWrapped: Boolean,
+    ): GolController =
         try {
             if (state == null) {
-                GolController(rows = rows, columns = cols, initialPattern = ".", rule = rule)
+                GolController(
+                    rows = rows,
+                    columns = cols,
+                    initialPattern = ".",
+                    rule = rule,
+                    areEdgesWrapped = areEdgesWrapped,
+                )
                     .apply { reset(pattern = null) }
             } else {
-                GolController(rows = rows, columns = cols, initialPattern = state, rule = rule)
+                GolController(
+                    rows = rows,
+                    columns = cols,
+                    initialPattern = state,
+                    rule = rule,
+                    areEdgesWrapped = areEdgesWrapped,
+                )
             }
         } catch (exception: IllegalArgumentException) {
             Log.w(TAG, "Pattern does not fit ${rows}x$cols grid, resetting to random", exception)
-            GolController(rows = rows, columns = cols, initialPattern = ".", rule = rule)
+            GolController(
+                rows = rows,
+                columns = cols,
+                initialPattern = ".",
+                rule = rule,
+                areEdgesWrapped = areEdgesWrapped,
+            )
                 .apply { reset(pattern = null) }
         }
 

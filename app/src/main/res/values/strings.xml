@@ -6,6 +6,8 @@
     <string name="next_step">Generate Next Step</string>
     <string name="freeze_alert">NOTE! You must disable freezing in order to for the game to update:\nSettings > Apps &amp; Notifications > Freeze Settings > GoL Screensaver (OFF)</string>
     <string name="reset_pattern">Reset Starting Pattern</string>
+    <string name="reset_pattern_selected">Reset Starting Pattern: %1$s</string>
+    <string name="custom_rle">Custom RLE</string>
     <string name="random_noise">Random Noise</string>
     <string name="paste_rle_label">Paste RLE pattern</string>
     <string name="apply_rle">Apply Pasted Pattern</string>
@@ -14,9 +16,11 @@
     <string name="report_issue">Report Issue or Request Feature</string>
     <string name="settings">Settings</string>
     <string name="rule_label">Game Rule:</string>
+    <string name="rule_selected">Game Rule: %1$s</string>
     <string name="cell_size_label">Cell Size:</string>
     <string name="update_interval_label">Update Interval:</string>
     <string name="show_stats_label">Show generation &amp; population on wallpaper</string>
+    <string name="wrap_edges_label">Wrap grid edges</string>
     <string name="wallpaper_target_label">Apply To:</string>
     <string name="target_lock">Lock screen</string>
     <string name="target_home">Home screen</string>
@@ -56,6 +60,8 @@
     <string name="calendar_section_title">Calendar overlay</string>
     <string name="calendar_enable">Show upcoming calendar events</string>
     <string name="calendar_choose">Choose calendars</string>
+    <string name="calendar_selected">Selected calendars:</string>
+    <string name="calendar_none_selected">None selected</string>
     <string name="calendar_done">Done</string>
     <string name="calendar_cancel">Cancel</string>
     <string name="calendar_primary">Primary calendar</string>

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -41,11 +44,14 @@ import me.haroldmartin.golwallpaper.domain.OverlayCorner
 import me.haroldmartin.golwallpaper.domain.OverlaySize
 import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
+import me.haroldmartin.golwallpaper.ui.theme.LARGE
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
 private val CALENDAR_LIST_MAX_HEIGHT = 360.dp
+private val SECTION_BORDER = 2.dp
 
 @Composable
+@Suppress("LongMethod")
 fun CalendarSection(
     settings: CalendarOverlaySettings,
     uiState: CalendarUiState,
@@ -71,7 +77,13 @@ fun CalendarSection(
         }
     }
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(SECTION_BORDER, Color.Black)
+            .padding(LARGE),
+        verticalArrangement = Arrangement.spacedBy(MEDIUM),
+    ) {
         Row(
             modifier = Modifier.clickable { isExpanded = !isExpanded },
             verticalAlignment = Alignment.CenterVertically,
@@ -80,13 +92,14 @@ fun CalendarSection(
             Text(
                 modifier = Modifier.padding(horizontal = MEDIUM),
                 fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.calendar_section_title),
             )
         }
         if (isExpanded) {
             CalendarOptions(
                 settings = settings,
-                issue = uiState.issue,
+                uiState = uiState,
                 onEnabledChange = { enabled ->
                     if (!enabled) {
                         callbacks.onDisable()
@@ -114,11 +127,14 @@ fun CalendarSection(
 @Composable
 private fun CalendarOptions(
     settings: CalendarOverlaySettings,
-    issue: CalendarUiIssue?,
+    uiState: CalendarUiState,
     onEnabledChange: (Boolean) -> Unit,
     onOpenPicker: () -> Unit,
     onSettingsChange: (CalendarOverlaySettings) -> Unit,
-) = Column(verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
+) = Column(
+    modifier = Modifier.padding(start = LARGE),
+    verticalArrangement = Arrangement.spacedBy(MEDIUM),
+) {
     Row(
         modifier = Modifier.toggleable(
             value = settings.isEnabled,
@@ -131,10 +147,13 @@ private fun CalendarOptions(
         Switch(checked = settings.isEnabled, onCheckedChange = null)
         Text(stringResource(R.string.calendar_enable))
     }
-    if (issue != null) Text(text = issue.displayText())
+    if (uiState.issue != null) Text(text = uiState.issue.displayText())
     if (settings.isEnabled) {
         AppButton(onClick = onOpenPicker) {
-            Text(stringResource(R.string.calendar_choose))
+            val selectedNames = uiState.sources
+                .filter { source -> source.id in settings.selectedCalendarIds }
+                .joinToString { source -> source.displayName }
+            Text(selectedNames.ifEmpty { stringResource(R.string.calendar_choose) })
         }
         OptionRow(
             label = stringResource(R.string.calendar_horizon),
