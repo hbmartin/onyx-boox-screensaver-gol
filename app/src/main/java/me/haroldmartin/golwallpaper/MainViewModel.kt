@@ -48,6 +48,7 @@ import me.haroldmartin.golwallpaper.utils.renderDeviceBitmap
 import me.haroldmartin.golwallpaper.utils.toRowsCols
 import me.haroldmartin.golwallpaper.utils.width
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -142,11 +143,14 @@ class MainViewModel(
     private var previewBufferPool: PreviewBufferPool? = null
 
     @Suppress("AvoidVarsExceptWithDelegate")
-    private var previewRenderRequested = false
+    private var isPreviewRenderRequested = false
 
     @Suppress("AvoidVarsExceptWithDelegate")
     private var nextPreviewFrameId = 0L
 
+    // Written on the main dispatcher but read from renderDispatcher inside
+    // renderPreviewFrame, so publish writes across threads.
+    @Volatile
     @Suppress("AvoidVarsExceptWithDelegate")
     private var previewSessionId = 0L
 
@@ -254,7 +258,7 @@ class MainViewModel(
         previewSessionId++
         val renderJob = previewRenderJob
         previewRenderJob = null
-        previewRenderRequested = false
+        isPreviewRenderRequested = false
         val bufferPool = previewBufferPool
         previewBufferPool = null
         _previewUiState.value = PreviewUiState()
@@ -262,6 +266,21 @@ class MainViewModel(
             renderJob?.cancelAndJoin()
             bufferPool?.recycle()
         }
+    }
+
+    override fun onCleared() {
+        // viewModelScope is already cancelled here, so recycle the pool on a
+        // scope that outlives it — after the (cancelled) render job finishes
+        // drawing, so a bitmap is never freed mid-render.
+        val renderJob = previewRenderJob
+        previewRenderJob = null
+        val bufferPool = previewBufferPool
+        previewBufferPool = null
+        CoroutineScope(renderDispatcher).launch {
+            renderJob?.cancelAndJoin()
+            bufferPool?.recycle()
+        }
+        super.onCleared()
     }
 
     fun playPreview() {
@@ -290,8 +309,8 @@ class MainViewModel(
 
     fun onPreviewFramePresented(frameId: Long) {
         val pool = previewBufferPool ?: return
-        if (pool.markPresented(frameId) && previewRenderRequested) {
-            previewRenderRequested = false
+        if (pool.markPresented(frameId) && isPreviewRenderRequested) {
+            isPreviewRenderRequested = false
             renderPreview()
         }
     }
@@ -315,18 +334,25 @@ class MainViewModel(
 
     private suspend fun preparePreviewBufferPool(sessionId: Long) {
         val resolution = previewGeometry.bitmapResolution
-        val currentPool = previewBufferPool
-        if (currentPool?.resolution == resolution) return
+        val oldPool = previewBufferPool
+        if (oldPool?.resolution == resolution) return
+        // Detach the old pool and its render job before suspending so a
+        // concurrent renderPreview() sees no pool and defers, rather than
+        // rendering into a pool that is about to be recycled below.
+        previewBufferPool = null
         val renderJob = previewRenderJob
         previewRenderJob = null
         renderJob?.cancelAndJoin()
         val newPool = withContext(renderDispatcher) { PreviewBufferPool(resolution) }
         if (previewUiState.value.isOpen && previewSessionId == sessionId) {
-            previewBufferPool?.recycle()
-            previewBufferPool = newPool
+            // Drop the displayed frame (which references the old bitmaps)
+            // before recycling them.
             _previewUiState.update { state -> state.copy(frame = null, isRendering = true) }
+            oldPool?.recycle()
+            previewBufferPool = newPool
         } else {
             newPool.recycle()
+            oldPool?.recycle()
         }
     }
 
@@ -495,10 +521,10 @@ class MainViewModel(
         val pool = previewBufferPool
         val buffer = pool?.acquire()
         if (pool == null || buffer == null) {
-            previewRenderRequested = true
+            isPreviewRenderRequested = true
             return
         }
-        previewRenderRequested = false
+        isPreviewRenderRequested = false
         val request = createPreviewRenderRequest()
         val sessionId = previewSessionId
         _previewUiState.update { state -> state.copy(isRendering = state.frame == null) }
