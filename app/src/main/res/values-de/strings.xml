@@ -5,6 +5,8 @@
     <string name="next_step">Nächsten Schritt erzeugen</string>
     <string name="freeze_alert">HINWEIS! Du musst das Einfrieren deaktivieren, damit sich das Spiel aktualisiert:\nEinstellungen > Apps &amp; Benachrichtigungen > Einfrieren > GoL Screensaver (AUS)</string>
     <string name="reset_pattern">Startmuster zurücksetzen</string>
+    <string name="reset_pattern_selected">Startmuster zurücksetzen: %1$s</string>
+    <string name="custom_rle">Benutzerdefiniertes RLE</string>
     <string name="random_noise">Zufallsrauschen</string>
     <string name="paste_rle_label">RLE-Muster einfügen</string>
     <string name="apply_rle">Eingefügtes Muster anwenden</string>
@@ -13,6 +15,7 @@
     <string name="report_issue">Fehler melden oder Funktion vorschlagen</string>
     <string name="settings">Einstellungen</string>
     <string name="rule_label">Spielregel:</string>
+    <string name="rule_selected">Spielregel: %1$s</string>
     <string name="cell_size_label">Zellengröße:</string>
     <string name="update_interval_label">Aktualisierungsintervall:</string>
     <string name="show_stats_label">Generation &amp; Population auf dem Hintergrund anzeigen</string>
@@ -55,6 +58,8 @@
     <string name="calendar_section_title">Kalenderüberlagerung</string>
     <string name="calendar_enable">Anstehende Kalendertermine anzeigen</string>
     <string name="calendar_choose">Kalender auswählen</string>
+    <string name="calendar_selected">Ausgewählte Kalender:</string>
+    <string name="calendar_none_selected">Keine ausgewählt</string>
     <string name="calendar_done">Fertig</string>
     <string name="calendar_cancel">Abbrechen</string>
     <string name="calendar_primary">Hauptkalender</string>

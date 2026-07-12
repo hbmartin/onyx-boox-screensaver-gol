@@ -1,7 +1,7 @@
 package me.haroldmartin.golwallpaper
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -65,5 +65,44 @@ class CalendarSectionTest {
         assertEquals(7L, toggledId.get())
         assertTrue(isConfirmed.get())
         assertTrue(isDismissed.get())
+    }
+
+    @Test
+    fun enabledOverlayShowsSelectedCalendars() {
+        composeRule.setContent {
+            GoLWallpaperTheme {
+                CalendarSection(
+                    settings = CalendarOverlaySettings(
+                        isEnabled = true,
+                        selectedCalendarIds = setOf(7),
+                    ),
+                    uiState = CalendarUiState(
+                        sources = listOf(
+                            CalendarSource(
+                                id = 7,
+                                displayName = "Work",
+                                accountName = "person@example.com",
+                                isPrimary = true,
+                            ),
+                        ),
+                    ),
+                    callbacks = CalendarSectionCallbacks(
+                        onPermissionResult = {},
+                        onOpenPicker = {},
+                        onDisable = {},
+                        onSettingsChange = {},
+                        onToggleDraft = {},
+                        onConfirmPicker = {},
+                        onDismissPicker = {},
+                    ),
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("Calendar overlay").performClick()
+
+        composeRule.onNodeWithText("Selected calendars:").assertIsDisplayed()
+        composeRule.onNodeWithText("Work").assertIsDisplayed()
+        composeRule.onNodeWithText("Choose calendars").assertIsDisplayed()
     }
 }

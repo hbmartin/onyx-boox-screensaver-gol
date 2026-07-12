@@ -5,6 +5,8 @@
     <string name="next_step">Generar siguiente paso</string>
     <string name="freeze_alert">¡NOTA! Debes desactivar la congelación para que el juego se actualice:\nAjustes > Aplicaciones y notificaciones > Congelación > GoL Screensaver (OFF)</string>
     <string name="reset_pattern">Restablecer patrón inicial</string>
+    <string name="reset_pattern_selected">Restablecer patrón inicial: %1$s</string>
+    <string name="custom_rle">RLE personalizado</string>
     <string name="random_noise">Ruido aleatorio</string>
     <string name="paste_rle_label">Pegar patrón RLE</string>
     <string name="apply_rle">Aplicar patrón pegado</string>
@@ -13,6 +15,7 @@
     <string name="report_issue">Informar de un problema o pedir una función</string>
     <string name="settings">Ajustes</string>
     <string name="rule_label">Regla del juego:</string>
+    <string name="rule_selected">Regla del juego: %1$s</string>
     <string name="cell_size_label">Tamaño de celda:</string>
     <string name="update_interval_label">Intervalo de actualización:</string>
     <string name="show_stats_label">Mostrar generación y población en el fondo</string>
@@ -56,6 +59,8 @@
     <string name="calendar_section_title">Superposición de calendario</string>
     <string name="calendar_enable">Mostrar próximos eventos</string>
     <string name="calendar_choose">Elegir calendarios</string>
+    <string name="calendar_selected">Calendarios seleccionados:</string>
+    <string name="calendar_none_selected">Ninguno seleccionado</string>
     <string name="calendar_done">Listo</string>
     <string name="calendar_cancel">Cancelar</string>
     <string name="calendar_primary">Calendario principal</string>

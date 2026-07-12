@@ -6,6 +6,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -32,6 +34,7 @@ import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.RulePreset
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
+import me.haroldmartin.golwallpaper.ui.theme.LARGE
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
@@ -46,6 +49,7 @@ private val BATTERY_THRESHOLDS = listOf(0, 10, 20, 30, 50)
 private const val MINS_PER_HOUR = 60L
 private val SELECTED_BORDER = 2.dp
 private val UNSELECTED_BORDER = 1.dp
+private val SECTION_BORDER = 2.dp
 
 @Composable
 @Suppress("LongParameterList")
@@ -60,7 +64,10 @@ fun SettingsPanel(
     var areSettingsVisible by remember { mutableStateOf(false) }
 
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .border(SECTION_BORDER, Color.Black)
+            .padding(LARGE),
         verticalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Row(
@@ -71,6 +78,7 @@ fun SettingsPanel(
             Text(
                 modifier = Modifier.padding(horizontal = MEDIUM),
                 fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.settings),
             )
         }
@@ -93,7 +101,10 @@ private fun SettingsOptions(
     showWallpaperTarget: Boolean,
     onBackgroundColorChange: (Int) -> Unit,
     onSettingsChange: (GolSettings) -> Unit,
-) = Column(verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
+) = Column(
+    modifier = Modifier.padding(start = LARGE),
+    verticalArrangement = Arrangement.spacedBy(MEDIUM),
+) {
     ColorPicker(
         label = stringResource(R.string.bg_color),
         selectedColor = backgroundColor,
@@ -188,13 +199,13 @@ private fun intervalLabel(mins: Long): String = if (mins < MINS_PER_HOUR) {
 
 @Composable
 internal fun <T> OptionRow(
-    label: String,
+    label: String?,
     options: List<Pair<String, T>>,
     selected: T,
     onSelect: (T) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(SMALL)) {
-        Text(text = label, fontWeight = FontWeight.Bold)
+        if (label != null) Text(text = label, fontWeight = FontWeight.Bold)
         Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(SMALL),

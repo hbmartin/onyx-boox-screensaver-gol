@@ -8,5 +8,5 @@ data class LayersCallbacks(
     val onEnabledChange: (Int, Boolean) -> Unit,
     val onColorChange: (Int, Int) -> Unit,
     val onRuleChange: (Int, String) -> Unit,
-    val onResetPattern: (Int, String?) -> Unit,
+    val onResetPattern: (Int, String?, String?) -> Unit,
 )

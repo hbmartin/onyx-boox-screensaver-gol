@@ -5,6 +5,8 @@
     <string name="next_step">Следующий шаг</string>
     <string name="freeze_alert">ВНИМАНИЕ! Отключите заморозку приложения, чтобы игра обновлялась:\nНастройки > Приложения и уведомления > Заморозка > GoL Screensaver (ВЫКЛ)</string>
     <string name="reset_pattern">Сбросить начальный узор</string>
+    <string name="reset_pattern_selected">Сбросить начальный узор: %1$s</string>
+    <string name="custom_rle">Пользовательский RLE</string>
     <string name="random_noise">Случайный шум</string>
     <string name="paste_rle_label">Вставить шаблон RLE</string>
     <string name="apply_rle">Применить вставленный шаблон</string>
@@ -13,6 +15,7 @@
     <string name="report_issue">Сообщить об ошибке или предложить функцию</string>
     <string name="settings">Настройки</string>
     <string name="rule_label">Правило игры:</string>
+    <string name="rule_selected">Правило игры: %1$s</string>
     <string name="cell_size_label">Размер клетки:</string>
     <string name="update_interval_label">Интервал обновления:</string>
     <string name="show_stats_label">Показывать поколение и население на обоях</string>
@@ -57,6 +60,8 @@
     <string name="calendar_section_title">Календарь на обоях</string>
     <string name="calendar_enable">Показывать предстоящие события</string>
     <string name="calendar_choose">Выбрать календари</string>
+    <string name="calendar_selected">Выбранные календари:</string>
+    <string name="calendar_none_selected">Ничего не выбрано</string>
     <string name="calendar_done">Готово</string>
     <string name="calendar_cancel">Отмена</string>
     <string name="calendar_primary">Основной календарь</string>

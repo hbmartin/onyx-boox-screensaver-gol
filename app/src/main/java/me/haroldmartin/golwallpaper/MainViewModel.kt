@@ -236,12 +236,8 @@ class MainViewModel(
     fun setLayerRule(context: Context, index: Int, rule: String) =
         updateLayers(context) { saveLayers.setRule(index, rule) }
 
-    fun resetLayer(context: Context, index: Int, pattern: String?) =
-        updateLayers(context) { saveLayers.resetPattern(index, pattern) }
-
-    fun saveNextStep(context: Context) = viewModelScope.launch {
-        saveScreenSaver(context, showHint = true, step = true)
-    }
+    fun resetLayer(context: Context, index: Int, pattern: String?, startingPattern: String?) =
+        updateLayers(context) { saveLayers.resetPattern(index, pattern, startingPattern) }
 
     fun openPreview() = viewModelScope.launch {
         if (previewUiState.value.isOpen) return@launch

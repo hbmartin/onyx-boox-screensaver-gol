@@ -27,6 +27,7 @@ import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 
 @Composable
+@Suppress("MultipleEmitters")
 fun ColorPicker(label: String, selectedColor: Int, onClick: (Int) -> Unit) {
     var isPaletteVisible by remember { mutableStateOf(false) }
 
@@ -52,6 +53,8 @@ fun ColorPicker(label: String, selectedColor: Int, onClick: (Int) -> Unit) {
         }
     }
     if (isPaletteVisible) {
-        ColorPicker(onClick = { color -> onClick(color) })
+        Box(modifier = Modifier.padding(start = LARGE)) {
+            ColorPicker(onClick = { color -> onClick(color) })
+        }
     }
 }

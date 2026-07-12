@@ -11,7 +11,14 @@ class LayersSerializerTest {
     @Test
     fun `encode then decode preserves every field including id`() {
         val layers = listOf(
-            Layer(fgColor = 1, rule = "B3/S23", state = "abc", generation = 4, isEnabled = true),
+            Layer(
+                fgColor = 1,
+                rule = "B3/S23",
+                state = "abc",
+                startingPattern = "ARK1",
+                generation = 4,
+                isEnabled = true,
+            ),
             Layer(fgColor = 2, rule = "B36/S23", state = null, generation = 0, isEnabled = false),
         )
 

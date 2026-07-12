@@ -128,16 +128,16 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     onRuleChange = { index, rule ->
                         viewModel.setLayerRule(context, index, rule)
                     },
-                    onResetPattern = { index, pattern ->
-                        viewModel.resetLayer(context, index, pattern)
+                    onResetPattern = { index, pattern, startingPattern ->
+                        viewModel.resetLayer(
+                            context = context,
+                            index = index,
+                            pattern = pattern,
+                            startingPattern = startingPattern,
+                        )
                     },
                 ),
             )
-            AppButton(
-                onClick = { viewModel.saveNextStep(context) },
-            ) {
-                Text(stringResource(R.string.next_step))
-            }
             AppButton(
                 onClick = { viewModel.openIssues(context) },
             ) {
