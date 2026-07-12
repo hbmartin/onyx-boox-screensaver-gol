@@ -40,6 +40,10 @@
     <string name="move_layer_up">上移图层</string>
     <string name="move_layer_down">下移图层</string>
     <string name="preview_title">合成预览</string>
+    <string name="preview_open">预览</string>
+    <string name="preview_close">关闭</string>
+    <string name="preview_rendering">正在渲染预览…</string>
+    <string name="preview_fullscreen_description">全屏壁纸预览</string>
     <string name="preview_play">播放</string>
     <string name="preview_pause">暂停</string>
     <string name="preview_step">单步</string>

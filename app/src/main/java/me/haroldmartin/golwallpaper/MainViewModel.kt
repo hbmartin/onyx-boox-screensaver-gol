@@ -1,6 +1,8 @@
 package me.haroldmartin.golwallpaper
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -35,14 +37,14 @@ import me.haroldmartin.golwallpaper.domain.setRule
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
+import me.haroldmartin.golwallpaper.utils.DeviceOverlays
 import me.haroldmartin.golwallpaper.utils.RenderLayer
+import me.haroldmartin.golwallpaper.utils.RenderStats
 import me.haroldmartin.golwallpaper.utils.Resolution
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
-import me.haroldmartin.golwallpaper.utils.createCompositeBitmap
-import me.haroldmartin.golwallpaper.utils.drawCalendarOverlay
 import me.haroldmartin.golwallpaper.utils.getScreenResolution
 import me.haroldmartin.golwallpaper.utils.height
-import me.haroldmartin.golwallpaper.utils.scaledToFit
+import me.haroldmartin.golwallpaper.utils.renderDeviceBitmap
 import me.haroldmartin.golwallpaper.utils.toRowsCols
 import me.haroldmartin.golwallpaper.utils.width
 import kotlinx.coroutines.CoroutineDispatcher
@@ -63,13 +65,17 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+private const val TAG = "MainViewModel"
 private const val STOP_TIMEOUT_MILLIS = 5000L
 private const val PREVIEW_DELAY_MILLIS = 500L
-private const val PREVIEW_MAX_WIDTH = 360
-private const val PREVIEW_MAX_HEIGHT = 480
+private const val PREVIEW_FALLBACK_WIDTH = 360
+private const val PREVIEW_FALLBACK_HEIGHT = 480
+private const val PREVIEW_BUFFER_COUNT = 2
 private const val CALENDAR_CHANGE_DEBOUNCE_MILLIS = 500L
 
 enum class CalendarUiIssue {
@@ -83,6 +89,19 @@ data class CalendarUiState(
     val draftSelectedIds: Set<Long> = emptySet(),
     val isPickerVisible: Boolean = false,
     val issue: CalendarUiIssue? = null,
+)
+
+data class PreviewFrame(
+    val id: Long,
+    val image: ImageBitmap,
+    internal val bufferIndex: Int,
+)
+
+data class PreviewUiState(
+    val isOpen: Boolean = false,
+    val isRendering: Boolean = false,
+    val isPlaying: Boolean = false,
+    val frame: PreviewFrame? = null,
 )
 
 @Suppress("TooManyFunctions", "LongParameterList")
@@ -106,10 +125,8 @@ class MainViewModel(
 
     private val previewLayers = MutableStateFlow<List<PreviewLayer>>(emptyList())
     private val previewBackground = MutableStateFlow(Color.White.toArgb())
-    private val _previewImage = MutableStateFlow<ImageBitmap?>(null)
-    val previewImage: StateFlow<ImageBitmap?> = _previewImage.asStateFlow()
-    private val previewPlayingMutable = MutableStateFlow(false)
-    val previewPlaying: StateFlow<Boolean> = previewPlayingMutable.asStateFlow()
+    private val _previewUiState = MutableStateFlow(PreviewUiState())
+    val previewUiState: StateFlow<PreviewUiState> = _previewUiState.asStateFlow()
     private val previewAgenda = MutableStateFlow<CalendarAgenda?>(null)
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
     val calendarUiState: StateFlow<CalendarUiState> = _calendarUiState.asStateFlow()
@@ -121,17 +138,31 @@ class MainViewModel(
     private var previewRenderJob: Job? = null
 
     @Suppress("AvoidVarsExceptWithDelegate")
+    private var previewBufferPool: PreviewBufferPool? = null
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var previewRenderRequested = false
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var nextPreviewFrameId = 0L
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var previewSessionId = 0L
+
+    @Suppress("AvoidVarsExceptWithDelegate")
     private var calendarObservationJob: Job? = null
 
     init {
         viewModelScope.launch {
-            previewPlayingMutable.collectLatest { isPlaying ->
-                while (isPlaying && currentCoroutineContext().isActive) {
-                    advancePreview()
-                    renderPreview()
-                    delay(PREVIEW_DELAY_MILLIS)
+            previewUiState.map { state -> state.isPlaying }
+                .distinctUntilChanged()
+                .collectLatest { isPlaying ->
+                    while (isPlaying && previewUiState.value.isOpen && currentCoroutineContext().isActive) {
+                        advancePreview()
+                        renderPreview()
+                        delay(PREVIEW_DELAY_MILLIS)
+                    }
                 }
-            }
         }
     }
 
@@ -207,20 +238,59 @@ class MainViewModel(
         saveScreenSaver(context, showHint = true, step = true)
     }
 
+    fun openPreview() = viewModelScope.launch {
+        if (previewUiState.value.isOpen) return@launch
+        val sessionId = ++previewSessionId
+        _previewUiState.value = PreviewUiState(isOpen = true, isRendering = true)
+        syncPreviewState()
+        preparePreviewBufferPool(sessionId)
+        if (previewUiState.value.isOpen && previewSessionId == sessionId) {
+            renderPreview()
+        }
+    }
+
+    fun closePreview() {
+        previewSessionId++
+        previewRenderJob?.cancel()
+        previewRenderJob = null
+        previewRenderRequested = false
+        previewBufferPool = null
+        _previewUiState.value = PreviewUiState()
+    }
+
     fun playPreview() {
-        previewPlayingMutable.value = true
+        _previewUiState.update { state ->
+            if (state.isOpen && state.frame != null) state.copy(isPlaying = true) else state
+        }
     }
 
     fun pausePreview() {
-        previewPlayingMutable.value = false
+        _previewUiState.update { state -> state.copy(isPlaying = false) }
     }
 
     fun stepPreview() = viewModelScope.launch {
+        if (!previewUiState.value.isOpen || previewUiState.value.isPlaying) return@launch
         advancePreview()
         renderPreview()
     }
 
     fun resyncPreview() = viewModelScope.launch {
+        syncPreviewState()
+        if (previewUiState.value.isOpen) {
+            preparePreviewBufferPool(previewSessionId)
+            renderPreview()
+        }
+    }
+
+    fun onPreviewFramePresented(frameId: Long) {
+        val pool = previewBufferPool ?: return
+        if (pool.markPresented(frameId) && previewRenderRequested) {
+            previewRenderRequested = false
+            renderPreview()
+        }
+    }
+
+    private suspend fun syncPreviewState() {
         val state = uiState.value
         previewGeometry = createPreviewGeometry(
             resolution = getScreenResolution(appContext),
@@ -235,7 +305,17 @@ class MainViewModel(
             layer.toPreviewLayer(background = background, geometry = previewGeometry)
         }
         refreshCalendarAgenda()
-        renderPreview()
+    }
+
+    private suspend fun preparePreviewBufferPool(sessionId: Long) {
+        val resolution = previewGeometry.bitmapResolution
+        val currentPool = previewBufferPool
+        if (currentPool?.resolution == resolution) return
+        val newPool = withContext(renderDispatcher) { PreviewBufferPool(resolution) }
+        if (previewUiState.value.isOpen && previewSessionId == sessionId) {
+            previewBufferPool = newPool
+            _previewUiState.update { state -> state.copy(frame = null, isRendering = true) }
+        }
     }
 
     fun onCalendarPermissionResult(granted: Boolean) {
@@ -388,17 +468,43 @@ class MainViewModel(
         }
 
     private fun advancePreview() {
-        previewLayers.value = previewLayers.value.onEach { previewLayer ->
-            if (previewLayer.isEnabled) previewLayer.controller.update()
+        previewLayers.value = previewLayers.value.map { previewLayer ->
+            if (previewLayer.isEnabled) {
+                previewLayer.controller.update()
+                previewLayer.copy(generation = previewLayer.generation + 1)
+            } else {
+                previewLayer
+            }
         }
     }
 
     private fun renderPreview() {
+        if (!previewUiState.value.isOpen) return
+        val pool = previewBufferPool
+        val buffer = pool?.acquire()
+        if (pool == null || buffer == null) {
+            previewRenderRequested = true
+            return
+        }
+        previewRenderRequested = false
+        val request = createPreviewRenderRequest()
+        val sessionId = previewSessionId
+        _previewUiState.update { state -> state.copy(isRendering = state.frame == null) }
+        previewRenderJob = viewModelScope.launch(renderDispatcher) {
+            renderPreviewFrame(
+                pool = pool,
+                buffer = buffer,
+                request = request,
+                sessionId = sessionId,
+            )
+        }
+    }
+
+    private fun createPreviewRenderRequest(): PreviewRenderRequest {
         val background = previewBackground.value
-        val agenda = previewAgenda.value
-        val calendarSettings = uiState.value.calendarOverlaySettings
-        val geometry = previewGeometry
-        val layers = previewLayers.value.filter(PreviewLayer::isEnabled).map { previewLayer ->
+        val currentUiState = uiState.value
+        val currentPreviewLayers = previewLayers.value
+        val layers = currentPreviewLayers.filter(PreviewLayer::isEnabled).map { previewLayer ->
             RenderLayer(
                 grid = Array(previewLayer.controller.grid.size) { row ->
                     previewLayer.controller.grid[row].clone()
@@ -406,28 +512,61 @@ class MainViewModel(
                 fgColor = previewLayer.fgColor,
             )
         }
-        previewRenderJob?.cancel()
-        previewRenderJob = viewModelScope.launch(renderDispatcher) {
-            val bitmap = createCompositeBitmap(
-                width = geometry.bitmapResolution.width,
-                height = geometry.bitmapResolution.height,
-                backgroundColor = background,
-                layers = layers,
+        val stats = if (currentUiState.settings.isStatsVisible) {
+            RenderStats(
+                generation = currentPreviewLayers.filter(PreviewLayer::isEnabled)
+                    .maxOfOrNull(PreviewLayer::generation)
+                    ?: 0,
+                population = currentPreviewLayers.filter(PreviewLayer::isEnabled)
+                    .sumOf { previewLayer -> previewLayer.controller.population },
             )
-            if (agenda != null) {
-                drawCalendarOverlay(
-                    context = appContext,
-                    bitmap = bitmap,
-                    agenda = agenda,
-                    settings = calendarSettings,
-                    backgroundColor = background,
-                )
+        } else {
+            null
+        }
+        return PreviewRenderRequest(
+            background = background,
+            layers = layers,
+            overlays = DeviceOverlays(
+                calendarAgenda = previewAgenda.value,
+                calendarSettings = currentUiState.calendarOverlaySettings,
+                stats = stats,
+            ),
+        )
+    }
+
+    @Suppress("AvoidVarsExceptWithDelegate", "TooGenericExceptionCaught")
+    private suspend fun renderPreviewFrame(
+        pool: PreviewBufferPool,
+        buffer: PreviewBuffer,
+        request: PreviewRenderRequest,
+        sessionId: Long,
+    ) {
+        var isPublished = false
+        try {
+            renderDeviceBitmap(
+                context = appContext,
+                bitmap = buffer.bitmap,
+                backgroundColor = request.background,
+                layers = request.layers,
+                overlays = request.overlays,
+            )
+            currentCoroutineContext().ensureActive()
+            if (!previewUiState.value.isOpen || previewSessionId != sessionId) return
+            val frame = pool.publish(buffer, ++nextPreviewFrameId)
+            isPublished = true
+            _previewUiState.update { state ->
+                if (state.isOpen && previewSessionId == sessionId) {
+                    state.copy(isRendering = false, frame = frame)
+                } else {
+                    state
+                }
             }
-            if (currentCoroutineContext().isActive) {
-                _previewImage.value = bitmap.asImageBitmap()
-            } else {
-                bitmap.recycle()
-            }
+        } catch (exception: Exception) {
+            currentCoroutineContext().ensureActive()
+            Log.e(TAG, "Failed to render preview", exception)
+            _previewUiState.update { state -> state.copy(isRendering = false) }
+        } finally {
+            if (!isPublished) pool.release(buffer)
         }
     }
 
@@ -464,6 +603,7 @@ class MainViewModel(
             ),
             fgColor = resolvePreviewColor(fgColor, except = setOf(background)),
             isEnabled = isEnabled,
+            generation = generation,
         )
 
     @Suppress("SwallowedException")
@@ -505,21 +645,74 @@ private data class PreviewLayer(
     val controller: GolController,
     val fgColor: Int,
     val isEnabled: Boolean,
+    val generation: Int,
 )
 
-private data class PreviewGeometry(
-    val bitmapResolution: Resolution = Resolution(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT),
-    val rows: Int = PREVIEW_MAX_HEIGHT / DEFAULT_CELL_SIZE,
-    val columns: Int = PREVIEW_MAX_WIDTH / DEFAULT_CELL_SIZE,
+internal data class PreviewGeometry(
+    val bitmapResolution: Resolution = Resolution(PREVIEW_FALLBACK_WIDTH, PREVIEW_FALLBACK_HEIGHT),
+    val rows: Int = PREVIEW_FALLBACK_HEIGHT / DEFAULT_CELL_SIZE,
+    val columns: Int = PREVIEW_FALLBACK_WIDTH / DEFAULT_CELL_SIZE,
 )
 
-private fun createPreviewGeometry(resolution: Resolution, cellSize: Int): PreviewGeometry {
+internal fun createPreviewGeometry(resolution: Resolution, cellSize: Int): PreviewGeometry {
     val wallpaperResolution = resolution.takeIf { it.width > 0 && it.height > 0 }
-        ?: Resolution(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT)
+        ?: Resolution(PREVIEW_FALLBACK_WIDTH, PREVIEW_FALLBACK_HEIGHT)
     val (rows, columns) = wallpaperResolution.toRowsCols(cellSize)
     return PreviewGeometry(
-        bitmapResolution = wallpaperResolution.scaledToFit(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT),
+        bitmapResolution = wallpaperResolution,
         rows = rows,
         columns = columns,
     )
+}
+
+private data class PreviewBuffer(
+    val index: Int,
+    val bitmap: Bitmap,
+    val image: ImageBitmap,
+)
+
+private data class PreviewRenderRequest(
+    val background: Int,
+    val layers: List<RenderLayer>,
+    val overlays: DeviceOverlays,
+)
+
+private class PreviewBufferPool(val resolution: Resolution) {
+    private val lock = Any()
+    private val buffers = List(PREVIEW_BUFFER_COUNT) { index ->
+        val bitmap = Bitmap.createBitmap(resolution.width, resolution.height, Bitmap.Config.ARGB_8888)
+        PreviewBuffer(index = index, bitmap = bitmap, image = bitmap.asImageBitmap())
+    }
+    private val renderingIndices = mutableSetOf<Int>()
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var displayedIndex: Int? = null
+
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var pendingFrame: PreviewFrame? = null
+
+    fun acquire(): PreviewBuffer? = synchronized(lock) {
+        if (pendingFrame != null || renderingIndices.isNotEmpty()) return@synchronized null
+        buffers.firstOrNull { buffer ->
+            buffer.index != displayedIndex && buffer.index !in renderingIndices
+        }?.also { buffer -> renderingIndices += buffer.index }
+    }
+
+    fun publish(buffer: PreviewBuffer, frameId: Long): PreviewFrame = synchronized(lock) {
+        check(renderingIndices.remove(buffer.index)) { "Preview buffer was not acquired" }
+        PreviewFrame(id = frameId, image = buffer.image, bufferIndex = buffer.index)
+            .also { frame -> pendingFrame = frame }
+    }
+
+    fun release(buffer: PreviewBuffer) {
+        synchronized(lock) { renderingIndices.remove(buffer.index) }
+    }
+
+    fun markPresented(frameId: Long): Boolean = synchronized(lock) {
+        val frame = pendingFrame?.takeIf { pending -> pending.id == frameId }
+            ?: return@synchronized false
+        displayedIndex = frame.bufferIndex
+        pendingFrame = null
+        true
+    }
 }

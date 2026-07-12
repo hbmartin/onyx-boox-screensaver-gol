@@ -40,6 +40,10 @@
     <string name="move_layer_up">Déplacer le calque vers le haut</string>
     <string name="move_layer_down">Déplacer le calque vers le bas</string>
     <string name="preview_title">Aperçu composite</string>
+    <string name="preview_open">Aperçu</string>
+    <string name="preview_close">Fermer</string>
+    <string name="preview_rendering">Rendu de l’aperçu…</string>
+    <string name="preview_fullscreen_description">Aperçu du fond d’écran en plein écran</string>
     <string name="preview_play">Lecture</string>
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Étape</string>

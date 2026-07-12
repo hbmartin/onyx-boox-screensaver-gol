@@ -41,6 +41,10 @@
     <string name="move_layer_up">Move layer up</string>
     <string name="move_layer_down">Move layer down</string>
     <string name="preview_title">Composite preview</string>
+    <string name="preview_open">Preview</string>
+    <string name="preview_close">Close</string>
+    <string name="preview_rendering">Rendering preview…</string>
+    <string name="preview_fullscreen_description">Full-screen wallpaper preview</string>
     <string name="preview_play">Play</string>
     <string name="preview_pause">Pause</string>
     <string name="preview_step">Step</string>
