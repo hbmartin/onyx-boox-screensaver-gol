@@ -19,6 +19,7 @@
     <string name="cell_size_label">Taille des cellules :</string>
     <string name="update_interval_label">Intervalle de mise à jour :</string>
     <string name="show_stats_label">Afficher génération et population sur le fond d\'écran</string>
+    <string name="wrap_edges_label">Relier les bords de la grille</string>
     <string name="wallpaper_target_label">Appliquer à :</string>
     <string name="target_lock">Écran de verrouillage</string>
     <string name="target_home">Écran d\'accueil</string>

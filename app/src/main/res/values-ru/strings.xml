@@ -19,6 +19,7 @@
     <string name="cell_size_label">Размер клетки:</string>
     <string name="update_interval_label">Интервал обновления:</string>
     <string name="show_stats_label">Показывать поколение и население на обоях</string>
+    <string name="wrap_edges_label">Замыкать края сетки</string>
     <string name="wallpaper_target_label">Применить к:</string>
     <string name="target_lock">Экран блокировки</string>
     <string name="target_home">Домашний экран</string>

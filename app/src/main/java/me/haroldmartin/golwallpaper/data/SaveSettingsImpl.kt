@@ -28,4 +28,8 @@ class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
         require(pct in 0..PERCENT_MAX) { "Battery threshold must be 0..$PERCENT_MAX: $pct" }
         dataStore[UserDataStore.Keys.BATTERY_THRESHOLD] = pct
     }
+
+    override suspend fun setWrapEdges(wrap: Boolean) {
+        dataStore[UserDataStore.Keys.WRAP_EDGES] = wrap
+    }
 }

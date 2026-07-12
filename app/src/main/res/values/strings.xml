@@ -20,6 +20,7 @@
     <string name="cell_size_label">Cell Size:</string>
     <string name="update_interval_label">Update Interval:</string>
     <string name="show_stats_label">Show generation &amp; population on wallpaper</string>
+    <string name="wrap_edges_label">Wrap grid edges</string>
     <string name="wallpaper_target_label">Apply To:</string>
     <string name="target_lock">Lock screen</string>
     <string name="target_home">Home screen</string>

@@ -19,6 +19,7 @@
     <string name="cell_size_label">单元格大小：</string>
     <string name="update_interval_label">更新间隔：</string>
     <string name="show_stats_label">在壁纸上显示世代和细胞数量</string>
+    <string name="wrap_edges_label">环绕网格边缘</string>
     <string name="wallpaper_target_label">应用到：</string>
     <string name="target_lock">锁屏</string>
     <string name="target_home">主屏幕</string>

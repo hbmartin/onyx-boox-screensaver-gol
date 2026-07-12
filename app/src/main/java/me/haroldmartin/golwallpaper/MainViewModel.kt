@@ -207,6 +207,9 @@ class MainViewModel(
         if (settings.batteryThresholdPct != current.batteryThresholdPct) {
             saveSettings.setBatteryThreshold(settings.batteryThresholdPct)
         }
+        if (settings.areEdgesWrapped != current.areEdgesWrapped) {
+            saveSettings.setWrapEdges(settings.areEdgesWrapped)
+        }
         if (settings.updateIntervalMins != current.updateIntervalMins) {
             saveSettings.setUpdateIntervalMins(settings.updateIntervalMins)
             scheduleWallpaperUpdates(context, settings.updateIntervalMins)
@@ -323,7 +326,11 @@ class MainViewModel(
         )
         previewBackground.value = background
         previewLayers.value = state.layers.map { layer ->
-            layer.toPreviewLayer(background = background, geometry = previewGeometry)
+            layer.toPreviewLayer(
+                background = background,
+                geometry = previewGeometry,
+                areEdgesWrapped = state.settings.areEdgesWrapped,
+            )
         }
         refreshCalendarAgenda()
     }
@@ -652,13 +659,18 @@ class MainViewModel(
         }
     }
 
-    private fun Layer.toPreviewLayer(background: Int, geometry: PreviewGeometry): PreviewLayer =
+    private fun Layer.toPreviewLayer(
+        background: Int,
+        geometry: PreviewGeometry,
+        areEdgesWrapped: Boolean,
+    ): PreviewLayer =
         PreviewLayer(
             controller = previewController(
                 state = state,
                 rule = rule,
                 rows = geometry.rows,
                 columns = geometry.columns,
+                areEdgesWrapped = areEdgesWrapped,
             ),
             fgColor = resolvePreviewColor(fgColor, except = setOf(background)),
             isEnabled = isEnabled,
@@ -671,6 +683,7 @@ class MainViewModel(
         rule: String,
         rows: Int,
         columns: Int,
+        areEdgesWrapped: Boolean,
     ): GolController = try {
         if (state == null) {
             GolController(
@@ -678,6 +691,7 @@ class MainViewModel(
                 columns = columns,
                 initialPattern = ".",
                 rule = rule,
+                areEdgesWrapped = areEdgesWrapped,
             ).apply { reset(pattern = null) }
         } else {
             GolController(
@@ -685,6 +699,7 @@ class MainViewModel(
                 columns = columns,
                 initialPattern = state,
                 rule = rule,
+                areEdgesWrapped = areEdgesWrapped,
             )
         }
     } catch (exception: IllegalArgumentException) {
@@ -693,6 +708,7 @@ class MainViewModel(
             columns = columns,
             initialPattern = ".",
             rule = rule,
+            areEdgesWrapped = areEdgesWrapped,
         ).apply { reset(pattern = null) }
     }
 

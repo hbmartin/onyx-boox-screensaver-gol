@@ -147,6 +147,11 @@ private fun SettingsOptions(
         )
     }
     SwitchRow(
+        label = stringResource(R.string.wrap_edges_label),
+        checked = settings.areEdgesWrapped,
+        onCheckedChange = { wrap -> onSettingsChange(settings.copy(areEdgesWrapped = wrap)) },
+    )
+    SwitchRow(
         label = stringResource(R.string.show_stats_label),
         checked = settings.isStatsVisible,
         onCheckedChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
