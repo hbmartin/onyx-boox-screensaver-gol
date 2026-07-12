@@ -1,5 +1,6 @@
 package me.haroldmartin.golwallpaper.ui
 
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -228,18 +229,37 @@ private fun BoxScope.PreviewControls(
 }
 
 @Composable
+@Suppress("AvoidVarsExceptWithDelegate")
 private fun HideDialogSystemBars() {
     val view = LocalView.current
     DisposableEffect(view) {
-        val window = (view.parent as? DialogWindowProvider)?.window
-        if (window == null) {
-            onDispose {}
-        } else {
-            val controller = WindowCompat.getInsetsController(window, view)
-            controller.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            onDispose { controller.show(WindowInsetsCompat.Type.systemBars()) }
+        var controller: WindowInsetsControllerCompat? = null
+
+        fun hideSystemBars(attachedView: View) {
+            val window = (attachedView.parent as? DialogWindowProvider)?.window ?: return
+            controller = WindowCompat.getInsetsController(window, attachedView).also { insetsController ->
+                insetsController.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                insetsController.hide(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+
+        val listener = object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(attachedView: View) {
+                hideSystemBars(attachedView)
+            }
+
+            override fun onViewDetachedFromWindow(detachedView: View) = Unit
+        }
+
+        view.addOnAttachStateChangeListener(listener)
+        if (view.isAttachedToWindow) {
+            hideSystemBars(view)
+        }
+
+        onDispose {
+            view.removeOnAttachStateChangeListener(listener)
+            controller?.show(WindowInsetsCompat.Type.systemBars())
         }
     }
 }
