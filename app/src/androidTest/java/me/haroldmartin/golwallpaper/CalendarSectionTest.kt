@@ -1,7 +1,10 @@
 package me.haroldmartin.golwallpaper
 
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -74,7 +77,7 @@ class CalendarSectionTest {
                 CalendarSection(
                     settings = CalendarOverlaySettings(
                         isEnabled = true,
-                        selectedCalendarIds = setOf(7),
+                        selectedCalendarIds = setOf(7, 8),
                     ),
                     uiState = CalendarUiState(
                         sources = listOf(
@@ -83,6 +86,12 @@ class CalendarSectionTest {
                                 displayName = "Work",
                                 accountName = "person@example.com",
                                 isPrimary = true,
+                            ),
+                            CalendarSource(
+                                id = 8,
+                                displayName = "Personal",
+                                accountName = "person@example.com",
+                                isPrimary = false,
                             ),
                         ),
                     ),
@@ -101,8 +110,8 @@ class CalendarSectionTest {
 
         composeRule.onNodeWithText("Calendar overlay").performClick()
 
-        composeRule.onNodeWithText("Selected calendars:").assertIsDisplayed()
-        composeRule.onNodeWithText("Work").assertIsDisplayed()
-        composeRule.onNodeWithText("Choose calendars").assertIsDisplayed()
+        composeRule.onAllNodesWithText("Selected calendars:").assertCountEquals(0)
+        composeRule.onNodeWithText("Work, Personal").assertIsDisplayed().assertHasClickAction()
+        composeRule.onAllNodesWithText("Choose calendars").assertCountEquals(0)
     }
 }

@@ -451,6 +451,7 @@ class MainViewModel(
     fun startCalendarObservation() {
         if (calendarObservationJob != null) return
         calendarObservationJob = viewModelScope.launch {
+            observeCalendarSources()
             val initialAgenda = previewAgenda.value
             refreshCalendarAgenda()
             if (previewAgenda.value != initialAgenda) {
@@ -470,6 +471,7 @@ class MainViewModel(
                 }
                 .debounce(CALENDAR_CHANGE_DEBOUNCE_MILLIS)
                 .collect {
+                    refreshCalendarSources()
                     val oldAgenda = previewAgenda.value
                     refreshCalendarAgenda()
                     if (previewAgenda.value != oldAgenda) {
@@ -478,6 +480,29 @@ class MainViewModel(
                     }
                 }
         }
+    }
+
+    private fun CoroutineScope.observeCalendarSources() = launch {
+        uiState.map { state -> state.calendarOverlaySettings.isEnabled }
+            .distinctUntilChanged()
+            .collectLatest { isEnabled ->
+                if (isEnabled) refreshCalendarSources()
+            }
+    }
+
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    private suspend fun refreshCalendarSources() {
+        if (!calendarRepository.hasPermission()) {
+            _calendarUiState.update { state -> state.copy(sources = emptyList()) }
+            return
+        }
+        val sources = try {
+            calendarRepository.getCalendars()
+        } catch (exception: Exception) {
+            currentCoroutineContext().ensureActive()
+            emptyList()
+        }
+        _calendarUiState.update { state -> state.copy(sources = sources) }
     }
 
     fun stopCalendarObservation() {

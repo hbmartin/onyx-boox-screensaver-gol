@@ -149,12 +149,11 @@ private fun CalendarOptions(
     }
     if (uiState.issue != null) Text(text = uiState.issue.displayText())
     if (settings.isEnabled) {
-        SelectedCalendars(
-            sources = uiState.sources,
-            selectedIds = settings.selectedCalendarIds,
-        )
         AppButton(onClick = onOpenPicker) {
-            Text(stringResource(R.string.calendar_choose))
+            val selectedNames = uiState.sources
+                .filter { source -> source.id in settings.selectedCalendarIds }
+                .joinToString { source -> source.displayName }
+            Text(selectedNames.ifEmpty { stringResource(R.string.calendar_choose) })
         }
         OptionRow(
             label = stringResource(R.string.calendar_horizon),
@@ -187,22 +186,6 @@ private fun CalendarOptions(
             selected = settings.size,
             onSelect = { size -> onSettingsChange(settings.copy(size = size)) },
         )
-    }
-}
-
-@Composable
-private fun SelectedCalendars(sources: List<CalendarSource>, selectedIds: Set<Long>) {
-    val selectedSources = sources.filter { source -> source.id in selectedIds }
-    Column(verticalArrangement = Arrangement.spacedBy(MEDIUM)) {
-        Text(
-            text = stringResource(R.string.calendar_selected),
-            fontWeight = FontWeight.Bold,
-        )
-        if (selectedSources.isEmpty()) {
-            Text(stringResource(R.string.calendar_none_selected))
-        } else {
-            selectedSources.forEach { source -> Text(source.displayName) }
-        }
     }
 }
 
