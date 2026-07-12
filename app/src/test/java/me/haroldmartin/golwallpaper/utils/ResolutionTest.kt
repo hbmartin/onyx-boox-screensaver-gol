@@ -1,10 +1,51 @@
 package me.haroldmartin.golwallpaper.utils
 
+import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class ResolutionTest {
+    @Test
+    fun `auto orientation preserves device resolution`() {
+        assertEquals(
+            Resolution(1200, 1600),
+            Resolution(1200, 1600).oriented(OutputOrientation.AUTO),
+        )
+    }
+
+    @Test
+    fun `portrait orientation places shorter dimension first`() {
+        assertEquals(
+            Resolution(1200, 1600),
+            Resolution(1600, 1200).oriented(OutputOrientation.PORTRAIT),
+        )
+        assertEquals(
+            Resolution(1200, 1600),
+            Resolution(1200, 1600).oriented(OutputOrientation.PORTRAIT),
+        )
+    }
+
+    @Test
+    fun `landscape orientation places longer dimension first`() {
+        assertEquals(
+            Resolution(1600, 1200),
+            Resolution(1200, 1600).oriented(OutputOrientation.LANDSCAPE),
+        )
+        assertEquals(
+            Resolution(1600, 1200),
+            Resolution(1600, 1200).oriented(OutputOrientation.LANDSCAPE),
+        )
+    }
+
+    @Test
+    fun `locked orientations preserve square resolution`() {
+        val square = Resolution(1200, 1200)
+
+        assertEquals(square, square.oriented(OutputOrientation.PORTRAIT))
+        assertEquals(square, square.oriented(OutputOrientation.LANDSCAPE))
+    }
+
     @Test
     fun `portrait grid uses height for rows and width for columns`() {
         assertEquals(80 to 60, Resolution(1200, 1600).toRowsCols(cellSize = 20))

@@ -21,6 +21,7 @@ import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
+import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import me.haroldmartin.golwallpaper.domain.SaveBgColor
 import me.haroldmartin.golwallpaper.domain.SaveLayers
 import me.haroldmartin.golwallpaper.domain.SaveSettings
@@ -44,6 +45,7 @@ import me.haroldmartin.golwallpaper.utils.Resolution
 import me.haroldmartin.golwallpaper.utils.SaveScreensaver
 import me.haroldmartin.golwallpaper.utils.getScreenResolution
 import me.haroldmartin.golwallpaper.utils.height
+import me.haroldmartin.golwallpaper.utils.oriented
 import me.haroldmartin.golwallpaper.utils.renderDeviceBitmap
 import me.haroldmartin.golwallpaper.utils.toRowsCols
 import me.haroldmartin.golwallpaper.utils.width
@@ -210,12 +212,19 @@ class MainViewModel(
         if (settings.areEdgesWrapped != current.areEdgesWrapped) {
             saveSettings.setWrapEdges(settings.areEdgesWrapped)
         }
+        updateOutputOrientation(settings, current)
         if (settings.updateIntervalMins != current.updateIntervalMins) {
             saveSettings.setUpdateIntervalMins(settings.updateIntervalMins)
             scheduleWallpaperUpdates(context, settings.updateIntervalMins)
         }
         if (isRedrawNeeded) {
             saveScreenSaver(context, showHint = true, step = false)
+        }
+    }
+
+    private suspend fun updateOutputOrientation(settings: GolSettings, current: GolSettings) {
+        if (settings.outputOrientation != current.outputOrientation) {
+            saveSettings.setOutputOrientation(settings.outputOrientation)
         }
     }
 
@@ -319,6 +328,7 @@ class MainViewModel(
         previewGeometry = createPreviewGeometry(
             resolution = getScreenResolution(appContext),
             cellSize = state.settings.cellSize,
+            outputOrientation = state.settings.outputOrientation,
         )
         val background = resolvePreviewColor(
             color = state.bgColor,
@@ -729,12 +739,17 @@ internal data class PreviewGeometry(
     val columns: Int = PREVIEW_FALLBACK_WIDTH / DEFAULT_CELL_SIZE,
 )
 
-internal fun createPreviewGeometry(resolution: Resolution, cellSize: Int): PreviewGeometry {
+internal fun createPreviewGeometry(
+    resolution: Resolution,
+    cellSize: Int,
+    outputOrientation: OutputOrientation = OutputOrientation.AUTO,
+): PreviewGeometry {
     val wallpaperResolution = resolution.takeIf { it.width > 0 && it.height > 0 }
         ?: Resolution(PREVIEW_FALLBACK_WIDTH, PREVIEW_FALLBACK_HEIGHT)
-    val (rows, columns) = wallpaperResolution.toRowsCols(cellSize)
+    val orientedResolution = wallpaperResolution.oriented(outputOrientation)
+    val (rows, columns) = orientedResolution.toRowsCols(cellSize)
     return PreviewGeometry(
-        bitmapResolution = wallpaperResolution,
+        bitmapResolution = orientedResolution,
         rows = rows,
         columns = columns,
     )

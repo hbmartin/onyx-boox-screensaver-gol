@@ -17,6 +17,10 @@
     <string name="rule_label">Règle du jeu :</string>
     <string name="rule_selected">Règle du jeu : %1$s</string>
     <string name="cell_size_label">Taille des cellules :</string>
+    <string name="orientation_label">Orientation :</string>
+    <string name="orientation_auto">Automatique</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="orientation_landscape">Paysage</string>
     <string name="update_interval_label">Intervalle de mise à jour :</string>
     <string name="show_stats_label">Afficher génération et population sur le fond d\'écran</string>
     <string name="wrap_edges_label">Relier les bords de la grille</string>

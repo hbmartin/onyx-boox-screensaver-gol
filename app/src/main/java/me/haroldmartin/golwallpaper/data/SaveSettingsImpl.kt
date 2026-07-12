@@ -1,5 +1,6 @@
 package me.haroldmartin.golwallpaper.data
 
+import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import me.haroldmartin.golwallpaper.domain.SaveSettings
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 
@@ -31,5 +32,9 @@ class SaveSettingsImpl(val dataStore: UserDataStore) : SaveSettings {
 
     override suspend fun setWrapEdges(wrap: Boolean) {
         dataStore[UserDataStore.Keys.WRAP_EDGES] = wrap
+    }
+
+    override suspend fun setOutputOrientation(orientation: OutputOrientation) {
+        dataStore[UserDataStore.Keys.OUTPUT_ORIENTATION] = orientation.name
     }
 }

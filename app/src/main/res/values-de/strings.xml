@@ -17,6 +17,10 @@
     <string name="rule_label">Spielregel:</string>
     <string name="rule_selected">Spielregel: %1$s</string>
     <string name="cell_size_label">Zellengröße:</string>
+    <string name="orientation_label">Ausrichtung:</string>
+    <string name="orientation_auto">Automatisch</string>
+    <string name="orientation_portrait">Hochformat</string>
+    <string name="orientation_landscape">Querformat</string>
     <string name="update_interval_label">Aktualisierungsintervall:</string>
     <string name="show_stats_label">Generation &amp; Population auf dem Hintergrund anzeigen</string>
     <string name="wrap_edges_label">Rasterränder verbinden</string>

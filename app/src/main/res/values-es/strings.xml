@@ -17,6 +17,10 @@
     <string name="rule_label">Regla del juego:</string>
     <string name="rule_selected">Regla del juego: %1$s</string>
     <string name="cell_size_label">Tamaño de celda:</string>
+    <string name="orientation_label">Orientación:</string>
+    <string name="orientation_auto">Automática</string>
+    <string name="orientation_portrait">Vertical</string>
+    <string name="orientation_landscape">Horizontal</string>
     <string name="update_interval_label">Intervalo de actualización:</string>
     <string name="show_stats_label">Mostrar generación y población en el fondo</string>
     <string name="wrap_edges_label">Conectar los bordes de la cuadrícula</string>

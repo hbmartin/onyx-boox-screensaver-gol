@@ -17,6 +17,7 @@ import me.haroldmartin.golwallpaper.domain.DEFAULT_WRAP_EDGES
 import me.haroldmartin.golwallpaper.domain.GolController
 import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
+import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 import me.haroldmartin.golwallpaper.ui.theme.Colors
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
@@ -36,7 +37,10 @@ class SaveScreensaver(
 ) {
     suspend operator fun invoke(context: Context, showHint: Boolean, step: Boolean = true) {
         withContext(ioDispatcher) {
-            val resolution = getScreenResolution(context)
+            val outputOrientation = OutputOrientation.fromString(
+                dataStore[Keys.OUTPUT_ORIENTATION].first(),
+            )
+            val resolution = getScreenResolution(context).oriented(outputOrientation)
             val bgColor = getBgColor()
             val cellSize = (dataStore[Keys.CELL_SIZE].first() ?: DEFAULT_CELL_SIZE).coerceAtLeast(1)
             val (rows, cols) = resolution.toRowsCols(cellSize)
