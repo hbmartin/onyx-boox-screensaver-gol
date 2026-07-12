@@ -51,6 +51,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -251,11 +252,16 @@ class MainViewModel(
 
     fun closePreview() {
         previewSessionId++
-        previewRenderJob?.cancel()
+        val renderJob = previewRenderJob
         previewRenderJob = null
         previewRenderRequested = false
+        val bufferPool = previewBufferPool
         previewBufferPool = null
         _previewUiState.value = PreviewUiState()
+        viewModelScope.launch {
+            renderJob?.cancelAndJoin()
+            bufferPool?.recycle()
+        }
     }
 
     fun playPreview() {
@@ -311,10 +317,16 @@ class MainViewModel(
         val resolution = previewGeometry.bitmapResolution
         val currentPool = previewBufferPool
         if (currentPool?.resolution == resolution) return
+        val renderJob = previewRenderJob
+        previewRenderJob = null
+        renderJob?.cancelAndJoin()
         val newPool = withContext(renderDispatcher) { PreviewBufferPool(resolution) }
         if (previewUiState.value.isOpen && previewSessionId == sessionId) {
+            previewBufferPool?.recycle()
             previewBufferPool = newPool
             _previewUiState.update { state -> state.copy(frame = null, isRendering = true) }
+        } else {
+            newPool.recycle()
         }
     }
 
@@ -665,7 +677,7 @@ internal fun createPreviewGeometry(resolution: Resolution, cellSize: Int): Previ
     )
 }
 
-private data class PreviewBuffer(
+internal data class PreviewBuffer(
     val index: Int,
     val bitmap: Bitmap,
     val image: ImageBitmap,
@@ -677,7 +689,7 @@ private data class PreviewRenderRequest(
     val overlays: DeviceOverlays,
 )
 
-private class PreviewBufferPool(val resolution: Resolution) {
+internal class PreviewBufferPool(val resolution: Resolution) {
     private val lock = Any()
     private val buffers = List(PREVIEW_BUFFER_COUNT) { index ->
         val bitmap = Bitmap.createBitmap(resolution.width, resolution.height, Bitmap.Config.ARGB_8888)
@@ -691,14 +703,20 @@ private class PreviewBufferPool(val resolution: Resolution) {
     @Suppress("AvoidVarsExceptWithDelegate")
     private var pendingFrame: PreviewFrame? = null
 
+    @Suppress("AvoidVarsExceptWithDelegate")
+    private var isRecycled = false
+
     fun acquire(): PreviewBuffer? = synchronized(lock) {
-        if (pendingFrame != null || renderingIndices.isNotEmpty()) return@synchronized null
+        if (isRecycled || pendingFrame != null || renderingIndices.isNotEmpty()) {
+            return@synchronized null
+        }
         buffers.firstOrNull { buffer ->
             buffer.index != displayedIndex && buffer.index !in renderingIndices
         }?.also { buffer -> renderingIndices += buffer.index }
     }
 
     fun publish(buffer: PreviewBuffer, frameId: Long): PreviewFrame = synchronized(lock) {
+        check(!isRecycled) { "Preview buffer pool was recycled" }
         check(renderingIndices.remove(buffer.index)) { "Preview buffer was not acquired" }
         PreviewFrame(id = frameId, image = buffer.image, bufferIndex = buffer.index)
             .also { frame -> pendingFrame = frame }
@@ -709,10 +727,20 @@ private class PreviewBufferPool(val resolution: Resolution) {
     }
 
     fun markPresented(frameId: Long): Boolean = synchronized(lock) {
+        if (isRecycled) return@synchronized false
         val frame = pendingFrame?.takeIf { pending -> pending.id == frameId }
             ?: return@synchronized false
         displayedIndex = frame.bufferIndex
         pendingFrame = null
         true
+    }
+
+    fun recycle() = synchronized(lock) {
+        if (isRecycled) return@synchronized
+        isRecycled = true
+        renderingIndices.clear()
+        displayedIndex = null
+        pendingFrame = null
+        buffers.forEach { buffer -> buffer.bitmap.recycle() }
     }
 }

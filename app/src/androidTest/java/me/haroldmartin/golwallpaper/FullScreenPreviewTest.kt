@@ -14,6 +14,7 @@ import androidx.compose.ui.test.click
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
+import me.haroldmartin.golwallpaper.ui.FullScreenPreview
 import me.haroldmartin.golwallpaper.ui.FullScreenPreviewContent
 import me.haroldmartin.golwallpaper.ui.PREVIEW_BUTTON_TAG
 import me.haroldmartin.golwallpaper.ui.PREVIEW_CONTROLS_TAG
@@ -22,6 +23,7 @@ import me.haroldmartin.golwallpaper.ui.PREVIEW_DIALOG_TAG
 import me.haroldmartin.golwallpaper.ui.PreviewFloatingActionButton
 import me.haroldmartin.golwallpaper.ui.theme.GoLWallpaperTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -44,6 +46,37 @@ class FullScreenPreviewTest {
         composeRule.onNodeWithTag(PREVIEW_BUTTON_TAG).assertIsDisplayed().performClick()
 
         assertTrue(wasClicked.get())
+    }
+
+    @Test
+    fun previewDialogDisplaysAfterWindowAttachment() {
+        composeRule.setContent {
+            GoLWallpaperTheme {
+                FullScreenPreview(
+                    state = readyState(),
+                    onDismiss = {},
+                    onPlayPause = {},
+                    onStep = {},
+                    onResync = {},
+                    onFramePresent = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(PREVIEW_DIALOG_TAG).assertIsDisplayed()
+    }
+
+    @Test
+    fun recycledPreviewBufferPoolCannotBeReused() {
+        val pool = PreviewBufferPool(2 to 2)
+        val buffer = requireNotNull(pool.acquire())
+        pool.release(buffer)
+
+        pool.recycle()
+        pool.recycle()
+
+        assertTrue(buffer.bitmap.isRecycled)
+        assertNull(pool.acquire())
     }
 
     @Test
