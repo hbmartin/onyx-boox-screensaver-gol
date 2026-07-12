@@ -15,7 +15,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -38,10 +38,9 @@ import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.LARGE
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
-private val LAYER_ACTION_BUTTON_SIZE = 56.dp
-private val LAYER_ACTION_ICON_SIZE = 32.dp
+private val LAYER_ACTION_BUTTON_SIZE = 48.dp
+private val LAYER_ACTION_ICON_SIZE = 28.dp
 private val LAYER_ACTION_STROKE_WIDTH = 4.dp
-private const val DISABLED_ICON_ALPHA = 0.65f
 
 private enum class LayerActionIcon {
     UP,
@@ -75,7 +74,6 @@ fun LayerCard(
                 index = index,
                 layerCount = layerCount,
                 isExpanded = isExpanded,
-                isEnabled = layer.isEnabled,
                 callbacks = callbacks,
                 onToggleExpansion = { isExpanded = !isExpanded },
             )
@@ -104,70 +102,49 @@ fun LayerCard(
 }
 
 @Composable
-@Suppress("LongParameterList")
 private fun LayerHeader(
     index: Int,
     layerCount: Int,
     isExpanded: Boolean,
-    isEnabled: Boolean,
     callbacks: LayerCallbacks,
     onToggleExpansion: () -> Unit,
 ) {
-    val enableDescription = stringResource(R.string.enable_layer)
-    Column(
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(MEDIUM),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .weight(1f)
+                .clickable(onClick = onToggleExpansion),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MEDIUM),
         ) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable(onClick = onToggleExpansion),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Disclosure(isExpanded)
-                Text(
-                    text = stringResource(R.string.layer_number, index + 1),
-                    modifier = Modifier.padding(horizontal = MEDIUM),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-            Switch(
-                checked = isEnabled,
-                onCheckedChange = callbacks.onEnabledChange,
-                modifier = Modifier.semantics {
-                    contentDescription = enableDescription
-                },
+            Disclosure(isExpanded)
+            Text(
+                text = stringResource(R.string.layer_number, index + 1),
+                modifier = Modifier.padding(horizontal = MEDIUM),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
             )
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-        ) {
-            LayerIconButton(
-                icon = LayerActionIcon.UP,
-                description = stringResource(R.string.move_layer_up),
-                enabled = index > 0,
-                onClick = callbacks.onMoveUp,
-            )
-            LayerIconButton(
-                icon = LayerActionIcon.DOWN,
-                description = stringResource(R.string.move_layer_down),
-                enabled = index < layerCount - 1,
-                onClick = callbacks.onMoveDown,
-            )
-            LayerIconButton(
-                icon = LayerActionIcon.REMOVE,
-                description = stringResource(R.string.delete_layer),
-                enabled = layerCount > 1,
-                onClick = callbacks.onDelete,
-            )
-        }
+        LayerIconButton(
+            icon = LayerActionIcon.UP,
+            description = stringResource(R.string.move_layer_up),
+            enabled = index > 0,
+            onClick = callbacks.onMoveUp,
+        )
+        LayerIconButton(
+            icon = LayerActionIcon.DOWN,
+            description = stringResource(R.string.move_layer_down),
+            enabled = index < layerCount - 1,
+            onClick = callbacks.onMoveDown,
+        )
+        LayerIconButton(
+            icon = LayerActionIcon.REMOVE,
+            description = stringResource(R.string.delete_layer),
+            enabled = layerCount > 1,
+            onClick = callbacks.onDelete,
+        )
     }
 }
 
@@ -178,7 +155,6 @@ private fun LayerIconButton(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    val colorScheme = MaterialTheme.colorScheme
     IconButton(
         onClick = onClick,
         enabled = enabled,
@@ -186,8 +162,8 @@ private fun LayerIconButton(
             .size(LAYER_ACTION_BUTTON_SIZE)
             .semantics { contentDescription = description },
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = colorScheme.onSurface,
-            disabledContentColor = colorScheme.onSurface.copy(alpha = DISABLED_ICON_ALPHA),
+            contentColor = Color.Black,
+            disabledContentColor = Color.Black,
         ),
     ) {
         LayerActionGlyph(icon)
