@@ -1,0 +1,1 @@
+Adds layers, additional Game of Life rules and boundary modes, RLE import, auto-reseeding, full-screen previews, calendar overlays, translations, and improved BOOX settings. Includes UI, performance, and reliability fixes.

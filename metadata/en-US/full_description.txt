@@ -15,7 +15,6 @@ Usage:
    - (Optional) Choose foreground and background colors in the app
    - (Optional) Pick a starting pattern
    - (Optional) Enable the calendar overlay and choose which synced calendars may appear on the screensaver
-   - (Optional) Tap "Generate Next Step" to advance the Game of Life and update your wallpaper
 
 Calendar privacy and refresh:
 - Calendar permission is optional and read-only
