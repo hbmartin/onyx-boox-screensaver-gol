@@ -49,6 +49,7 @@ import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
 private val CALENDAR_LIST_MAX_HEIGHT = 360.dp
 private val SECTION_BORDER = 2.dp
+private val SELECT_CALENDARS_BORDER = 2.dp
 
 @Composable
 @Suppress("LongMethod")
@@ -85,12 +86,16 @@ fun CalendarSection(
         verticalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Row(
-            modifier = Modifier.clickable { isExpanded = !isExpanded },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { isExpanded = !isExpanded },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Disclosure(isExpanded)
             Text(
-                modifier = Modifier.padding(horizontal = MEDIUM),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = MEDIUM),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.calendar_section_title),
@@ -149,7 +154,7 @@ private fun CalendarOptions(
     }
     if (uiState.issue != null) Text(text = uiState.issue.displayText())
     if (settings.isEnabled) {
-        AppButton(onClick = onOpenPicker) {
+        AppButton(onClick = onOpenPicker, borderWidth = SELECT_CALENDARS_BORDER) {
             val selectedNames = uiState.sources
                 .filter { source -> source.id in settings.selectedCalendarIds }
                 .joinToString { source -> source.displayName }

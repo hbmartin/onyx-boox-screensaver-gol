@@ -71,12 +71,16 @@ fun SettingsPanel(
         verticalArrangement = Arrangement.spacedBy(MEDIUM),
     ) {
         Row(
-            modifier = Modifier.clickable { areSettingsVisible = !areSettingsVisible },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { areSettingsVisible = !areSettingsVisible },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Disclosure(areSettingsVisible)
             Text(
-                modifier = Modifier.padding(horizontal = MEDIUM),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = MEDIUM),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.settings),

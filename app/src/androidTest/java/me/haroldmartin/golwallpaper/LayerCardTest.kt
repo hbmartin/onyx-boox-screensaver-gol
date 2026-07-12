@@ -2,6 +2,7 @@ package me.haroldmartin.golwallpaper
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -32,7 +33,6 @@ class LayerCardTest {
                     index = 0,
                     layerCount = 2,
                     callbacks = LayerCallbacks(
-                        onEnabledChange = {},
                         onMoveUp = {},
                         onMoveDown = {},
                         onDelete = {},
@@ -44,6 +44,7 @@ class LayerCardTest {
             }
         }
 
+        composeRule.onNodeWithContentDescription("Enable layer").assertDoesNotExist()
         composeRule.onNodeWithText("Layer 1").performClick()
 
         composeRule.onNodeWithText("Game Rule: HighLife").assertIsDisplayed()

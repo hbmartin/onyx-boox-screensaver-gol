@@ -65,8 +65,8 @@ class GolController(
         areEdgesWrapped = areEdgesWrapped,
     )
 
-    // The nested loops and unrolled neighbour counting are deliberate: this runs over every
-    // cell of a screen-sized grid and must not allocate.
+    // Neighbour counting is deliberately allocation-free: this runs over every cell of a
+    // screen-sized grid.
     @Suppress(
         "AvoidVarsExceptWithDelegate",
         "NestedBlockDepth",
@@ -87,11 +87,7 @@ class GolController(
         return grid
     }
 
-    @Suppress(
-        "AvoidVarsExceptWithDelegate",
-        "CyclomaticComplexMethod",
-        "CognitiveComplexMethod",
-    )
+    @Suppress("AvoidVarsExceptWithDelegate")
     private fun updateWrapped(next: Array<BooleanArray>) {
         for (rowIndex in 0 until rows) {
             val above = grid[if (rowIndex == 0) rows - 1 else rowIndex - 1]
@@ -99,58 +95,35 @@ class GolController(
             val below = grid[if (rowIndex == rows - 1) 0 else rowIndex + 1]
             val nextRow = next[rowIndex]
             for (columnIndex in 0 until columns) {
-                val left = if (columnIndex == 0) columns - 1 else columnIndex - 1
-                val right = if (columnIndex == columns - 1) 0 else columnIndex + 1
-                var liveNeighbours = 0
-                if (above[left]) liveNeighbours++
-                if (above[columnIndex]) liveNeighbours++
-                if (above[right]) liveNeighbours++
-                if (current[left]) liveNeighbours++
-                if (current[right]) liveNeighbours++
-                if (below[left]) liveNeighbours++
-                if (below[columnIndex]) liveNeighbours++
-                if (below[right]) liveNeighbours++
-
-                nextRow[columnIndex] = if (current[columnIndex]) {
-                    surviveRule[liveNeighbours]
-                } else {
-                    birthRule[liveNeighbours]
-                }
+                val liveNeighbours = countWrappedNeighbours(
+                    above = above,
+                    current = current,
+                    below = below,
+                    columnIndex = columnIndex,
+                    columns = columns,
+                )
+                nextRow[columnIndex] = nextCellState(current[columnIndex], liveNeighbours)
             }
         }
     }
 
-    @Suppress(
-        "AvoidVarsExceptWithDelegate",
-        "NestedBlockDepth",
-        "CognitiveComplexMethod",
-    )
     private fun updateDeadEdges(next: Array<BooleanArray>) {
         for (rowIndex in 0 until rows) {
             val nextRow = next[rowIndex]
             for (columnIndex in 0 until columns) {
-                var liveNeighbours = 0
-                val firstRow = maxOf(0, rowIndex - 1)
-                val lastRow = minOf(rows - 1, rowIndex + 1)
-                val firstColumn = maxOf(0, columnIndex - 1)
-                val lastColumn = minOf(columns - 1, columnIndex + 1)
-                for (neighbourRow in firstRow..lastRow) {
-                    for (neighbourColumn in firstColumn..lastColumn) {
-                        if ((neighbourRow != rowIndex || neighbourColumn != columnIndex) &&
-                            grid[neighbourRow][neighbourColumn]
-                        ) {
-                            liveNeighbours++
-                        }
-                    }
-                }
-                nextRow[columnIndex] = if (grid[rowIndex][columnIndex]) {
-                    surviveRule[liveNeighbours]
-                } else {
-                    birthRule[liveNeighbours]
-                }
+                val liveNeighbours = grid.countDeadEdgeNeighbours(
+                    rowIndex = rowIndex,
+                    columnIndex = columnIndex,
+                    rows = rows,
+                    columns = columns,
+                )
+                nextRow[columnIndex] = nextCellState(grid[rowIndex][columnIndex], liveNeighbours)
             }
         }
     }
+
+    private fun nextCellState(isAlive: Boolean, liveNeighbours: Int): Boolean =
+        if (isAlive) surviveRule[liveNeighbours] else birthRule[liveNeighbours]
 
     fun turnOnCell(rowIndex: Int, colIndex: Int) {
         grid[rowIndex][colIndex] = true
@@ -180,6 +153,52 @@ class GolController(
     fun reset(pattern: String) {
         grid = centerPattern(parsePattern(pattern), rows, columns)
     }
+}
+
+@Suppress("AvoidVarsExceptWithDelegate")
+private fun countWrappedNeighbours(
+    above: BooleanArray,
+    current: BooleanArray,
+    below: BooleanArray,
+    columnIndex: Int,
+    columns: Int,
+): Int {
+    val left = if (columnIndex == 0) columns - 1 else columnIndex - 1
+    val right = if (columnIndex == columns - 1) 0 else columnIndex + 1
+    var liveNeighbours = 0
+    if (above[left]) liveNeighbours++
+    if (above[columnIndex]) liveNeighbours++
+    if (above[right]) liveNeighbours++
+    if (current[left]) liveNeighbours++
+    if (current[right]) liveNeighbours++
+    if (below[left]) liveNeighbours++
+    if (below[columnIndex]) liveNeighbours++
+    if (below[right]) liveNeighbours++
+    return liveNeighbours
+}
+
+@Suppress("AvoidVarsExceptWithDelegate", "NestedBlockDepth")
+private fun Array<BooleanArray>.countDeadEdgeNeighbours(
+    rowIndex: Int,
+    columnIndex: Int,
+    rows: Int,
+    columns: Int,
+): Int {
+    var liveNeighbours = 0
+    val firstRow = maxOf(0, rowIndex - 1)
+    val lastRow = minOf(rows - 1, rowIndex + 1)
+    val firstColumn = maxOf(0, columnIndex - 1)
+    val lastColumn = minOf(columns - 1, columnIndex + 1)
+    for (neighbourRow in firstRow..lastRow) {
+        for (neighbourColumn in firstColumn..lastColumn) {
+            if ((neighbourRow != rowIndex || neighbourColumn != columnIndex) &&
+                this[neighbourRow][neighbourColumn]
+            ) {
+                liveNeighbours++
+            }
+        }
+    }
+    return liveNeighbours
 }
 
 @Suppress("AvoidVarsExceptWithDelegate")

@@ -4,7 +4,7 @@
     <string name="fg_color">Foreground Color:</string>
     <string name="bg_color">Background Color:</string>
     <string name="next_step">Generate Next Step</string>
-    <string name="freeze_alert">NOTE! You must disable freezing in order to for the game to update:\nSettings > Apps &amp; Notifications > Freeze Settings > GoL Screensaver (OFF)</string>
+    <string name="freeze_alert">NOTE! You must disable freezing in order to for the game to update:\nSettings > Apps &amp; Notifications > Freeze Settings > GoL Screensaver > Toggle OFF</string>
     <string name="reset_pattern">Reset Starting Pattern</string>
     <string name="reset_pattern_selected">Reset Starting Pattern: %1$s</string>
     <string name="custom_rle">Custom RLE</string>

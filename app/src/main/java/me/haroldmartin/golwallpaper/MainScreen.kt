@@ -13,12 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -34,6 +37,7 @@ import me.haroldmartin.golwallpaper.ui.PreviewFloatingActionButton
 import me.haroldmartin.golwallpaper.ui.SettingsPanel
 import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.XXLARGE
+import me.haroldmartin.golwallpaper.utils.isOnyxAutoFreezeEnabled
 import me.haroldmartin.golwallpaper.utils.isOnyxDevice
 import me.haroldmartin.golwallpaper.utils.openOnyxFreezeSettings
 
@@ -49,11 +53,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val calendarUiState by viewModel.calendarUiState.collectAsStateWithLifecycle()
     val isOnyx = remember { isOnyxDevice() }
     val lifecycleOwner = LocalLifecycleOwner.current
+    var isAutoFreezeEnabled by remember { mutableStateOf<Boolean?>(null) }
 
-    DisposableEffect(lifecycleOwner, viewModel) {
+    DisposableEffect(lifecycleOwner, viewModel, isOnyx, context) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
                 viewModel.startCalendarObservation()
+            } else if (event == Lifecycle.Event.ON_RESUME && isOnyx) {
+                isAutoFreezeEnabled = isOnyxAutoFreezeEnabled(context.packageName)
             } else if (event == Lifecycle.Event.ON_STOP) {
                 viewModel.pausePreview()
                 viewModel.stopCalendarObservation()
@@ -90,12 +97,13 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 .padding(bottom = PREVIEW_FAB_CLEARANCE),
             verticalArrangement = Arrangement.spacedBy(XXLARGE),
         ) {
-            if (isOnyx) {
+            if (isOnyx && isAutoFreezeEnabled != false) {
                 Text(
                     text = stringResource(R.string.freeze_alert),
                     modifier = Modifier.clickable(role = Role.Button) {
                         openOnyxFreezeSettings(context)
                     },
+                    textDecoration = TextDecoration.Underline,
                 )
             }
             SettingsPanel(
@@ -127,9 +135,6 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     onRemove = { index -> viewModel.removeLayer(context, index) },
                     onMoveUp = { index -> viewModel.moveLayerUp(context, index) },
                     onMoveDown = { index -> viewModel.moveLayerDown(context, index) },
-                    onEnabledChange = { index, enabled ->
-                        viewModel.setLayerEnabled(context, index, enabled)
-                    },
                     onColorChange = { index, color ->
                         viewModel.setLayerFgColor(context, index, color)
                     },

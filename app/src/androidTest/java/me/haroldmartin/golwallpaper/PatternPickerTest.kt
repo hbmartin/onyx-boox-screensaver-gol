@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -35,6 +36,7 @@ class PatternPickerTest {
             }
         }
 
+        composeRule.onNodeWithContentDescription("Triangle").assertIsDisplayed()
         composeRule.onNodeWithText("Reset Starting Pattern: Random Noise").performClick()
 
         composeRule.onNodeWithText("Reset Starting Pattern").assertIsDisplayed()

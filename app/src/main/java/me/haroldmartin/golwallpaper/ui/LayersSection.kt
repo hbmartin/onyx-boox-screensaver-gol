@@ -33,7 +33,6 @@ fun LayersSection(
                     index = index,
                     layerCount = layers.size,
                     callbacks = LayerCallbacks(
-                        onEnabledChange = { enabled -> callbacks.onEnabledChange(index, enabled) },
                         onMoveUp = { callbacks.onMoveUp(index) },
                         onMoveDown = { callbacks.onMoveDown(index) },
                         onDelete = { callbacks.onRemove(index) },

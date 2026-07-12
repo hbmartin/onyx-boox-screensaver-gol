@@ -1,5 +1,6 @@
 package me.haroldmartin.golwallpaper.ui
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,11 +32,13 @@ import me.haroldmartin.golwallpaper.domain.Patterns
 import me.haroldmartin.golwallpaper.domain.isParseablePattern
 import me.haroldmartin.golwallpaper.ui.theme.AppButton
 import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
+import me.haroldmartin.golwallpaper.ui.theme.Disclosure
 import me.haroldmartin.golwallpaper.ui.theme.LARGE
 import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
 private const val SCREEN_FRACTION = 0.6f
+private val DIALOG_BORDER_WIDTH = 2.dp
 
 @Composable
 fun PatternPicker(
@@ -47,6 +52,7 @@ fun PatternPicker(
         modifier = Modifier.clickable { isDialogVisible = true },
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Disclosure(isOpen = false)
         Text(
             modifier = Modifier.padding(horizontal = MEDIUM),
             fontWeight = FontWeight.Bold,
@@ -75,6 +81,12 @@ private fun PatternPickerDialog(
     val patternsMaxHeight = LocalConfiguration.current.screenHeightDp.dp * SCREEN_FRACTION
     AlertDialog(
         onDismissRequest = onDismiss,
+        modifier = Modifier.border(
+            width = DIALOG_BORDER_WIDTH,
+            color = Color.Black,
+            shape = RectangleShape,
+        ),
+        shape = RectangleShape,
         title = { Text(stringResource(R.string.reset_pattern)) },
         text = {
             Column(

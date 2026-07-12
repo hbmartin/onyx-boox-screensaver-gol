@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 private const val DISABLED_ALPHA = 0.38f
@@ -18,6 +19,7 @@ internal fun AppButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    borderWidth: Dp = BUTTON_BORDER_WIDTH,
     content: @Composable RowScope.() -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -28,7 +30,7 @@ internal fun AppButton(
         enabled = enabled,
         shape = RectangleShape,
         border = BorderStroke(
-            width = BUTTON_BORDER_WIDTH,
+            width = borderWidth,
             color = if (enabled) colorScheme.outline else disabledColor,
         ),
         colors = ButtonDefaults.buttonColors(
