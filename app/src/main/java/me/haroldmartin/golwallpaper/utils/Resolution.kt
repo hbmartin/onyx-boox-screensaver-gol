@@ -6,12 +6,19 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Display
 import android.view.WindowManager
+import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import kotlin.math.roundToInt
 
 typealias Resolution = Pair<Int, Int>
 
 val Resolution.width: Int get() = first
 val Resolution.height: Int get() = second
+
+fun Resolution.oriented(orientation: OutputOrientation): Resolution = when (orientation) {
+    OutputOrientation.AUTO -> this
+    OutputOrientation.PORTRAIT -> Resolution(minOf(width, height), maxOf(width, height))
+    OutputOrientation.LANDSCAPE -> Resolution(maxOf(width, height), minOf(width, height))
+}
 
 fun Resolution.toRowsCols(cellSize: Int): Pair<Int, Int> {
     require(cellSize > 0) { "Cell size must be positive" }

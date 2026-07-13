@@ -17,6 +17,10 @@
     <string name="rule_label">Правило игры:</string>
     <string name="rule_selected">Правило игры: %1$s</string>
     <string name="cell_size_label">Размер клетки:</string>
+    <string name="orientation_label">Ориентация:</string>
+    <string name="orientation_auto">Авто</string>
+    <string name="orientation_portrait">Портретная</string>
+    <string name="orientation_landscape">Альбомная</string>
     <string name="update_interval_label">Интервал обновления:</string>
     <string name="show_stats_label">Показывать поколение и население на обоях</string>
     <string name="wrap_edges_label">Замыкать края сетки</string>

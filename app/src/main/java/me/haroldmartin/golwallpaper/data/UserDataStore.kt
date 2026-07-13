@@ -60,6 +60,7 @@ class UserDataStore(private val dataStore: DataStore<Preferences>) {
         object WALLPAPER_TARGET : Keys<String>(stringPreferencesKey("wallpaper_target"))
         object BATTERY_THRESHOLD : Keys<Int>(intPreferencesKey("battery_threshold"))
         object WRAP_EDGES : Keys<Boolean>(booleanPreferencesKey("wrap_edges"))
+        object OUTPUT_ORIENTATION : Keys<String>(stringPreferencesKey("output_orientation"))
         object AUTO_RESEED : Keys<Boolean>(booleanPreferencesKey("auto_reseed"))
         object GENERATION : Keys<Int>(intPreferencesKey("generation"))
         object LAYERS : Keys<String>(stringPreferencesKey("layers"))

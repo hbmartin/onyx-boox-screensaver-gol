@@ -17,6 +17,10 @@
     <string name="rule_label">游戏规则：</string>
     <string name="rule_selected">游戏规则：%1$s</string>
     <string name="cell_size_label">单元格大小：</string>
+    <string name="orientation_label">方向：</string>
+    <string name="orientation_auto">自动</string>
+    <string name="orientation_portrait">竖屏</string>
+    <string name="orientation_landscape">横屏</string>
     <string name="update_interval_label">更新间隔：</string>
     <string name="show_stats_label">在壁纸上显示世代和细胞数量</string>
     <string name="wrap_edges_label">环绕网格边缘</string>

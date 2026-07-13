@@ -19,6 +19,18 @@ enum class WallpaperTarget {
     }
 }
 
+enum class OutputOrientation {
+    AUTO,
+    PORTRAIT,
+    LANDSCAPE,
+    ;
+
+    companion object {
+        fun fromString(value: String?): OutputOrientation =
+            entries.firstOrNull { it.name == value } ?: AUTO
+    }
+}
+
 enum class RulePreset(val rule: String) {
     CONWAY("B3/S23"),
     HIGH_LIFE("B36/S23"),
@@ -34,4 +46,5 @@ data class GolSettings(
     val wallpaperTarget: WallpaperTarget = WallpaperTarget.LOCK,
     val batteryThresholdPct: Int = DEFAULT_BATTERY_THRESHOLD_PCT,
     val areEdgesWrapped: Boolean = DEFAULT_WRAP_EDGES,
+    val outputOrientation: OutputOrientation = OutputOrientation.AUTO,
 )

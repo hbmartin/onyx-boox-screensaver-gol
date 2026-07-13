@@ -18,6 +18,10 @@
     <string name="rule_label">Game Rule:</string>
     <string name="rule_selected">Game Rule: %1$s</string>
     <string name="cell_size_label">Cell Size:</string>
+    <string name="orientation_label">Orientation:</string>
+    <string name="orientation_auto">Auto</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="orientation_landscape">Landscape</string>
     <string name="update_interval_label">Update Interval:</string>
     <string name="show_stats_label">Show generation &amp; population on wallpaper</string>
     <string name="wrap_edges_label">Wrap grid edges</string>

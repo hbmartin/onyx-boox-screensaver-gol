@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.GolSettings
+import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import me.haroldmartin.golwallpaper.domain.RulePreset
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
 import me.haroldmartin.golwallpaper.ui.theme.Disclosure
@@ -122,6 +123,7 @@ private fun SettingsOptions(
         selected = settings.cellSize,
         onSelect = { size -> onSettingsChange(settings.copy(cellSize = size)) },
     )
+    OrientationOption(settings = settings, onSettingsChange = onSettingsChange)
     OptionRow(
         label = stringResource(R.string.update_interval_label),
         options = UPDATE_INTERVALS_MINS.map { mins ->
@@ -159,6 +161,25 @@ private fun SettingsOptions(
         label = stringResource(R.string.show_stats_label),
         checked = settings.isStatsVisible,
         onCheckedChange = { show -> onSettingsChange(settings.copy(isStatsVisible = show)) },
+    )
+}
+
+@Composable
+private fun OrientationOption(
+    settings: GolSettings,
+    onSettingsChange: (GolSettings) -> Unit,
+) {
+    OptionRow(
+        label = stringResource(R.string.orientation_label),
+        options = listOf(
+            stringResource(R.string.orientation_auto) to OutputOrientation.AUTO,
+            stringResource(R.string.orientation_portrait) to OutputOrientation.PORTRAIT,
+            stringResource(R.string.orientation_landscape) to OutputOrientation.LANDSCAPE,
+        ),
+        selected = settings.outputOrientation,
+        onSelect = { orientation ->
+            onSettingsChange(settings.copy(outputOrientation = orientation))
+        },
     )
 }
 

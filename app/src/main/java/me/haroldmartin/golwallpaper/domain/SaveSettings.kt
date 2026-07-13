@@ -7,4 +7,5 @@ interface SaveSettings {
     suspend fun setWallpaperTarget(target: WallpaperTarget)
     suspend fun setBatteryThreshold(pct: Int)
     suspend fun setWrapEdges(wrap: Boolean)
+    suspend fun setOutputOrientation(orientation: OutputOrientation)
 }
