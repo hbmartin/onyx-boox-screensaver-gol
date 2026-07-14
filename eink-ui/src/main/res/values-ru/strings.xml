@@ -1,0 +1,14 @@
+<resources>
+    <string name="eink_random">Случайный</string>
+    <string name="eink_decrease">Уменьшить</string>
+    <string name="eink_increase">Увеличить</string>
+    <string name="eink_color_red">Красный</string>
+    <string name="eink_color_pink">Розовый</string>
+    <string name="eink_color_purple">Фиолетовый</string>
+    <string name="eink_color_cyan">Голубой</string>
+    <string name="eink_color_green">Зеленый</string>
+    <string name="eink_color_yellow">Желтый</string>
+    <string name="eink_color_blue_gray">Серо-синий</string>
+    <string name="eink_color_black">Черный</string>
+    <string name="eink_color_white">Белый</string>
+</resources>

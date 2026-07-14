@@ -1,0 +1,14 @@
+<resources>
+    <string name="eink_random">Aléatoire</string>
+    <string name="eink_decrease">Diminuer</string>
+    <string name="eink_increase">Augmenter</string>
+    <string name="eink_color_red">Rouge</string>
+    <string name="eink_color_pink">Rose</string>
+    <string name="eink_color_purple">Violet</string>
+    <string name="eink_color_cyan">Cyan</string>
+    <string name="eink_color_green">Vert</string>
+    <string name="eink_color_yellow">Jaune</string>
+    <string name="eink_color_blue_gray">Bleu-gris</string>
+    <string name="eink_color_black">Noir</string>
+    <string name="eink_color_white">Blanc</string>
+</resources>

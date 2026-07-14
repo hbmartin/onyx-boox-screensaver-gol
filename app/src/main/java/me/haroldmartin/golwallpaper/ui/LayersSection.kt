@@ -8,10 +8,10 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import me.haroldmartin.einkui.EinkButton
+import me.haroldmartin.einkui.EinkTheme
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Layer
-import me.haroldmartin.golwallpaper.ui.theme.AppButton
-import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
 private const val SOFT_LAYER_CAP = 10
 
@@ -23,7 +23,7 @@ fun LayersSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MEDIUM),
+        verticalArrangement = Arrangement.spacedBy(EinkTheme.spacing.small),
     ) {
         Text(stringResource(R.string.layers_title))
         layers.forEachIndexed { index, layer ->
@@ -48,7 +48,7 @@ fun LayersSection(
         if (layers.size >= SOFT_LAYER_CAP) {
             Text(pluralStringResource(R.plurals.max_layers_warning, SOFT_LAYER_CAP, SOFT_LAYER_CAP))
         }
-        AppButton(onClick = callbacks.onAdd) {
+        EinkButton(onClick = callbacks.onAdd) {
             Text(stringResource(R.string.add_layer))
         }
     }

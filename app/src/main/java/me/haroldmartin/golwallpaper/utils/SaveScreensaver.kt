@@ -19,7 +19,7 @@ import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.LoadCalendarAgenda
 import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
-import me.haroldmartin.golwallpaper.ui.theme.Colors
+import me.haroldmartin.golwallpaper.ui.theme.ALL_COLORS
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
 import kotlinx.coroutines.CoroutineDispatcher
@@ -219,7 +219,7 @@ class SaveScreensaver(
     )
 
     private fun resolveColor(color: Int, except: Set<Int>): Int = if (color == RANDOM_COLOR) {
-        Colors.ALL.chooseRandom(except).value.toArgb()
+        ALL_COLORS.chooseRandom(except).color.toArgb()
     } else {
         color
     }

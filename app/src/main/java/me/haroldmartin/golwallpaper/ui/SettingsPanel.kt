@@ -1,43 +1,26 @@
 package me.haroldmartin.golwallpaper.ui
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import me.haroldmartin.einkui.EinkExpandableSection
+import me.haroldmartin.einkui.EinkOptionGroup
+import me.haroldmartin.einkui.EinkSwitchRow
+import me.haroldmartin.einkui.EinkTheme
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.GolSettings
 import me.haroldmartin.golwallpaper.domain.OutputOrientation
 import me.haroldmartin.golwallpaper.domain.RulePreset
 import me.haroldmartin.golwallpaper.domain.WallpaperTarget
-import me.haroldmartin.golwallpaper.ui.theme.Disclosure
-import me.haroldmartin.golwallpaper.ui.theme.LARGE
-import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
-import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
 @Suppress("MagicNumber")
 private val CELL_SIZES = listOf(5, 10, 20, 40)
@@ -48,9 +31,6 @@ private val UPDATE_INTERVALS_MINS = listOf(15L, 30L, 60L, 180L, 720L, 1440L)
 @Suppress("MagicNumber")
 private val BATTERY_THRESHOLDS = listOf(0, 10, 20, 30, 50)
 private const val MINS_PER_HOUR = 60L
-private val SELECTED_BORDER = 2.dp
-private val UNSELECTED_BORDER = 1.dp
-private val SECTION_BORDER = 2.dp
 
 @Composable
 @Suppress("LongParameterList")
@@ -64,38 +44,26 @@ fun SettingsPanel(
 ) {
     var areSettingsVisible by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(SECTION_BORDER, Color.Black)
-            .padding(LARGE),
-        verticalArrangement = Arrangement.spacedBy(MEDIUM),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { areSettingsVisible = !areSettingsVisible },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Disclosure(areSettingsVisible)
+    EinkExpandableSection(
+        expanded = areSettingsVisible,
+        onExpandedChange = { areSettingsVisible = it },
+        modifier = modifier,
+        title = {
             Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = MEDIUM),
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.settings),
+                modifier = Modifier.weight(1f),
+                fontWeight = FontWeight.Bold,
+                style = EinkTheme.typography.title,
             )
-        }
-        if (areSettingsVisible) {
-            SettingsOptions(
-                backgroundColor = backgroundColor,
-                settings = settings,
-                showWallpaperTarget = showWallpaperTarget,
-                onBackgroundColorChange = onBackgroundColorChange,
-                onSettingsChange = onSettingsChange,
-            )
-        }
+        },
+    ) {
+        SettingsOptions(
+            backgroundColor = backgroundColor,
+            settings = settings,
+            showWallpaperTarget = showWallpaperTarget,
+            onBackgroundColorChange = onBackgroundColorChange,
+            onSettingsChange = onSettingsChange,
+        )
     }
 }
 
@@ -107,8 +75,8 @@ private fun SettingsOptions(
     onBackgroundColorChange: (Int) -> Unit,
     onSettingsChange: (GolSettings) -> Unit,
 ) = Column(
-    modifier = Modifier.padding(start = LARGE),
-    verticalArrangement = Arrangement.spacedBy(MEDIUM),
+    modifier = Modifier.padding(start = EinkTheme.spacing.medium),
+    verticalArrangement = Arrangement.spacedBy(EinkTheme.spacing.small),
 ) {
     ColorPicker(
         label = stringResource(R.string.bg_color),
@@ -185,19 +153,7 @@ private fun OrientationOption(
 
 @Composable
 private fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Row(
-        modifier = Modifier.toggleable(
-            value = checked,
-            role = Role.Switch,
-            onValueChange = onCheckedChange,
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MEDIUM),
-    ) {
-        Switch(
-            checked = checked,
-            onCheckedChange = null,
-        )
+    EinkSwitchRow(checked = checked, onCheckedChange = onCheckedChange) {
         Text(label)
     }
 }
@@ -234,42 +190,12 @@ internal fun <T> OptionRow(
     selected: T,
     onSelect: (T) -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(SMALL)) {
-        if (label != null) Text(text = label, fontWeight = FontWeight.Bold)
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(SMALL),
-        ) {
-            options.forEach { (name, value) ->
-                OptionButton(
-                    name = name,
-                    isSelected = value == selected,
-                    onClick = { onSelect(value) },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun OptionButton(name: String, isSelected: Boolean, onClick: () -> Unit) {
-    val colorScheme = MaterialTheme.colorScheme
-    Button(
-        modifier = Modifier
-            .border(
-                width = if (isSelected) SELECTED_BORDER else UNSELECTED_BORDER,
-                color = colorScheme.outline,
-            )
-            .semantics { selected = isSelected },
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = colorScheme.surface,
-            contentColor = colorScheme.onSurface,
-        ),
-    ) {
-        Text(
-            text = name,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-        )
-    }
+    val selectedOption = options.firstOrNull { (_, value) -> value == selected } ?: return
+    EinkOptionGroup(
+        options = options,
+        selected = selectedOption,
+        onSelectionChange = { (_, value) -> onSelect(value) },
+        label = label,
+        optionLabel = { option -> option.first },
+    )
 }

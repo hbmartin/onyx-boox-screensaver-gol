@@ -1,7 +1,7 @@
 package me.haroldmartin.golwallpaper.domain
 
 import androidx.compose.ui.graphics.toArgb
-import me.haroldmartin.golwallpaper.ui.theme.Colors
+import me.haroldmartin.golwallpaper.ui.theme.ALL_COLORS
 
 object LayerOps {
     fun addDefault(layers: List<Layer>, nextColor: Int = nextUnusedColor(layers)): List<Layer> =
@@ -32,10 +32,10 @@ object LayerOps {
 
     fun nextUnusedColor(layers: List<Layer>): Int {
         val usedColors = layers.map(Layer::fgColor).toSet()
-        return Colors.ALL
-            .map { color -> color.value.toArgb() }
+        return ALL_COLORS
+            .map { color -> color.color.toArgb() }
             .firstOrNull { color -> color !in usedColors }
-            ?: Colors.ALL[layers.size % Colors.ALL.size].value.toArgb()
+            ?: ALL_COLORS[layers.size % ALL_COLORS.size].color.toArgb()
     }
 
     private fun swap(layers: List<Layer>, from: Int, to: Int): List<Layer> =
