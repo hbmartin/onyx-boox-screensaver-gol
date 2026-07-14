@@ -3,7 +3,6 @@ package me.haroldmartin.golwallpaper.ui
 import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,24 +24,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import me.haroldmartin.einkui.EinkButton
+import me.haroldmartin.einkui.EinkFloatingActionButton
+import me.haroldmartin.einkui.EinkTheme
 import me.haroldmartin.golwallpaper.PreviewFrame
 import me.haroldmartin.golwallpaper.PreviewUiState
 import me.haroldmartin.golwallpaper.R
-import me.haroldmartin.golwallpaper.ui.theme.AppButton
-import me.haroldmartin.golwallpaper.ui.theme.LARGE
 import kotlinx.coroutines.delay
 
 internal const val PREVIEW_BUTTON_TAG = "preview_button"
@@ -55,14 +51,10 @@ internal const val PREVIEW_CONTROLS_TIMEOUT_MILLIS = 3000L
 
 @Composable
 internal fun PreviewFloatingActionButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    ExtendedFloatingActionButton(
+    EinkFloatingActionButton(
         onClick = onClick,
-        shape = RectangleShape,
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
         modifier = modifier
-            .testTag(PREVIEW_BUTTON_TAG)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RectangleShape),
+            .testTag(PREVIEW_BUTTON_TAG),
     ) {
         Text(stringResource(R.string.preview_open))
     }
@@ -183,22 +175,22 @@ private fun BoxScope.PreviewControls(
     onResync: () -> Unit,
     onInteraction: () -> Unit,
 ) {
-    AppButton(
+    EinkButton(
         onClick = onDismiss,
         modifier = Modifier
             .align(Alignment.TopEnd)
-            .padding(LARGE),
+            .padding(EinkTheme.spacing.medium),
     ) {
         Text(stringResource(R.string.preview_close))
     }
     Row(
         modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(LARGE)
+            .padding(EinkTheme.spacing.medium)
             .testTag(PREVIEW_CONTROLS_TAG),
-        horizontalArrangement = Arrangement.spacedBy(LARGE),
+        horizontalArrangement = Arrangement.spacedBy(EinkTheme.spacing.medium),
     ) {
-        AppButton(
+        EinkButton(
             onClick = {
                 onInteraction()
                 onPlayPause()
@@ -207,7 +199,7 @@ private fun BoxScope.PreviewControls(
         ) {
             Text(stringResource(if (state.isPlaying) R.string.preview_pause else R.string.preview_play))
         }
-        AppButton(
+        EinkButton(
             onClick = {
                 onInteraction()
                 onStep()
@@ -216,7 +208,7 @@ private fun BoxScope.PreviewControls(
         ) {
             Text(stringResource(R.string.preview_step))
         }
-        AppButton(
+        EinkButton(
             onClick = {
                 onInteraction()
                 onResync()

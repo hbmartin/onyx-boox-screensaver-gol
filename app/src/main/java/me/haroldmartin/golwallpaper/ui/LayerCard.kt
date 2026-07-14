@@ -1,20 +1,13 @@
 package me.haroldmartin.golwallpaper.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,19 +17,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import me.haroldmartin.einkui.EinkCard
+import me.haroldmartin.einkui.EinkDisclosureRow
+import me.haroldmartin.einkui.EinkIconButton
+import me.haroldmartin.einkui.EinkTheme
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.Layer
 import me.haroldmartin.golwallpaper.domain.RulePreset
-import me.haroldmartin.golwallpaper.ui.theme.Disclosure
-import me.haroldmartin.golwallpaper.ui.theme.LARGE
-import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
 private val LAYER_ACTION_BUTTON_SIZE = 48.dp
 private val LAYER_ACTION_ICON_SIZE = 28.dp
@@ -58,17 +51,12 @@ fun LayerCard(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
+    EinkCard(
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(MEDIUM),
-            verticalArrangement = Arrangement.spacedBy(MEDIUM),
+            modifier = Modifier.padding(EinkTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(EinkTheme.spacing.small),
         ) {
             LayerHeader(
                 index = index,
@@ -79,8 +67,8 @@ fun LayerCard(
             )
             if (isExpanded) {
                 Column(
-                    modifier = Modifier.padding(start = LARGE),
-                    verticalArrangement = Arrangement.spacedBy(MEDIUM),
+                    modifier = Modifier.padding(start = EinkTheme.spacing.medium),
+                    verticalArrangement = Arrangement.spacedBy(EinkTheme.spacing.small),
                 ) {
                     ColorPicker(
                         label = stringResource(R.string.fg_color),
@@ -113,18 +101,16 @@ private fun LayerHeader(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .clickable(onClick = onToggleExpansion),
-            verticalAlignment = Alignment.CenterVertically,
+        EinkDisclosureRow(
+            expanded = isExpanded,
+            onExpandedChange = { onToggleExpansion() },
+            modifier = Modifier.weight(1f),
         ) {
-            Disclosure(isExpanded)
             Text(
                 text = stringResource(R.string.layer_number, index + 1),
-                modifier = Modifier.padding(horizontal = MEDIUM),
+                modifier = Modifier.padding(horizontal = EinkTheme.spacing.small),
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge,
+                style = EinkTheme.typography.title,
             )
         }
         LayerIconButton(
@@ -155,16 +141,12 @@ private fun LayerIconButton(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    IconButton(
+    EinkIconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
             .size(LAYER_ACTION_BUTTON_SIZE)
             .semantics { contentDescription = description },
-        colors = IconButtonDefaults.iconButtonColors(
-            contentColor = Color.Black,
-            disabledContentColor = Color.Black,
-        ),
     ) {
         LayerActionGlyph(icon)
     }
@@ -256,14 +238,13 @@ private fun RulePicker(selectedRule: String, onSelect: (String) -> Unit) {
     val selectedPreset = RulePreset.entries.firstOrNull { preset -> preset.rule == selectedRule }
     val selectedName = selectedPreset?.displayName() ?: selectedRule
 
-    Row(
-        modifier = Modifier.clickable { isExpanded = !isExpanded },
-        verticalAlignment = Alignment.CenterVertically,
+    EinkDisclosureRow(
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = it },
     ) {
-        Disclosure(isExpanded)
         Text(
             text = stringResource(R.string.rule_selected, selectedName),
-            modifier = Modifier.padding(horizontal = MEDIUM),
+            modifier = Modifier.padding(horizontal = EinkTheme.spacing.small),
             fontWeight = FontWeight.Bold,
         )
     }

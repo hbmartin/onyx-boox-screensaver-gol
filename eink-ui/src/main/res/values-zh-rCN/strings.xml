@@ -1,0 +1,14 @@
+<resources>
+    <string name="eink_random">随机</string>
+    <string name="eink_decrease">减少</string>
+    <string name="eink_increase">增加</string>
+    <string name="eink_color_red">红色</string>
+    <string name="eink_color_pink">粉色</string>
+    <string name="eink_color_purple">紫色</string>
+    <string name="eink_color_cyan">青色</string>
+    <string name="eink_color_green">绿色</string>
+    <string name="eink_color_yellow">黄色</string>
+    <string name="eink_color_blue_gray">蓝灰色</string>
+    <string name="eink_color_black">黑色</string>
+    <string name="eink_color_white">白色</string>
+</resources>

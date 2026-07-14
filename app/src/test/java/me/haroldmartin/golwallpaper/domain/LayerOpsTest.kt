@@ -1,7 +1,7 @@
 package me.haroldmartin.golwallpaper.domain
 
 import androidx.compose.ui.graphics.toArgb
-import me.haroldmartin.golwallpaper.ui.theme.Colors
+import me.haroldmartin.golwallpaper.ui.theme.ALL_COLORS
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -59,9 +59,9 @@ class LayerOpsTest {
 
     @Test
     fun `next unused color chooses palette order and wraps after exhaustion`() {
-        val firstPaletteColor = Colors.ALL.first().value.toArgb()
-        val secondPaletteColor = Colors.ALL[1].value.toArgb()
-        val paletteLayers = Colors.ALL.map { color -> Layer(fgColor = color.value.toArgb()) }
+        val firstPaletteColor = ALL_COLORS.first().color.toArgb()
+        val secondPaletteColor = ALL_COLORS[1].color.toArgb()
+        val paletteLayers = ALL_COLORS.map { color -> Layer(fgColor = color.color.toArgb()) }
 
         assertEquals(firstPaletteColor, LayerOps.nextUnusedColor(emptyList()))
         assertEquals(

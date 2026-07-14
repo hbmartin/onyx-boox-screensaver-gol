@@ -1,13 +1,7 @@
 package me.haroldmartin.golwallpaper
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -20,14 +14,15 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.haroldmartin.einkui.EinkButton
+import me.haroldmartin.einkui.EinkLink
+import me.haroldmartin.einkui.EinkSettingsScreen
 import me.haroldmartin.golwallpaper.ui.CalendarSection
 import me.haroldmartin.golwallpaper.ui.CalendarSectionCallbacks
 import me.haroldmartin.golwallpaper.ui.FullScreenPreview
@@ -35,8 +30,6 @@ import me.haroldmartin.golwallpaper.ui.LayersCallbacks
 import me.haroldmartin.golwallpaper.ui.LayersSection
 import me.haroldmartin.golwallpaper.ui.PreviewFloatingActionButton
 import me.haroldmartin.golwallpaper.ui.SettingsPanel
-import me.haroldmartin.golwallpaper.ui.theme.AppButton
-import me.haroldmartin.golwallpaper.ui.theme.XXLARGE
 import me.haroldmartin.golwallpaper.utils.isOnyxAutoFreezeEnabled
 import me.haroldmartin.golwallpaper.utils.isOnyxDevice
 import me.haroldmartin.golwallpaper.utils.openOnyxFreezeSettings
@@ -82,28 +75,17 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         viewModel.resyncPreview()
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
+    EinkSettingsScreen(
         floatingActionButton = {
             PreviewFloatingActionButton(onClick = viewModel::openPreview)
         },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(XXLARGE)
-                .padding(bottom = PREVIEW_FAB_CLEARANCE),
-            verticalArrangement = Arrangement.spacedBy(XXLARGE),
-        ) {
+        primaryPane = {
             if (isOnyx && isAutoFreezeEnabled != false) {
-                Text(
+                EinkLink(
                     text = stringResource(R.string.freeze_alert),
-                    modifier = Modifier.clickable(role = Role.Button) {
+                    onClick = {
                         openOnyxFreezeSettings(context)
                     },
-                    textDecoration = TextDecoration.Underline,
                 )
             }
             SettingsPanel(
@@ -151,13 +133,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     },
                 ),
             )
-            AppButton(
+            EinkButton(
                 onClick = { viewModel.openIssues(context) },
             ) {
                 Text(stringResource(R.string.report_issue))
             }
-        }
-    }
+            Spacer(Modifier.height(PREVIEW_FAB_CLEARANCE))
+        },
+    )
 
     if (previewUiState.isOpen) {
         FullScreenPreview(

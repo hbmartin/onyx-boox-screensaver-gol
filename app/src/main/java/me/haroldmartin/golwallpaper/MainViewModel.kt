@@ -35,7 +35,7 @@ import me.haroldmartin.golwallpaper.domain.resetPattern
 import me.haroldmartin.golwallpaper.domain.setEnabled
 import me.haroldmartin.golwallpaper.domain.setFgColor
 import me.haroldmartin.golwallpaper.domain.setRule
-import me.haroldmartin.golwallpaper.ui.theme.Colors
+import me.haroldmartin.golwallpaper.ui.theme.ALL_COLORS
 import me.haroldmartin.golwallpaper.ui.theme.RANDOM_COLOR
 import me.haroldmartin.golwallpaper.ui.theme.chooseRandom
 import me.haroldmartin.golwallpaper.utils.DeviceOverlays
@@ -723,7 +723,7 @@ class MainViewModel(
     }
 
     private fun resolvePreviewColor(color: Int, except: Set<Int>): Int =
-        if (color == RANDOM_COLOR) Colors.ALL.chooseRandom(except).value.toArgb() else color
+        if (color == RANDOM_COLOR) ALL_COLORS.chooseRandom(except).color.toArgb() else color
 }
 
 private data class PreviewLayer(

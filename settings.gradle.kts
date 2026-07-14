@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GoL Screensaver"
 include(":app")
+include(":eink-ui")

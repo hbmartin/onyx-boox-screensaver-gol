@@ -4,36 +4,31 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import me.haroldmartin.einkui.EinkButton
+import me.haroldmartin.einkui.EinkButtonEmphasis
+import me.haroldmartin.einkui.EinkCheckboxRow
+import me.haroldmartin.einkui.EinkExpandableSection
+import me.haroldmartin.einkui.EinkPickerDialog
+import me.haroldmartin.einkui.EinkSwitchRow
+import me.haroldmartin.einkui.EinkTheme
 import me.haroldmartin.golwallpaper.CalendarUiIssue
 import me.haroldmartin.golwallpaper.CalendarUiState
 import me.haroldmartin.golwallpaper.R
@@ -42,14 +37,8 @@ import me.haroldmartin.golwallpaper.domain.CalendarOverlaySettings
 import me.haroldmartin.golwallpaper.domain.CalendarSource
 import me.haroldmartin.golwallpaper.domain.OverlayCorner
 import me.haroldmartin.golwallpaper.domain.OverlaySize
-import me.haroldmartin.golwallpaper.ui.theme.AppButton
-import me.haroldmartin.golwallpaper.ui.theme.Disclosure
-import me.haroldmartin.golwallpaper.ui.theme.LARGE
-import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
 
 private val CALENDAR_LIST_MAX_HEIGHT = 360.dp
-private val SECTION_BORDER = 2.dp
-private val SELECT_CALENDARS_BORDER = 2.dp
 
 @Composable
 @Suppress("LongMethod")
@@ -78,44 +67,28 @@ fun CalendarSection(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(SECTION_BORDER, Color.Black)
-            .padding(LARGE),
-        verticalArrangement = Arrangement.spacedBy(MEDIUM),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Disclosure(isExpanded)
+    EinkExpandableSection(
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = it },
+        modifier = modifier,
+        title = {
             Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = MEDIUM),
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.calendar_section_title),
+                modifier = Modifier.weight(1f),
+                fontWeight = FontWeight.Bold,
+                style = EinkTheme.typography.title,
             )
-        }
-        if (isExpanded) {
-            CalendarOptions(
-                settings = settings,
-                uiState = uiState,
-                onEnabledChange = { enabled ->
-                    if (!enabled) {
-                        callbacks.onDisable()
-                    } else {
-                        requestCalendarAccess()
-                    }
-                },
-                onOpenPicker = requestCalendarAccess,
-                onSettingsChange = callbacks.onSettingsChange,
-            )
-        }
+        },
+    ) {
+        CalendarOptions(
+            settings = settings,
+            uiState = uiState,
+            onEnabledChange = { enabled ->
+                if (!enabled) callbacks.onDisable() else requestCalendarAccess()
+            },
+            onOpenPicker = requestCalendarAccess,
+            onSettingsChange = callbacks.onSettingsChange,
+        )
     }
 
     if (uiState.isPickerVisible) {
@@ -137,24 +110,15 @@ private fun CalendarOptions(
     onOpenPicker: () -> Unit,
     onSettingsChange: (CalendarOverlaySettings) -> Unit,
 ) = Column(
-    modifier = Modifier.padding(start = LARGE),
-    verticalArrangement = Arrangement.spacedBy(MEDIUM),
+    modifier = Modifier.padding(start = EinkTheme.spacing.medium),
+    verticalArrangement = Arrangement.spacedBy(EinkTheme.spacing.small),
 ) {
-    Row(
-        modifier = Modifier.toggleable(
-            value = settings.isEnabled,
-            role = Role.Switch,
-            onValueChange = onEnabledChange,
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MEDIUM),
-    ) {
-        Switch(checked = settings.isEnabled, onCheckedChange = null)
+    EinkSwitchRow(checked = settings.isEnabled, onCheckedChange = onEnabledChange) {
         Text(stringResource(R.string.calendar_enable))
     }
     if (uiState.issue != null) Text(text = uiState.issue.displayText())
     if (settings.isEnabled) {
-        AppButton(onClick = onOpenPicker, borderWidth = SELECT_CALENDARS_BORDER) {
+        EinkButton(onClick = onOpenPicker, emphasis = EinkButtonEmphasis.Strong) {
             val selectedNames = uiState.sources
                 .filter { source -> source.id in settings.selectedCalendarIds }
                 .joinToString { source -> source.displayName }
@@ -202,10 +166,10 @@ private fun CalendarPickerDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    EinkPickerDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.calendar_choose)) },
-        text = {
+        primaryPane = {
             LazyColumn(modifier = Modifier.heightIn(max = CALENDAR_LIST_MAX_HEIGHT)) {
                 items(items = sources, key = CalendarSource::id) { source ->
                     CalendarSourceRow(
@@ -217,10 +181,12 @@ private fun CalendarPickerDialog(
             }
         },
         confirmButton = {
-            AppButton(onClick = onConfirm) { Text(stringResource(R.string.calendar_done)) }
+            EinkButton(onClick = onConfirm, emphasis = EinkButtonEmphasis.Strong) {
+                Text(stringResource(R.string.calendar_done))
+            }
         },
         dismissButton = {
-            AppButton(onClick = onDismiss) { Text(stringResource(R.string.calendar_cancel)) }
+            EinkButton(onClick = onDismiss) { Text(stringResource(R.string.calendar_cancel)) }
         },
     )
 }
@@ -231,15 +197,11 @@ private fun CalendarSourceRow(
     isSelected: Boolean,
     onToggle: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .toggleable(value = isSelected, role = Role.Checkbox, onValueChange = { onToggle() })
-            .padding(vertical = MEDIUM),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MEDIUM),
+    EinkCheckboxRow(
+        checked = isSelected,
+        onCheckedChange = { onToggle() },
+        modifier = Modifier.padding(vertical = EinkTheme.spacing.small),
     ) {
-        Checkbox(checked = isSelected, onCheckedChange = null)
         Column {
             Text(source.displayName, fontWeight = FontWeight.Bold)
             Text(source.accountName)

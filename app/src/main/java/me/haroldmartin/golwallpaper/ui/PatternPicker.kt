@@ -1,44 +1,35 @@
 package me.haroldmartin.golwallpaper.ui
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import me.haroldmartin.einkui.EinkButton
+import me.haroldmartin.einkui.EinkChoiceButton
+import me.haroldmartin.einkui.EinkDisclosureRow
+import me.haroldmartin.einkui.EinkPickerDialog
+import me.haroldmartin.einkui.EinkTextField
+import me.haroldmartin.einkui.EinkTheme
 import me.haroldmartin.golwallpaper.R
 import me.haroldmartin.golwallpaper.domain.CUSTOM_STARTING_PATTERN
 import me.haroldmartin.golwallpaper.domain.Patterns
 import me.haroldmartin.golwallpaper.domain.isParseablePattern
-import me.haroldmartin.golwallpaper.ui.theme.AppButton
-import me.haroldmartin.golwallpaper.ui.theme.COLOR_SCHEME
-import me.haroldmartin.golwallpaper.ui.theme.Disclosure
-import me.haroldmartin.golwallpaper.ui.theme.LARGE
-import me.haroldmartin.golwallpaper.ui.theme.MEDIUM
-import me.haroldmartin.golwallpaper.ui.theme.SMALL
 
 private const val SCREEN_FRACTION = 0.6f
-private val DIALOG_BORDER_WIDTH = 2.dp
 
 @Composable
 fun PatternPicker(
@@ -48,13 +39,12 @@ fun PatternPicker(
     var isDialogVisible by remember { mutableStateOf(false) }
     val selectedName = selectedPattern.displayName()
 
-    Row(
-        modifier = Modifier.clickable { isDialogVisible = true },
-        verticalAlignment = Alignment.CenterVertically,
+    EinkDisclosureRow(
+        expanded = false,
+        onExpandedChange = { isDialogVisible = true },
     ) {
-        Disclosure(isOpen = false)
         Text(
-            modifier = Modifier.padding(horizontal = MEDIUM),
+            modifier = Modifier.padding(horizontal = EinkTheme.spacing.small),
             fontWeight = FontWeight.Bold,
             text = stringResource(R.string.reset_pattern_selected, selectedName),
         )
@@ -79,22 +69,16 @@ private fun PatternPickerDialog(
     onDismiss: () -> Unit,
 ) {
     val patternsMaxHeight = LocalConfiguration.current.screenHeightDp.dp * SCREEN_FRACTION
-    AlertDialog(
+    EinkPickerDialog(
         onDismissRequest = onDismiss,
-        modifier = Modifier.border(
-            width = DIALOG_BORDER_WIDTH,
-            color = Color.Black,
-            shape = RectangleShape,
-        ),
-        shape = RectangleShape,
         title = { Text(stringResource(R.string.reset_pattern)) },
-        text = {
+        primaryPane = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(SMALL),
+                verticalArrangement = Arrangement.spacedBy(EinkTheme.spacing.extraSmall),
                 modifier = Modifier
                     .heightIn(max = patternsMaxHeight)
                     .verticalScroll(rememberScrollState())
-                    .padding(start = LARGE),
+                    .padding(start = EinkTheme.spacing.medium),
             ) {
                 PatternButton(
                     text = stringResource(R.string.random_noise),
@@ -114,9 +98,8 @@ private fun PatternPickerDialog(
                 )
             }
         },
-        confirmButton = {},
         dismissButton = {
-            AppButton(onClick = onDismiss) {
+            EinkButton(onClick = onDismiss) {
                 Text(stringResource(R.string.calendar_cancel))
             }
         },
@@ -125,9 +108,9 @@ private fun PatternPickerDialog(
 
 @Composable
 private fun PatternButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    AppButton(onClick = onClick) {
+    EinkChoiceButton(selected = isSelected, onClick = onClick) {
         Text(
-            modifier = Modifier.padding(horizontal = MEDIUM, vertical = 0.dp),
+            modifier = Modifier.padding(horizontal = EinkTheme.spacing.small),
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             text = text,
         )
@@ -140,28 +123,18 @@ private fun RleInput(isSelected: Boolean, onApply: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
+    EinkTextField(
         value = text,
         onValueChange = { value ->
             text = value
             isError = false
         },
         isError = isError,
-        label = {
-            Text(
-                text = stringResource(R.string.paste_rle_label),
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            )
-        },
+        label = stringResource(R.string.paste_rle_label) + if (isSelected) " ✓" else "",
+        supportingText = if (isError) stringResource(R.string.invalid_rle) else null,
         modifier = Modifier.fillMaxWidth(),
     )
-    if (isError) {
-        Text(
-            text = stringResource(R.string.invalid_rle),
-            color = COLOR_SCHEME.error,
-        )
-    }
-    AppButton(
+    EinkButton(
         onClick = {
             val rle = text.trim()
             if (isParseablePattern(rle)) {
@@ -173,8 +146,7 @@ private fun RleInput(isSelected: Boolean, onApply: (String) -> Unit) {
         },
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = MEDIUM, vertical = 0.dp),
-            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(horizontal = EinkTheme.spacing.small),
             text = stringResource(R.string.apply_rle),
         )
     }

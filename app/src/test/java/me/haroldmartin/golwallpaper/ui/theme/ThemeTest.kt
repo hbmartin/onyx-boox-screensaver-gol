@@ -11,13 +11,14 @@ private const val LUMINANCE_OFFSET = 0.05f
 class ThemeTest {
     @Test
     fun `primary action color contrasts with pale surfaces`() {
+        val colorScheme = me.haroldmartin.einkui.EinkThemeDefaults.colors
         val backgrounds = listOf(
-            COLOR_SCHEME.background,
-            COLOR_SCHEME.surfaceContainerHigh,
+            colorScheme.background,
+            colorScheme.surface,
         )
 
         backgrounds.forEach { background ->
-            val contrastRatio = contrastRatio(COLOR_SCHEME.primary, background)
+            val contrastRatio = contrastRatio(colorScheme.content, background)
             assertTrue(
                 "Expected primary action contrast of at least $MIN_TEXT_CONTRAST_RATIO, " +
                     "but was $contrastRatio",
