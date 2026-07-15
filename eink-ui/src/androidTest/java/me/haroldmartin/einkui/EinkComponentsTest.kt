@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
@@ -44,7 +45,7 @@ class EinkComponentsTest {
     @Test
     fun switchRowChangesImmediately() {
         composeRule.setContent {
-            val checked = mutableStateOf(false)
+            val checked = remember { mutableStateOf(false) }
             EinkTheme {
                 EinkSwitchRow(checked = checked.value, onCheckedChange = { checked.value = it }) {
                     Text("Calendar")
@@ -73,7 +74,7 @@ class EinkComponentsTest {
     @Test
     fun colorChooserExposesNamedSelectedChoices() {
         composeRule.setContent {
-            val selection = mutableStateOf<EinkColorChoice>(EinkColorChoice.Random)
+            val selection = remember { mutableStateOf<EinkColorChoice>(EinkColorChoice.Random) }
             EinkTheme {
                 EinkColorChooser(
                     selection = selection.value,
@@ -102,6 +103,43 @@ class EinkComponentsTest {
 
         composeRule.onNodeWithText("Primary").assertIsDisplayed()
         composeRule.onNodeWithText("Secondary").assertIsDisplayed()
+    }
+
+    @Test
+    fun adaptivePaneRetainsStateWhenPaneLambdasChange() {
+        val primaryVersion = mutableIntStateOf(0)
+        val secondaryVersion = mutableIntStateOf(0)
+        composeRule.setContent {
+            EinkTheme {
+                val currentPrimaryVersion = primaryVersion.intValue
+                val currentSecondaryVersion = secondaryVersion.intValue
+                EinkAdaptivePaneLayout(
+                    layoutMode = EinkLayoutMode.TwoPane,
+                    primaryPane = {
+                        val clicks = remember { mutableIntStateOf(0) }
+                        EinkButton(onClick = { clicks.intValue++ }) {
+                            Text("Primary ${clicks.intValue} v$currentPrimaryVersion")
+                        }
+                    },
+                    secondaryPane = {
+                        val clicks = remember { mutableIntStateOf(0) }
+                        EinkButton(onClick = { clicks.intValue++ }) {
+                            Text("Secondary ${clicks.intValue} v$currentSecondaryVersion")
+                        }
+                    },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("Primary 0 v0").performClick()
+        composeRule.onNodeWithText("Secondary 0 v0").performClick()
+        composeRule.runOnIdle {
+            primaryVersion.intValue++
+            secondaryVersion.intValue++
+        }
+
+        composeRule.onNodeWithText("Primary 1 v1").assertIsDisplayed()
+        composeRule.onNodeWithText("Secondary 1 v1").assertIsDisplayed()
     }
 
     @Test
