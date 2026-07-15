@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
@@ -42,10 +43,8 @@ fun EinkAdaptivePaneLayout(
     activePane: EinkPane = EinkPane.Primary,
     secondaryPane: (@Composable () -> Unit)? = null,
 ) {
-    val primaryContent = remember(primaryPane) { movableContentOf { primaryPane() } }
-    val secondaryContent = secondaryPane?.let { pane ->
-        remember(pane) { movableContentOf { pane() } }
-    }
+    val primaryContent = rememberMovablePaneContent(primaryPane)
+    val secondaryContent = rememberOptionalPaneContent(secondaryPane)
     BoxWithConstraints(modifier = modifier) {
         val resolvedMode = when {
             secondaryContent == null -> EinkLayoutMode.SinglePane
@@ -76,6 +75,22 @@ fun EinkAdaptivePaneLayout(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun rememberMovablePaneContent(pane: @Composable () -> Unit): @Composable () -> Unit {
+    val paneState = rememberUpdatedState(pane)
+    return remember { movableContentOf { paneState.value() } }
+}
+
+@Composable
+private fun rememberOptionalPaneContent(
+    pane: (@Composable () -> Unit)?,
+): (@Composable () -> Unit)? {
+    val paneState = rememberUpdatedState(pane)
+    return remember(pane != null) {
+        pane?.let { movableContentOf { paneState.value?.invoke() } }
     }
 }
 
