@@ -1,5 +1,5 @@
 [versions]
-agp = "9.3.2"
+agp = "9.4.0"
 kotlin = "2.4.10"
 coreKtx = "1.19.0"
 junit = "4.13.2"
@@ -16,7 +16,7 @@ androidxWork = "2.11.2"
 updatesCheck = "0.61.0"
 hbmartinRules = "1.0.0"
 #noinspection NewerVersionAvailable
-composeRules = "0.6.4"
+composeRules = "0.6.6"
 json = "20260814"
 
 [libraries]
